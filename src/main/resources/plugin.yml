@@ -1,0 +1,18 @@
+name: NDailyRewards
+version: '${project.version}'
+main: me.nonplay.ndailyrewards.NDailyRewards
+api-version: 1.13
+softdepend: [ Citizens ]
+authors: [ NONPLAY ]
+description: Reward players for playing on your server!
+commands:
+  ndailyrewards:
+    aliases: [rewards, ndailyreward, dailybonus, ndr]
+    description: Main command
+permissions:
+  ndailyrewards.user:
+    description: Allows players to use GUI.
+    default: true
+  ndailyrewards.admin:
+    description: Allows to use admin commands.
+    default: op
