@@ -10,7 +10,7 @@ public enum Lang
 {
     Prefix("Prefix", 0, "&6[&eNDailyRewards&6] &7"),
     Commands_Help_Usage("Commands_Help_Usage", 1, "&cUsage: &e/ndailyrewards %command% %usage%"),
-    Commands_Help_Commands("Commands_Help_Commands", 2, "&8&m-----------&8&l[ &aNDaily Rewards &8&l]&8&m-----------\n\n&2» &a/ndailyrewards &7- Open GUI.\n&2» &a/ndailyrewards help &7- Help page.\n&2» &a/ndailyrewards reload &7- Reload the plugin.\n\n&8&m--------------------------------------"),
+    Commands_Help_Commands("Commands_Help_Commands", 2, "&8&m-----------&8&l[ &aNDailyRewards &8&l]&8&m-----------\n\n&2» &a/ndailyrewards &7- Open GUI.\n&2» &a/ndailyrewards help &7- Help page.\n&2» &a/ndailyrewards reload &7- Reload the plugin.\n\n&8&m--------------------------------------"),
     Command_Reload_Exec("Command_Reload_Exec", 3, "&aConfiguration reloaded!"),
     Time_Sec("Time_Sec", 4, "sec."),
     Time_Min("Time_Min", 5, "m."),

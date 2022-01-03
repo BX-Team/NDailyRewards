@@ -3,6 +3,7 @@ package me.nonplay.ndailyrewards;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.nonplay.ndailyrewards.data.IDataV2;
+import me.nonplay.ndailyrewards.utils.Metrics;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import me.nonplay.ndailyrewards.tasks.SaveTask;
@@ -38,6 +39,11 @@ import org.bukkit.plugin.java.JavaPlugin;
             (this.hm = new HookManager(this)).setup();
             this.load();
             new SaveTask(this).start();
+
+            // All you have to do is adding the following two lines in your onEnable method.
+            // You can find the plugin ids of your plugins on the page https://bstats.org/what-is-my-plugin-id
+            int pluginId = 13828; // <-- Replace with the id of your plugin!
+            Metrics metrics = new Metrics(this, pluginId);
         }
 
         public void onDisable() {

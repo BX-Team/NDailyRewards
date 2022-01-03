@@ -6,11 +6,11 @@ import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.trait.TraitName;
 import net.citizensnpcs.api.trait.Trait;
 
-@TraitName("dailyrewards")
+@TraitName("ndailyrewards")
 public class DailyTrait extends Trait
 {
     public DailyTrait() {
-        super("dailyrewards");
+        super("ndailyrewards");
     }
     
     @EventHandler

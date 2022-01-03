@@ -13,7 +13,7 @@
 data:
   auto-save: 15
   storage:
-    type: sqlite
+    type: sqlite #sqlite or MySQL
     username: none
     password: none
     host: none

@@ -12,7 +12,7 @@ public class LogUtil
     }
     
     public static void send(final String msg, final LogType type) {
-        String out = type.color() + "[" + type.name() + "] &bDailyRewards: " + ChatColor.GRAY + msg;
+        String out = type.color() + "[" + type.name() + "] &bNDailyRewards: " + ChatColor.GRAY + msg;
         out = ChatColor.translateAlternateColorCodes('&', out);
         LogUtil.plugin.getServer().getConsoleSender().sendMessage(out);
     }
