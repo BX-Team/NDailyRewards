@@ -16,7 +16,7 @@ View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewar
 ![bstats](https://bstats.org/signatures/bukkit/NDailyRewards.svg)
 
 ### 🌐 Social links
-SpigotMC: 
+SpigotMC: https://www.spigotmc.org/resources/ndailyrewards-1-13-1-18-1.98936/
 
 bStats: https://bstats.org/plugin/bukkit/NDailyRewards/13828
 
