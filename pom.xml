@@ -6,7 +6,7 @@
 
     <groupId>me.nonplay</groupId>
     <artifactId>ndailyrewards</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <name>NDailyRewards</name>
@@ -81,19 +81,25 @@
             <version>3.2.38</version>
             <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
         <dependency>
-            <groupId>net.citizensnpcs</groupId>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.36.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>net.citizensnpc</groupId>
             <artifactId>api</artifactId>
             <version>2.0.29</version>
             <scope>system</scope>
             <systemPath>E:/Java/NDailyRewards/jar/citizensapi-2.0.29-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>org.sqlite</groupId>
-            <artifactId>JDBC</artifactId>
-            <version>3.36.0.3</version>
+            <groupId>me.nonplay</groupId>
+            <artifactId>nplib</artifactId>
+            <version>1.1</version>
             <scope>system</scope>
-            <systemPath>E:/Java/NDailyRewards/jar/sqlite-jdbc-3.36.0.3.jar</systemPath>
+            <systemPath>E:/Java/NPLib/target/nplib-1.1.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

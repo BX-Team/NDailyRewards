@@ -2,6 +2,7 @@ name: NDailyRewards
 version: '${project.version}'
 main: me.nonplay.ndailyrewards.NDailyRewards
 api-version: 1.13
+depend: [ NPLib ]
 softdepend: [ Citizens ]
 authors: [ NONPLAY ]
 description: Reward players for playing on your server!

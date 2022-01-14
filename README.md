@@ -5,7 +5,7 @@
 This plugin gives you the ability to give players daily rewards for playing on your server!
 You can change the amount of days in a row from 1 to 54!
 
-**To run plugin, you need Java 11+ and Spigot 1.13+ (or Purpur, Paper and etc.)**
+**To run plugin, you need `Java 11+`, `Spigot 1.13+ (or Purpur, Paper and etc.)` and [NPLib](https://polymart.org/resource/nplib.1861)**
 
 ### 🤖 Featrues
 - MySQL and SQLite support
