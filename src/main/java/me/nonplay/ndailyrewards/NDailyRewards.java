@@ -13,7 +13,7 @@ import me.nonplay.ndailyrewards.hooks.HookManager;
 import org.bukkit.plugin.PluginManager;
 import me.nonplay.ndailyrewards.cfg.ConfigManager;
 import me.nonplay.ndailyrewards.cmds.CommandManager;
-import me.nonplay.nplib.utils.metrics.Metrics;
+import me.nonplay.ndailyrewards.utils.metrics.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
     public class NDailyRewards extends JavaPlugin

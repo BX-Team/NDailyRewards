@@ -28,7 +28,7 @@ public class Files
     
     public static void mkdir(final File file) {
         try {
-            file.mkdir();
+            file.mkdir(); // Create dir
         }
         catch (Exception ex) {
             ex.printStackTrace();

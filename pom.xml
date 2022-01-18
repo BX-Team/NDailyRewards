@@ -6,7 +6,7 @@
 
     <groupId>me.nonplay</groupId>
     <artifactId>ndailyrewards</artifactId>
-    <version>1.2</version>
+    <version>1.2.2</version>
     <packaging>jar</packaging>
 
     <name>NDailyRewards</name>
@@ -93,13 +93,6 @@
             <version>2.0.29</version>
             <scope>system</scope>
             <systemPath>E:/Java/NDailyRewards/jar/citizensapi-2.0.29-SNAPSHOT.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>me.nonplay</groupId>
-            <artifactId>nplib</artifactId>
-            <version>1.1</version>
-            <scope>system</scope>
-            <systemPath>E:/Java/NPLib/target/nplib-1.1.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
