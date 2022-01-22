@@ -6,7 +6,7 @@
 
     <groupId>me.nonplay</groupId>
     <artifactId>ndailyrewards</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <packaging>jar</packaging>
 
     <name>NDailyRewards</name>
@@ -55,6 +55,10 @@
 
     <repositories>
         <repository>
+            <id>everything</id>
+            <url>https://repo.citizensnpcs.co/</url>
+        </repository>
+        <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
@@ -69,6 +73,13 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>net.citizensnpcs</groupId>
+            <artifactId>citizensapi</artifactId>
+            <version>2.0.29-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
@@ -86,13 +97,6 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.36.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>net.citizensnpc</groupId>
-            <artifactId>api</artifactId>
-            <version>2.0.29</version>
-            <scope>system</scope>
-            <systemPath>E:/Java/NDailyRewards/jar/citizensapi-2.0.29-SNAPSHOT.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
