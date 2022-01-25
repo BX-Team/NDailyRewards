@@ -6,6 +6,7 @@ This plugin gives you the ability to give players daily rewards for playing on y
 You can change the amount of days in a row from 1 to 54!
 
 **To run plugin, you need `Java 8+`, `Spigot 1.13+ (or Purpur, Paper and etc.)`**
+**I advise you to use version 1.18.1, because there are the latest security updates. But if you wish, you can use other versions**
 
 ### 🤖 Featrues
 - MySQL and SQLite support
