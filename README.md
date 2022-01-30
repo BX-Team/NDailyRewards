@@ -1,5 +1,4 @@
-## 💰 NDailyRewards - Reward players for playing on your server!
-
+## 💰 NDailyRewards - Reward players for playing on your server! 
 
 ### ❓ About
 This plugin gives you the ability to give players daily rewards for playing on your server!
@@ -43,3 +42,4 @@ You can change the amount of days in a row from 1 to 54!
 View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewards/13844)
 
 ![bstats](https://bstats.org/signatures/bukkit/NDailyRewards.svg)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/NONPLAYT/NDailyRewards/Java%20CI%20with%20Maven?style=for-the-badge)
