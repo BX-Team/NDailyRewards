@@ -28,7 +28,7 @@ options:
     only-when-have: true
   days-row: 7
   rewards-cooldown: 86400
-  unlock-after-midnight: true
+  unlock-after-midnight: false
 rewards:
   '1':
     lore:

@@ -3,7 +3,6 @@ package me.nonplay.ndailyrewards.nbt;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
@@ -18,7 +17,7 @@ import me.nonplay.ndailyrewards.nbt.utils.nmsmappings.ReflectionMethod;
 /**
  * Base class representing NMS Compounds. For a standalone implementation check
  * {@link NBTContainer}
- * 
+ *
  * @author tr7zw
  *
  */
@@ -77,7 +76,7 @@ public class NBTCompound {
 	/**
 	 * Merges all data from comp into this compound. This is done in one action, so
 	 * it also works with Tiles/Entities
-	 * 
+	 *
 	 * @param comp
 	 */
 	public void mergeCompound(NBTCompound comp) {
@@ -92,7 +91,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -108,7 +107,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -127,7 +126,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -143,7 +142,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -158,7 +157,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -174,7 +173,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -189,7 +188,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -205,7 +204,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -220,7 +219,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -236,7 +235,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -251,7 +250,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -267,7 +266,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -282,7 +281,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -298,7 +297,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -313,7 +312,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -329,7 +328,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -344,7 +343,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -360,7 +359,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -375,7 +374,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -396,7 +395,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -411,7 +410,7 @@ public class NBTCompound {
 
 	/**
 	 * Uses Gson to store an {@link Serializable} Object
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -427,7 +426,7 @@ public class NBTCompound {
 
 	/**
 	 * Uses Gson to retrieve a stored Object
-	 * 
+	 *
 	 * @param key
 	 * @param type Class of the Object
 	 * @return The created Object or null if empty
@@ -443,7 +442,7 @@ public class NBTCompound {
 
 	/**
 	 * Save an ItemStack as a compound under a given key
-	 * 
+	 *
 	 * @param key
 	 * @param item
 	 */
@@ -459,7 +458,7 @@ public class NBTCompound {
 
 	/**
 	 * Get an ItemStack that was saved at the given key
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -472,8 +471,8 @@ public class NBTCompound {
 			readLock.unlock();
 		}
 	}
-	
-		/**
+
+	/**
 	 * Setter
 	 *
 	 * @param key
@@ -547,7 +546,7 @@ public class NBTCompound {
 
 	/**
 	 * Creates a subCompound, or returns it if already provided
-	 * 
+	 *
 	 * @param name Key to use
 	 * @return The subCompound Object
 	 */
@@ -584,10 +583,10 @@ public class NBTCompound {
 			readLock.unlock();
 		}
 	}
-	
+
 	/**
 	 * The same as addCompound, just with a name that better reflects what it does
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -669,10 +668,10 @@ public class NBTCompound {
 			writeLock.unlock();
 		}
 	}
-	
+
 	/**
 	 * Returns the type of the list, null if not a list
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -804,34 +803,34 @@ public class NBTCompound {
 		}
 		return false;
 	}
-	
+
 	protected static boolean isEqual(NBTCompound compA, NBTCompound compB, String key) {
 		if(compA.getType(key) != compB.getType(key))return false;
 		switch(compA.getType(key)) {
-		case NBTTagByte:
-			return compA.getByte(key).equals(compB.getByte(key));
-		case NBTTagByteArray:
-			return Arrays.equals(compA.getByteArray(key), compB.getByteArray(key));
-		case NBTTagCompound:
-			return compA.getCompound(key).equals(compB.getCompound(key));
-		case NBTTagDouble:
-			return compA.getDouble(key).equals(compB.getDouble(key));
-		case NBTTagEnd:
-			return true; //??
-		case NBTTagFloat:
-			return compA.getFloat(key).equals(compB.getFloat(key));
-		case NBTTagInt:
-			return compA.getInteger(key).equals(compB.getInteger(key));
-		case NBTTagIntArray:
-			return Arrays.equals(compA.getIntArray(key), compB.getIntArray(key));
-		case NBTTagList:
-			return NBTReflectionUtil.getEntry(compA, key).toString().equals(NBTReflectionUtil.getEntry(compB, key).toString()); // Just string compare the 2 lists
-		case NBTTagLong:
-			return compA.getLong(key).equals(compB.getLong(key));
-		case NBTTagShort:
-			return compA.getShort(key).equals(compB.getShort(key));
-		case NBTTagString:
-			return compA.getString(key).equals(compB.getString(key));
+			case NBTTagByte:
+				return compA.getByte(key).equals(compB.getByte(key));
+			case NBTTagByteArray:
+				return Arrays.equals(compA.getByteArray(key), compB.getByteArray(key));
+			case NBTTagCompound:
+				return compA.getCompound(key).equals(compB.getCompound(key));
+			case NBTTagDouble:
+				return compA.getDouble(key).equals(compB.getDouble(key));
+			case NBTTagEnd:
+				return true; //??
+			case NBTTagFloat:
+				return compA.getFloat(key).equals(compB.getFloat(key));
+			case NBTTagInt:
+				return compA.getInteger(key).equals(compB.getInteger(key));
+			case NBTTagIntArray:
+				return Arrays.equals(compA.getIntArray(key), compB.getIntArray(key));
+			case NBTTagList:
+				return NBTReflectionUtil.getEntry(compA, key).toString().equals(NBTReflectionUtil.getEntry(compB, key).toString()); // Just string compare the 2 lists
+			case NBTTagLong:
+				return compA.getLong(key).equals(compB.getLong(key));
+			case NBTTagShort:
+				return compA.getShort(key).equals(compB.getShort(key));
+			case NBTTagString:
+				return compA.getString(key).equals(compB.getString(key));
 		}
 		return false;
 	}

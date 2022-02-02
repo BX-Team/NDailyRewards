@@ -29,7 +29,7 @@ import static me.nonplay.ndailyrewards.nbt.utils.MinecraftVersion.getLogger;
  * bStats collects some data for plugin authors.
  * <p>
  * Check out https://bStats.org/ to learn more about bStats!
- * 
+ *
  * This class is modified by tr7zw to work when the api is shaded into other peoples plugins.
  */
 public class ApiMetricsLite {
@@ -72,9 +72,9 @@ public class ApiMetricsLite {
 		// The register method just uses any enabled plugin it can find to register. This *shouldn't* cause any problems, since the plugin isn't used any other way.
 		// Register our service
 		for(Plugin plug : Bukkit.getPluginManager().getPlugins()) {
-				plugin = plug;
-				if(plugin != null)
-					break;
+			plugin = plug;
+			if(plugin != null)
+				break;
 		}
 		if(plugin == null) {
 			return;// Didn't find any plugin that could work
@@ -105,7 +105,7 @@ public class ApiMetricsLite {
 							"To honor their work, you should not disable it.\n" +
 							"This has nearly no effect on the server performance!\n" +
 							"Check out https://bStats.org/ to learn more :)"
-					).copyDefaults(true);
+			).copyDefaults(true);
 			try {
 				config.save(configFile);
 			} catch (IOException ignored) { }
@@ -214,7 +214,7 @@ public class ApiMetricsLite {
 			Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
 			playerAmount = onlinePlayersMethod.getReturnType().equals(Collection.class)
 					? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).size()
-							: ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer())).length;
+					: ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer())).length;
 		} catch (Exception e) {
 			playerAmount = Bukkit.getOnlinePlayers().size(); // Just use the new method if the Reflection failed
 		}
@@ -279,7 +279,7 @@ public class ApiMetricsLite {
 								if (logFailedRequests) {
 									getLogger().log(Level.WARNING, "[NBTAPI][BSTATS] Encountered exception while posting request!", e);
 									// Not using the plugins logger since the plugin isn't the plugin containing the NBT-Api most of the time
-									//this.plugin.getLogger().log(Level.SEVERE, "Encountered unexpected exception ", e); 
+									//this.plugin.getLogger().log(Level.SEVERE, "Encountered unexpected exception ", e);
 								}
 								continue; // continue looping since we cannot do any other thing.
 							}
@@ -326,7 +326,7 @@ public class ApiMetricsLite {
 			throw new IllegalAccessException("This method must not be called from the main thread!");
 		}
 		if (logSentData) {
-			System.out.println("[NBTAPI][BSTATS] Sending data to bStats: " + data.toString());
+			MinecraftVersion.getLogger().info("[NBTAPI][BSTATS] Sending data to bStats: " + data.toString());
 			// Not using the plugins logger since the plugin isn't the plugin containing the NBT-Api most of the time
 			//plugin.getLogger().info("Sending data to bStats: " + data.toString());
 		}

@@ -7,8 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Inventory;
-import java.util.Iterator;
-import org.bukkit.plugin.Plugin;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 import org.bukkit.inventory.InventoryHolder;

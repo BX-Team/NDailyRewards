@@ -1,6 +1,5 @@
 package me.nonplay.ndailyrewards.gui;
 
-import java.util.Iterator;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
