@@ -1,6 +1,5 @@
 package me.nonplay.ndailyrewards.utils;
 
-import java.util.Iterator;
 import java.lang.reflect.Field;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.mojang.authlib.properties.Property;
