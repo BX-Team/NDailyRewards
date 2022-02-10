@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
  * This class acts as the "Brain" of the NBTApi. It contains the main logger for
  * other classes,registers bStats and checks rather Maven shading was done
  * correctly.
- * 
+ *
  * @author tr7zw
  *
  */
@@ -30,15 +30,15 @@ public enum MinecraftVersion {
 	private static Logger logger = Logger.getLogger("NBTAPI");
 
 	// NBT-API Version
-	protected static final String VERSION = "2.9.1";
+	protected static final String VERSION = "2.9.2-SNAPSHOT";
 
 	private final int versionId;
 	private final boolean mojangMapping;
 
-   MinecraftVersion(int versionId) {
-        this(versionId, false);
-    }
-	
+	MinecraftVersion(int versionId) {
+		this(versionId, false);
+	}
+
 	MinecraftVersion(int versionId, boolean mojangMapping) {
 		this.versionId = versionId;
 		this.mojangMapping = mojangMapping;
@@ -55,29 +55,29 @@ public enum MinecraftVersion {
 	 * @return True if method names are in Mojang format and need to be remapped internally
 	 */
 	public boolean isMojangMapping() {
-        return mojangMapping;
-    }
-	
-	public String getPackageName() {
-	    if(this == UNKNOWN) {
-	        return values()[values().length-1].name().replace("MC", "v");
-	    }
-	    return this.name().replace("MC", "v");
+		return mojangMapping;
 	}
 
-    /**
+	public String getPackageName() {
+		if(this == UNKNOWN) {
+			return values()[values().length-1].name().replace("MC", "v");
+		}
+		return this.name().replace("MC", "v");
+	}
+
+	/**
 	 * Returns true if the current versions is at least the given Version
-	 * 
+	 *
 	 * @param version The minimum version
 	 * @return
 	 */
 	public static boolean isAtLeastVersion(MinecraftVersion version) {
 		return getVersion().getVersionId() >= version.getVersionId();
 	}
-	
+
 	/**
 	 * Returns true if the current versions newer (not equal) than the given version
-	 * 
+	 *
 	 * @param version The minimum version
 	 * @return
 	 */
@@ -88,7 +88,7 @@ public enum MinecraftVersion {
 	/**
 	 * Getter for this servers MinecraftVersion. Also init's bStats and checks the
 	 * shading.
-	 * 
+	 *
 	 * @return The enum for the MinecraftVersion this server is running
 	 */
 	public static MinecraftVersion getVersion() {
@@ -189,17 +189,17 @@ public enum MinecraftVersion {
 	public static void disablePackageWarning() {
 		disablePackageWarning = true;
 	}
-	
+
 	/**
 	 * @return Logger used by the NBT-API
 	 */
 	public static Logger getLogger() {
 		return logger;
 	}
-	
+
 	/**
 	 * Replaces the NBT-API logger with a custom implementation.
-	 * 
+	 *
 	 * @param logger The new logger(can not be null!)
 	 */
 	public static void replaceLogger(Logger logger) {
