@@ -17,7 +17,6 @@ body:
       options:
         - Paper
         - Spigot
-        - Tuinity
         - Purpur
     validations:
       required: true
@@ -30,7 +29,6 @@ body:
       options:
         - '1.18.1'
         - '1.17.1'
-        - '1.16.5'
     validations:
       required: true
 
@@ -68,7 +66,7 @@ body:
   - type: input
     attributes:
       label: Error log (if applicable)
-      description: If you are reporting a console error, upload any relevant log excerpts to https://paste.bxteam.gq
+      description: If you are reporting a console error, upload any relevant log excerpts to https://www.toptal.com/developers/hastebin/
 
   - type: input
     attributes:

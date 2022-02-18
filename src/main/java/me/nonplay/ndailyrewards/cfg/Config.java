@@ -29,6 +29,7 @@ public class Config
     public static boolean opt_auto_is;
     public static boolean opt_auto_have;
     public static boolean opt_midnight;
+    public static boolean cfgver;
     public static int opt_cd;
     public static int opt_days_row;
     public static Map<Integer, Reward> rewards;
@@ -63,6 +64,7 @@ public class Config
         Config.opt_midnight = cfg.getBoolean(String.valueOf(path) + "unlock-after-midnight");
         Config.opt_cd = cfg.getInt(String.valueOf(path) + "rewards-cooldown", 86400);
         Config.opt_days_row = cfg.getInt(String.valueOf(path) + "days-row");
+        Config.cfgver = cfg.getBoolean(String.valueOf(path) + "cfgver");
         Config.rewards = new TreeMap<Integer, Reward>();
         for (final String d : cfg.getSection("rewards")) {
             final int day = Integer.parseInt(d);
