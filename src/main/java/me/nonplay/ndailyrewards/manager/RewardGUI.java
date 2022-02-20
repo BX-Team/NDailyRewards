@@ -17,8 +17,6 @@ import me.nonplay.ndailyrewards.manager.objects.DUser;
 import me.nonplay.ndailyrewards.gui.GUIUtils;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
-import java.util.Iterator;
-import java.util.Collection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import me.nonplay.ndailyrewards.gui.GUIItem;

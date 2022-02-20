@@ -44,7 +44,7 @@ public class D2MySQL extends IDataV2
     
     @Override
     public void create() {
-        final String sql = "CREATE TABLE IF NOT EXISTS dailyrewards_data (`id` int(11) NOT NULL AUTO_INCREMENT, `uuid` char(36) CHARACTER SET utf8 NOT NULL, `name` varchar(24) CHARACTER SET utf8 NOT NULL, `login` bigint(64) NOT NULL, `next` bigint(64) NOT NULL, `expire` bigint(64) NOT NULL, `day` int(4) NOT NULL, PRIMARY KEY (`id`));";
+        final String sql = "CREATE TABLE IF NOT EXISTS ndailyrewards_data (`id` int(11) NOT NULL AUTO_INCREMENT, `uuid` char(36) CHARACTER SET utf8 NOT NULL, `name` varchar(24) CHARACTER SET utf8 NOT NULL, `login` bigint(64) NOT NULL, `next` bigint(64) NOT NULL, `expire` bigint(64) NOT NULL, `day` int(4) NOT NULL, PRIMARY KEY (`id`));";
         try {
             this.con = this.getConnection();
             (this.ps = this.con.createStatement()).execute(sql);

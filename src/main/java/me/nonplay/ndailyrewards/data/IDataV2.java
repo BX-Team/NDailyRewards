@@ -18,7 +18,7 @@ import me.nonplay.ndailyrewards.NDailyRewards;
 public abstract class IDataV2
 {
     protected NDailyRewards plugin;
-    protected final String table = "dailyrewards_data";
+    protected final String table = "ndailyrewards_data";
     protected Connection con;
     protected Statement ps;
     protected ResultSet rs;
@@ -186,7 +186,7 @@ public abstract class IDataV2
     
     public List<DUser> getUsers() {
         final List<DUser> list = new ArrayList<DUser>();
-        final String sql = "SELECT * FROM dailyrewards_data";
+        final String sql = "SELECT * FROM ndailyrewards_data";
         try {
             this.con = this.getConnection();
             this.ps = this.con.createStatement();
@@ -224,7 +224,7 @@ public abstract class IDataV2
     }
     
     public DUser getByUUID(final String uuid) {
-        final String sql = "SELECT * FROM dailyrewards_data WHERE `uuid` = ?";
+        final String sql = "SELECT * FROM ndailyrewards_data WHERE `uuid` = ?";
         try {
             this.con = this.getConnection();
             this.ps = this.con.prepareStatement(sql);
@@ -271,7 +271,7 @@ public abstract class IDataV2
         final int day = mp.getDayInRow();
         final long next = mp.getNextRewardTime();
         final long expire = mp.getTimeToGetReward();
-        final String sql = "UPDATE dailyrewards_data SET `login` = '" + date + "', `next` = '" + next + "', `expire` = '" + expire + "', `day` = '" + day + "'" + " WHERE `uuid` = '" + uuid + "'";
+        final String sql = "UPDATE ndailyrewards_data SET `login` = '" + date + "', `next` = '" + next + "', `expire` = '" + expire + "', `day` = '" + day + "'" + " WHERE `uuid` = '" + uuid + "'";
         this.exec(sql);
     }
     
@@ -285,12 +285,12 @@ public abstract class IDataV2
         final int day = mp.getDayInRow();
         final long next = mp.getNextRewardTime();
         final long expire = mp.getTimeToGetReward();
-        final String sql = "INSERT INTO dailyrewards_data(`uuid`, `name`, `login`, `next`, `expire`, `day`) VALUES('" + uid + "', '" + name + "', '" + date + "', '" + next + "', '" + expire + "', '" + day + "')";
+        final String sql = "INSERT INTO ndailyrewards_data(`uuid`, `name`, `login`, `next`, `expire`, `day`) VALUES('" + uid + "', '" + name + "', '" + date + "', '" + next + "', '" + expire + "', '" + day + "')";
         this.exec(sql);
     }
     
     public void del(final String uuid) {
-        final String sql = "DELETE FROM dailyrewards_data WHERE `uuid` = '" + uuid + "'";
+        final String sql = "DELETE FROM ndailyrewards_data WHERE `uuid` = '" + uuid + "'";
         this.exec(sql);
     }
 }

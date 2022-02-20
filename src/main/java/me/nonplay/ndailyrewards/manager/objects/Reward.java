@@ -1,6 +1,5 @@
 package me.nonplay.ndailyrewards.manager.objects;
 
-import java.util.Iterator;
 import org.bukkit.ChatColor;
 import me.nonplay.ndailyrewards.utils.ArchUtils;
 import org.bukkit.entity.Player;

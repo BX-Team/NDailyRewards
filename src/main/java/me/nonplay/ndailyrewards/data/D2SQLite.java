@@ -40,7 +40,7 @@ public class D2SQLite extends IDataV2
     
     @Override
     public void create() {
-        final String sql = "CREATE TABLE IF NOT EXISTS dailyrewards_data ( uuid TEXT NOT NULL,\tname TEXT NOT NULL, login BIGINT NOT NULL, next BIGINT NOT NULL, expire BIGINT NOT NULL, day INTEGER NOT NULL, PRIMARY KEY (uuid));";
+        final String sql = "CREATE TABLE IF NOT EXISTS ndailyrewards_data ( uuid TEXT NOT NULL,\tname TEXT NOT NULL, login BIGINT NOT NULL, next BIGINT NOT NULL, expire BIGINT NOT NULL, day INTEGER NOT NULL, PRIMARY KEY (uuid));";
         try {
             this.con = this.getConnection();
             (this.ps = this.con.createStatement()).execute(sql);

@@ -1,6 +1,5 @@
 package me.nonplay.ndailyrewards.cmds;
 
-import java.util.Iterator;
 import java.util.Collections;
 import me.nonplay.ndailyrewards.utils.ArchUtils;
 import java.util.ArrayList;

@@ -2,7 +2,6 @@ package me.nonplay.ndailyrewards.cfg;
 
 import org.bukkit.inventory.ItemStack;
 import java.util.List;
-import java.util.Iterator;
 import me.nonplay.ndailyrewards.NDailyRewards;
 import me.nonplay.ndailyrewards.gui.GUIItem;
 import java.util.LinkedHashMap;

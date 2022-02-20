@@ -7,7 +7,6 @@ import java.util.Collection;
 import org.bukkit.scheduler.BukkitRunnable;
 import me.nonplay.ndailyrewards.data.DataType;
 import me.nonplay.ndailyrewards.cfg.Config;
-import java.util.Iterator;
 import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.HashSet;
