@@ -3,7 +3,7 @@ version: '${project.version}'
 main: me.nonplay.ndailyrewards.NDailyRewards
 api-version: 1.13
 softdepend: [ Citizens ]
-authors: [ NONPLAY ]
+authors: [ NONPLAY, Xenolit ]
 description: Reward players for playing on your server!
 commands:
   ndailyrewards:
