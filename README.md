@@ -41,8 +41,9 @@ You can change the amount of days in a row from 1 to 54!
 View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewards/13844)
 
 ![bstats](https://bstats.org/signatures/bukkit/NDailyRewards.svg)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/NONPLAYT/NDailyRewards/Java%20CI%20with%20Maven?style=for-the-badge)
 
 
 ### 🔨 Test versions (Snapshots)
 You can download snapshots of plugin at [Actions](https://github.com/BX-Team/NDailyRewards/actions) artifacts! If the version is checked with a red box, then this version will not work! (Maybe xD))
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/NONPLAYT/NDailyRewards/Java%20CI%20with%20Maven?style=for-the-badge)
