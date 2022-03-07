@@ -30,7 +30,7 @@ public enum MinecraftVersion {
 	private static Logger logger = Logger.getLogger("NBTAPI");
 
 	// NBT-API Version
-	protected static final String VERSION = "2.9.2-SNAPSHOT";
+	protected static final String VERSION = "2.9.2";
 
 	private final int versionId;
 	private final boolean mojangMapping;
@@ -58,9 +58,14 @@ public enum MinecraftVersion {
 		return mojangMapping;
 	}
 
+	/**
+	 * This method is required to hot-wire the plugin during mappings generation for newer mc versions thanks to md_5 not used mojmap.
+	 *
+	 * @return
+	 */
 	public String getPackageName() {
 		if(this == UNKNOWN) {
-			return values()[values().length-1].name().replace("MC", "v");
+			return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		}
 		return this.name().replace("MC", "v");
 	}
@@ -124,7 +129,7 @@ public enum MinecraftVersion {
 				try {
 					VersionChecker.checkForUpdates();
 				} catch (Exception ex) {
-					logger.log(Level.WARNING, "[NBTAPI] Error while checking for updates!", ex);
+					logger.log(Level.WARNING, "[NBTAPI] Error while checking for updates! Error: " + ex.getMessage());
 				}
 			}).start();
 		// Maven's Relocate is clever and changes strings, too. So we have to use this

@@ -27,6 +27,6 @@ jobs:
     - name: Upload NDailyRewards
       uses: actions/upload-artifact@v3.0.0
       with:
-        name: NDailyRewards Built On Java Temurin 17
-        path: "target/ndailyrewards*.jar"
+        name: NDailyRewards Built On Java 17
+        path: "target/original-ndailyrewards*.jar"
 
