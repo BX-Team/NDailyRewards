@@ -5,6 +5,7 @@ api-version: 1.13
 softdepend: [ Citizens ]
 authors: [ NONPLAY, Xenolit ]
 description: Reward players for playing on your server!
+website: https://discord.gg/p7cxhw7E2M
 commands:
   ndailyrewards:
     aliases: [rewards, ndailyreward, dailybonus, ndr]
