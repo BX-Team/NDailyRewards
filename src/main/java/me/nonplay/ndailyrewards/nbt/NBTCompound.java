@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.nonplay.ndailyrewards.nbt.utils.MinecraftVersion;
 import me.nonplay.ndailyrewards.nbt.utils.nmsmappings.ReflectionMethod;
+import me.nonplay.ndailyrewards.nbt.utils.nmsmappings.Forge1710Mappings;
 
 /**
  * Base class representing NMS Compounds. For a standalone implementation check
@@ -790,6 +791,15 @@ public class NBTCompound {
 	}
 
 	/**
+	 * Remove all keys from this compound
+	 */
+	public void clearNBT(){
+		for (String key : getKeys()) {
+			removeKey(key);
+		}
+	}
+
+	/**
 	 * @deprecated Just use toString()
 	 * @return A {@link String} representation of the NBT in Mojang JSON. This is different from normal JSON!
 	 */
@@ -800,7 +810,11 @@ public class NBTCompound {
 			Object comp = NBTReflectionUtil.gettoCompount(getCompound(), this);
 			if (comp == null)
 				return "{}";
-			return comp.toString();
+			if (MinecraftVersion.isForgePresent() && MinecraftVersion.getVersion() == MinecraftVersion.MC1_7_R4){
+				return Forge1710Mappings.toString(comp);
+			}else {
+				return comp.toString();
+			}
 		} finally {
 			readLock.unlock();
 		}
