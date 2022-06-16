@@ -1,17 +1,14 @@
 package me.nonplay.ndailyrewards.cfg;
 
 import org.bukkit.inventory.ItemStack;
-import java.util.List;
+import java.util.*;
 import me.nonplay.ndailyrewards.NDailyRewards;
 import me.nonplay.ndailyrewards.gui.GUIItem;
-import java.util.LinkedHashMap;
 import org.bukkit.ChatColor;
-import java.util.TreeMap;
 import me.nonplay.ndailyrewards.utils.logs.LogUtil;
 import me.nonplay.ndailyrewards.utils.logs.LogType;
 import me.nonplay.ndailyrewards.manager.RewardGUI;
 import me.nonplay.ndailyrewards.manager.objects.Reward;
-import java.util.Map;
 import me.nonplay.ndailyrewards.data.DataType;
 
 public class Config
@@ -84,7 +81,7 @@ public class Config
             g_items.put(id, gi);
         }
         // Defines a snapshot version
-        LogUtil.send("This is a SNAPSHOT version! Bugs and errors may occur! Report them on our GitHub", LogType.WARN);
+        //LogUtil.send("This is a SNAPSHOT version! Bugs and errors may occur! Report them on our GitHub", LogType.WARN);
         int[] slots = { 0 };
         if (cfg.contains(String.valueOf(path) + "days-positions")) {
             final String[] raw = cfg.getString(String.valueOf(path) + "days-positions").replaceAll("\\s", "").split(",");
