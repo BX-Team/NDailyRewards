@@ -125,6 +125,10 @@ public class JYML extends YamlConfiguration
                 catch (IllegalArgumentException ex) {}
             }
         }
+        if (this.isSet(path + "custom-model-data")){
+            final int customModelData = this.getInt(path + "custom-model-data");
+            meta.setCustomModelData(customModelData);
+        }
         item.setItemMeta(meta);
         return item;
     }
