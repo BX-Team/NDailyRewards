@@ -9,11 +9,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import de.tr7zw.changeme.nbtapi.utils.nmsmappings.Forge1710Mappings;
 import org.bukkit.inventory.ItemStack;
 
 import me.nonplay.ndailyrewards.nbt.utils.MinecraftVersion;
 import me.nonplay.ndailyrewards.nbt.utils.nmsmappings.ReflectionMethod;
-import me.nonplay.ndailyrewards.nbt.utils.nmsmappings.Forge1710Mappings;
 
 /**
  * Base class representing NMS Compounds. For a standalone implementation check
@@ -410,11 +410,13 @@ public class NBTCompound {
 	}
 
 	/**
-	 * Uses Gson to store an {@link Serializable} Object
+	 * Uses Gson to store an {@link Serializable} Object.
+	 * Deprecated to clarify that it's probably missused. Preferably do the serializing yourself.
 	 *
 	 * @param key
 	 * @param value
 	 */
+	@Deprecated
 	public void setObject(String key, Object value) {
 		try {
 			writeLock.lock();
@@ -427,11 +429,13 @@ public class NBTCompound {
 
 	/**
 	 * Uses Gson to retrieve a stored Object
+	 * Deprecated to clarify that it's probably missused. Preferably do the serializing yourself.
 	 *
 	 * @param key
 	 * @param type Class of the Object
 	 * @return The created Object or null if empty
 	 */
+	@Deprecated
 	public <T> T getObject(String key, Class<T> type) {
 		try {
 			readLock.lock();
@@ -482,7 +486,11 @@ public class NBTCompound {
 	public void setUUID(String key, UUID value) {
 		try {
 			writeLock.lock();
-			NBTReflectionUtil.setData(this, ReflectionMethod.COMPOUND_SET_UUID, key, value);
+			if(MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_16_R1)) {
+				NBTReflectionUtil.setData(this, ReflectionMethod.COMPOUND_SET_UUID, key, value);
+			} else {
+				setString(key, value.toString());
+			}
 			saveCompound();
 		} finally {
 			writeLock.unlock();
@@ -498,7 +506,11 @@ public class NBTCompound {
 	public UUID getUUID(String key) {
 		try {
 			readLock.lock();
-			return (UUID) NBTReflectionUtil.getData(this, ReflectionMethod.COMPOUND_GET_UUID, key);
+			if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_16_R1)) {
+				return (UUID) NBTReflectionUtil.getData(this, ReflectionMethod.COMPOUND_GET_UUID, key);
+			} else {
+				return UUID.fromString(getString(key));
+			}
 		} finally {
 			readLock.unlock();
 		}
