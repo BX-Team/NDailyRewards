@@ -9,7 +9,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import de.tr7zw.changeme.nbtapi.utils.nmsmappings.Forge1710Mappings;
+import me.nonplay.ndailyrewards.nbt.utils.nmsmappings.Forge1710Mappings;
 import org.bukkit.inventory.ItemStack;
 
 import me.nonplay.ndailyrewards.nbt.utils.MinecraftVersion;

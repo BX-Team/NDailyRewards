@@ -29,6 +29,6 @@ jobs:
     - name: Upload NDailyRewards
       uses: actions/upload-artifact@v3.1.0
       with:
-        name: NDailyRewards Built On Java 17
+        name: NDailyRewards Artifact
         path: "target/original-ndailyrewards*.jar"
 
