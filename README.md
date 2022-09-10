@@ -17,6 +17,7 @@ You can change the amount of days in a row from 1 to 54!
 - Define the time between the rewards!
 - Execute commands and send messages in rewards!
 - GUI Fully customizable
+- Custom model data support!
 - You can change amount of days in a row to reward
 - Auto opens on join (toggleable)
 - Autosaves player data every X mins
