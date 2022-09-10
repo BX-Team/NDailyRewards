@@ -1,6 +1,6 @@
 package me.nonplay.ndailyrewards.gui;
 
-import me.nonplay.ndailyrewards.nbt.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

@@ -1,6 +1,6 @@
 package me.nonplay.ndailyrewards.utils;
 
-import me.nonplay.ndailyrewards.nbt.utils.MinecraftVersion;
+import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 
 public class MethodNames
 {
