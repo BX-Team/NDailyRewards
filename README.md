@@ -1,4 +1,19 @@
-## 💰 NDailyRewards - Reward players for playing on your server! 
+<h1 align="center">
+  NDailyRewards
+</h1>
+
+<p align="center">
+    Reward players for playing on your server.
+</p>
+
+<div align="center">
+    <a href="https://discord.gg/p7cxhw7E2M"><img src="https://img.shields.io/discord/931595732752953375?logo=discord&style=for-the-badge" alt="Discord"/></a>
+    <br>
+    <img src="https://img.shields.io/github/last-commit/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub last commit"/>
+    <img src="https://img.shields.io/github/commit-activity/m/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub commit activity"/>
+    <br>
+    <img src="https://img.shields.io/github/languages/code-size/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub code size in bytes"/>
+</div>
 
 ### ❓ About
 This plugin gives you the ability to give players daily rewards for playing on your server!
