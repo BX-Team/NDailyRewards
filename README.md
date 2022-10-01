@@ -13,6 +13,7 @@
     <img src="https://img.shields.io/github/commit-activity/m/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub commit activity"/>
     <br>
     <img src="https://img.shields.io/github/languages/code-size/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub code size in bytes"/>
+    <img src="https://img.shields.io/github/workflow/status/NONPLAYT/NDailyRewards/Java%20CI%20with%20Maven?style=for-the-badge" alt="GitHub workflow status"/>
 </div>
 
 ### ❓ About
@@ -61,5 +62,3 @@ View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewar
 
 ### 🔨 Test versions (Snapshots)
 You can download snapshots of plugin at [Actions](https://github.com/BX-Team/NDailyRewards/actions) artifacts! If the version is checked with a red box, then this version will not work!
-
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/NONPLAYT/NDailyRewards/Java%20CI%20with%20Maven?style=for-the-badge)
