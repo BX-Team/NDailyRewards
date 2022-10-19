@@ -14,6 +14,7 @@
     <br>
     <img src="https://img.shields.io/github/languages/code-size/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub code size in bytes"/>
     <img src="https://img.shields.io/github/workflow/status/NONPLAYT/NDailyRewards/Java%20CI%20with%20Maven?style=for-the-badge" alt="GitHub workflow status"/>
+    <img src="https://img.shields.io/maven-central/v/gq.bxteam/ndailyrewards?style=for-the-badge" href="https://s01.oss.sonatype.org/content/repositories/staging/gq/bxteam/ndailyrewards/"/>
 </div>
 
 ### ❓ About
@@ -62,3 +63,14 @@ View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewar
 
 ### 🔨 Test versions (Snapshots)
 You can download snapshots of plugin at [Actions](https://github.com/BX-Team/NDailyRewards/actions) artifacts! If the version is checked with a red box, then this version will not work!
+
+### 👩‍💻 For developers
+If you want to download and use NDailyRewards in your project, get it on maven and import to `pom.xml` like this:
+```xml
+<dependency>
+  <groupId>gq.bxteam</groupId>
+  <artifactId>ndailyrewards</artifactId>
+  <version>PLUGIN_VERSION</version>
+</dependency>
+```
+**NOTE: If you will ask where is repo url, I say it is already in maven central, so you are ready to use dependency**
