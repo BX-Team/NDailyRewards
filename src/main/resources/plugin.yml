@@ -1,6 +1,6 @@
 name: NDailyRewards
 version: '${project.version}'
-main: me.nonplay.ndailyrewards.NDailyRewards
+main: gq.bxteam.ndailyrewards.NDailyRewards
 api-version: 1.13
 softdepend: [ Citizens ]
 authors: [ NONPLAY, Xenolit ]
