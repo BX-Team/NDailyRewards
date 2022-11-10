@@ -1,6 +1,6 @@
 package gq.bxteam.ndailyrewards.gui;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import gq.bxteam.ndailyrewards.nbt.NBTItem;
 import org.bukkit.inventory.ItemStack;
 
 public class GUIItem

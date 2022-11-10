@@ -1,6 +1,6 @@
 package gq.bxteam.ndailyrewards.utils;
 
-import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
+import gq.bxteam.ndailyrewards.nbt.utils.MinecraftVersion;
 
 public class MethodNames
 {

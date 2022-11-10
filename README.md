@@ -61,8 +61,8 @@ View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewar
 ![bstats](https://bstats.org/signatures/bukkit/NDailyRewards.svg)
 
 
-### 🔨 Test versions (Snapshots)
-You can download snapshots of plugin at [Actions](https://github.com/BX-Team/NDailyRewards/actions) artifacts! If the version is checked with a red box, then this version will not work!
+### 🔨 Builds
+You can download all plugin builds from our Jenkins server [here](https://ci.bxteam.gq/job/NDailyRewards/).
 
 ### 👩‍💻 For developers
 If you want to download and use NDailyRewards in your project, get it on maven and import to `pom.xml` like this:
