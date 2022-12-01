@@ -11,11 +11,7 @@
     <br>
     <img src="https://img.shields.io/github/last-commit/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub last commit"/>
     <img src="https://img.shields.io/github/commit-activity/m/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub commit activity"/>
-    <br>
-    <img src="https://img.shields.io/github/languages/code-size/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub code size in bytes"/>
-    <img src="https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.bxteam.gq%2Fjob%2FNDailyRewards%2F&style=for-the-badge" alt="GitHub workflow status"/>
-    <img src="https://img.shields.io/maven-central/v/gq.bxteam/ndailyrewards?style=for-the-badge" href="https://s01.oss.sonatype.org/content/repositories/staging/gq/bxteam/ndailyrewards/"/>
-</div>
+    <img src="https://img.shields.io/github/languages/code-size/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub code size in bytes"/></div>
 
 ### ❓ About
 This plugin gives you the ability to give players daily rewards for playing on your server!
@@ -61,16 +57,23 @@ View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewar
 ![bstats](https://bstats.org/signatures/bukkit/NDailyRewards.svg)
 
 
-### 🔨 Builds
-You can download all plugin builds from our Jenkins server [here](https://ci.bxteam.gq/job/NDailyRewards/).
+### 🔨 Download
+You can download plugin from releases tab or [here](https://github.com/BX-Team/NDailyRewards/releases/latest).
 
 ### 👩‍💻 For developers
 If you want to download and use NDailyRewards in your project, get it on maven and import to `pom.xml` like this:
 ```xml
+<repository>
+  <id>bxteam-repo-releases</id>
+  <name>BX Team</name>
+  <url>https://maven.bxteam.gq/releases</url>
+</repository>
+```
+
+```xml
 <dependency>
   <groupId>gq.bxteam</groupId>
   <artifactId>ndailyrewards</artifactId>
-  <version>PLUGIN_VERSION</version>
+  <version>1.5.5</version>
 </dependency>
 ```
-**NOTE: If you will ask where is repo url, I say it is already in maven central, so you are ready to use dependency**
