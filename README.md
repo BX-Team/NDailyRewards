@@ -65,13 +65,6 @@ You can download plugin from releases tab or [here](https://github.com/BX-Team/N
 
 ### 👩‍💻 For developers
 If you want to download and use NDailyRewards in your project, get it on maven and import to `pom.xml` like this:
-```xml
-<repository>
-  <id>bxteam-repo-releases</id>
-  <name>BX Team</name>
-  <url>https://maven.bxteam.gq/releases</url>
-</repository>
-```
 
 ```xml
 <dependency>
