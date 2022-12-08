@@ -14,6 +14,7 @@
     <br>
     <img src="https://img.shields.io/github/languages/code-size/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub code size in bytes"/>
     <img src="https://img.shields.io/github/workflow/status/BX-Team/NDailyRewards/Java%20CI%20with%20Maven?style=for-the-badge" alt="GitHub workflow status"/>
+    <img src="https://img.shields.io/maven-central/v/gq.bxteam/ndailyrewards?style=for-the-badge" alt="Maven central version"/>
 </div>
 
 ### ❓ About
@@ -65,18 +66,11 @@ You can download plugin from releases tab or [here](https://github.com/BX-Team/N
 
 ### 👩‍💻 For developers
 If you want to download and use NDailyRewards in your project, get it on maven and import to `pom.xml` like this:
-```xml
-<repository>
-  <id>bxteam-repo-releases</id>
-  <name>BX Team</name>
-  <url>https://maven.bxteam.gq/releases</url>
-</repository>
-```
 
 ```xml
 <dependency>
   <groupId>gq.bxteam</groupId>
   <artifactId>ndailyrewards</artifactId>
-  <version>1.5.5</version>
+  <version>1.5.6</version>
 </dependency>
 ```

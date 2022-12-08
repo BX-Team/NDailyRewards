@@ -80,8 +80,6 @@ public class Config
             final GUIItem gi = cfg.getGUIItemFromSection(path2);
             g_items.put(id, gi);
         }
-        // Defines a snapshot version
-        //LogUtil.send("This is a SNAPSHOT version! Bugs and errors may occur! Report them on our GitHub", LogType.WARN);
         int[] slots = { 0 };
         if (cfg.contains(String.valueOf(path) + "days-positions")) {
             final String[] raw = cfg.getString(String.valueOf(path) + "days-positions").replaceAll("\\s", "").split(",");

@@ -12,7 +12,7 @@ commands:
     description: Main command
 permissions:
   ndailyrewards.user:
-    description: Allows players to use GUI.
+    description: Allows players to use non-admin commands.
     default: true
   ndailyrewards.admin:
     description: Allows to use admin commands.
