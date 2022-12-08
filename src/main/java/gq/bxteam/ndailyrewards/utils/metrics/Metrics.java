@@ -40,6 +40,8 @@ public class Metrics {
     private final MetricsBase metricsBase;
 
     /**
+     * Version 3.0.0 from BStats GitHub
+     *
      * Creates a new Metrics instance.
      *
      * @param plugin Your plugin instance.
