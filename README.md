@@ -50,6 +50,10 @@ You can change the amount of days in a row from 1 to 54!
 
 **Permission**: ndailyrewards.user
 
+**Command**: /ndailyrewards version - Sends current version of plugin
+
+**Permission**: ndailyrewards.user
+
 **Command**: /ndailyrewards reload - Reload configuration
 
 **Permission**: ndailyrewards.admin
