@@ -12,6 +12,6 @@ import gq.bxteam.ndailyrewards.nbt.utils.MinecraftVersion;
 @Target({ METHOD })
 public @interface AvailableSince {
 
-	MinecraftVersion version();
+    MinecraftVersion version();
 
 }

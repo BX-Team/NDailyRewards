@@ -3,7 +3,6 @@ package gq.bxteam.ndailyrewards.nbt.utils.nmsmappings;
 import java.util.HashMap;
 import java.util.Map;
 
-import gq.bxteam.ndailyrewards.nbt.NbtApiException;
 import gq.bxteam.ndailyrewards.nbt.utils.MinecraftVersion;
 
 /**
@@ -111,17 +110,17 @@ public class MojangToMapping {
 
     public static Map<String, String> getMapping() {
         switch (MinecraftVersion.getVersion()) {
-            case MC1_19_R2:
-                return MC1_19R2;
-            case MC1_19_R1:
-                return MC1_19R1;
-            case MC1_18_R2:
-                return MC1_18R2;
-            case MC1_18_R1:
-                return MC1_18R1;
-            default:
-                return MC1_19R2;// throw new NbtApiException("This version of the NBTAPI is not compatible with
-            // this server version!");
+        case MC1_19_R2:
+            return MC1_19R2;
+        case MC1_19_R1:
+            return MC1_19R1;
+        case MC1_18_R2:
+            return MC1_18R2;
+        case MC1_18_R1:
+            return MC1_18R1;
+        default:
+            return MC1_19R2;// throw new NbtApiException("This version of the NBTAPI is not compatible with
+                            // this server version!");
         }
     }
 
