@@ -13,7 +13,7 @@
     <img src="https://img.shields.io/github/commit-activity/m/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub commit activity"/>
     <br>
     <img src="https://img.shields.io/github/languages/code-size/BX-Team/NDailyRewards?style=for-the-badge" alt="GitHub code size in bytes"/>
-    <img src="https://img.shields.io/github/workflow/status/BX-Team/NDailyRewards/Java%20CI%20with%20Maven?style=for-the-badge" alt="GitHub workflow status"/>
+    <img src="https://img.shields.io/github/actions/workflow/status/BX-Team/NDailyRewards/maven.yml?branch=ver%2F1.19.3&style=for-the-badge" alt="GitHub workflow status"/>
     <img src="https://img.shields.io/maven-central/v/gq.bxteam/ndailyrewards?style=for-the-badge" alt="Maven central version"/>
 </div>
 
