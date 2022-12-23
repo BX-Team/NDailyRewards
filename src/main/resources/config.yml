@@ -38,8 +38,8 @@ rewards:
       - '&6- $500'
       - '&6- x2 Diamonds'
     commands:
-      - 'console: eco give %player% 500'
-      - 'console: give %player% diamond 2'
+      - 'console: eco give %player% 500' # you can use %player% to get the player name
+      - 'console: give %player% diamond 2' # also you can edit this commands to your needs
     messages:
       - '&aCongratulations! You got reward for join %day%st day in a row!'
   '2':
