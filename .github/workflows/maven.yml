@@ -25,5 +25,4 @@ jobs:
       uses: actions/upload-artifact@v3.1.2
       with:
         name: NDailyRewards Dev Artifacts
-        path: "target/*-ndailyrewards*.jar"
-
+        path: "target/*ndailyrewards*.jar"
