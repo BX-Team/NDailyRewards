@@ -80,7 +80,6 @@ public class Config
             final GUIItem gi = cfg.getGUIItemFromSection(path2);
             g_items.put(id, gi);
         }
-        // get version from pom.xml and if version contains SNAPSHOT send warning message to console
         if (NDailyRewards.getInstance().getDescription().getVersion().contains("SNAPSHOT")) {
             LogUtil.send("&cYou are using a SNAPSHOT version of the plugin! Please use a stable version!", LogType.WARN);
         }
