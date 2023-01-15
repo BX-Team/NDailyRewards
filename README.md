@@ -69,6 +69,7 @@ View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewar
 You can download plugin from [releases tab](https://github.com/BX-Team/NDailyRewards/releases/latest) or also from:
 - [CurseForge](http://curseforge.com/minecraft/bukkit-plugins/ndailyrewards)
 - [Modrinth](https://modrinth.com/mod/ndailyrewards)
+- [Development releases](https://nonplayt.github.io/benkins/BX-Team/NDailyRewards/master)
 
 ### 👩‍💻 For developers
 If you want to download and use NDailyRewards in your project, get it on maven and import to `pom.xml` like this:
