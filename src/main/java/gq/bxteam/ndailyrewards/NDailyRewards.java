@@ -4,6 +4,8 @@ import gq.bxteam.ndailyrewards.cfg.ConfigManager;
 import gq.bxteam.ndailyrewards.cmds.CommandManager;
 import gq.bxteam.ndailyrewards.manager.UserManager;
 import gq.bxteam.ndailyrewards.tasks.SaveTask;
+import gq.bxteam.ndailyrewards.utils.logs.LogType;
+import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import gq.bxteam.ndailyrewards.utils.metrics.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,6 +33,7 @@ public class NDailyRewards extends JavaPlugin
 
         @Override
         public void onEnable() {
+            // Plugin startup logic
             NDailyRewards.instance = this;
             (this.cmd = new CommandManager(this)).setup();
             this.getCommand("ndailyrewards").setExecutor((CommandExecutor)this.cmd);
@@ -38,6 +41,8 @@ public class NDailyRewards extends JavaPlugin
             (this.hm = new HookManager(this)).setup();
             this.load();
             new SaveTask(this).start();
+
+            // init metrics
             int pluginId = 13844;
             Metrics metrics = new Metrics(this, pluginId);
         }
@@ -53,10 +58,15 @@ public class NDailyRewards extends JavaPlugin
         }
 
         public void unload() {
-            this.getServer().getScheduler().cancelTasks((Plugin)this);
-            HandlerList.unregisterAll((Plugin)this);
-            this.um.shutdown();
-            this.data.shutdown();
+            try {
+                this.getServer().getScheduler().cancelTasks((Plugin)this);
+                HandlerList.unregisterAll((Plugin)this);
+                this.um.shutdown();
+                this.data.shutdown();
+            }
+            catch (Exception e) {
+                LogUtil.send("Error while saving plugin data: " + e.getMessage(), LogType.ERROR);
+            }
         }
 
         public void reload() {
