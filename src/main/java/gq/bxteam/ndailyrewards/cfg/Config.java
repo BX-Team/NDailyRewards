@@ -35,7 +35,7 @@ public class Config
         Config.config = mc;
         final JYML cfg = Config.config.getConfig();
         cfg.addMissing("options.unlock-after-midnight", true);
-        cfg.addMissing("options.rewards-cooldown", 86400);
+        cfg.addMissing("options.rewards-cool-down", 86400);
         cfg.save();
         Config.data_save = cfg.getInt("data.auto-save", 15);
         String path = "data.storage.";

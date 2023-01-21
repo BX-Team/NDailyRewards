@@ -11,15 +11,14 @@ public enum Lang
     Commands_Help_Usage("Commands_Help_Usage", 1, "&cUsage: &e/ndailyrewards %command% %usage%"),
     Commands_Help_Commands("Commands_Help_Commands", 2, "&8&m-----------&8&l[ &aNDailyRewards &8&l]&8&m-----------\n\n&2» &a/ndailyrewards &7- Open GUI.\n&2» &a/ndailyrewards help &7- Help page.\n&2» &a/ndailyrewards reload &7- Reload the plugin.\n&2» &a/ndailyrewards version &7- Sends current plugin version.\n\n&8&m--------------------------------------"),
     Command_Reload_Exec("Command_Reload_Exec", 3, "&aConfiguration reloaded!"),
-    Command_Plugin_Version("Command_Plugin_Version", 4, "&aCurrent plugin version: &6[&e1.5.7&6]"),
-    Time_Sec("Time_Sec", 5, "sec."),
-    Time_Min("Time_Min", 6, "m."),
-    Time_Hour("Time_Hour", 7, "h."),
-    Time_Day("Time_Day", 8, "d."),
-    Error_NoPerm("Error_NoPerm", 9, "&cYou don't have permissions to do that."),
-    Error_Number("Error_Number", 10, "&cInvalid number: &e%num%"),
-    Error_NoPlayer("Error_NoPlayer", 11, "&cPlayer not found!"),
-    Error_Console("Error_Console", 12, "&cThis command is only for players!");
+    Time_Sec("Time_Sec", 4, "sec."),
+    Time_Min("Time_Min", 5, "m."),
+    Time_Hour("Time_Hour", 6, "h."),
+    Time_Day("Time_Day", 7, "d."),
+    Error_NoPerm("Error_NoPerm", 8, "&cYou don't have permissions to do that."),
+    Error_Number("Error_Number", 9, "&cInvalid number: &e%num%"),
+    Error_NoPlayer("Error_NoPlayer", 10, "&cPlayer not found!"),
+    Error_Console("Error_Console", 11, "&cThis command is only for players!");
 
     private String msg;
     private static MyConfig config;

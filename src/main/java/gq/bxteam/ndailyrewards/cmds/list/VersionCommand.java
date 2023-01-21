@@ -3,7 +3,6 @@ package gq.bxteam.ndailyrewards.cmds.list;
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.cfg.Lang;
 import gq.bxteam.ndailyrewards.cmds.ICmd;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class VersionCommand extends ICmd
@@ -14,7 +13,7 @@ public class VersionCommand extends ICmd
 
     @Override
     public void perform(final CommandSender sender, final String[] args) {
-        sender.sendMessage(String.valueOf(Lang.Prefix.toMsg()) + Lang.Command_Plugin_Version.toMsg());
+        sender.sendMessage(String.valueOf(Lang.Prefix.toMsg()) + "Current installed version is: " + this.plugin.getDescription().getVersion());
     }
 
     @Override

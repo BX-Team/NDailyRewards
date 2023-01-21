@@ -7,14 +7,14 @@ import gq.bxteam.ndailyrewards.tasks.SaveTask;
 import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import gq.bxteam.ndailyrewards.utils.metrics.Metrics;
-import org.bukkit.plugin.java.JavaPlugin;
-
+import gq.bxteam.ndailyrewards.data.DataManager;
+import gq.bxteam.ndailyrewards.hooks.HookManager;
 import gq.bxteam.ndailyrewards.data.IDataV2;
+
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.command.CommandExecutor;
-import gq.bxteam.ndailyrewards.data.DataManager;
-import gq.bxteam.ndailyrewards.hooks.HookManager;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
 public class NDailyRewards extends JavaPlugin
