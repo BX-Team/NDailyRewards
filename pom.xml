@@ -6,7 +6,7 @@
 
     <groupId>gq.bxteam</groupId>
     <artifactId>ndailyrewards</artifactId>
-    <version>1.5.8</version>
+    <version>1.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>NDailyRewards</name>
@@ -151,7 +151,7 @@
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
-            <version>1.5.25</version>
+            <version>3.16.29</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

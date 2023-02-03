@@ -81,7 +81,7 @@ public class Config
             g_items.put(id, gi);
         }
         if (NDailyRewards.getInstance().getDescription().getVersion().contains("SNAPSHOT")) {
-            LogUtil.send("&cYou are using a SNAPSHOT version of the plugin! Please use a stable version!", LogType.WARN);
+            LogUtil.send("&cYou are using a SNAPSHOT version of the plugin! Bugs & Errors may occur!", LogType.WARN);
         }
         int[] slots = { 0 };
         if (cfg.contains(String.valueOf(path) + "days-positions")) {

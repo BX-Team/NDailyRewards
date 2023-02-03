@@ -5,7 +5,7 @@ import com.mojang.authlib.GameProfile;
 import gq.bxteam.ndailyrewards.nbt.utils.nmsmappings.ObjectCreator;
 import gq.bxteam.ndailyrewards.nbt.utils.nmsmappings.ReflectionMethod;
 
-@Deprecated // authlib 1.5.25 have CVE-2021-29425 and log4j2 vulnerability. This comment will be deleted when 1.20 will be released.
+@Deprecated
 public class NBTGameProfile {
 
     /**
