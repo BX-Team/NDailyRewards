@@ -11,7 +11,7 @@
 data:
   auto-save: 15
   storage:
-    type: sqlite
+    type: SQLite
     username: none
     password: none
     host: none
@@ -26,6 +26,7 @@ options:
   days-row: 7
   rewards-cool-down: 86400
   unlock-after-midnight: false
+  enable-metrics: true
 rewards:
   '1':
     lore:
