@@ -42,7 +42,7 @@ public class NDailyRewards extends JavaPlugin
             this.load();
             new SaveTask(this).start();
 
-            // init metrics
+            // Initialize metrics
             int pluginId = 13844;
             Metrics metrics = new Metrics(this, pluginId);
         }
