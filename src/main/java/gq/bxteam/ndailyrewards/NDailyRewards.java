@@ -4,6 +4,7 @@ import gq.bxteam.ndailyrewards.cfg.Config;
 import gq.bxteam.ndailyrewards.cfg.ConfigManager;
 import gq.bxteam.ndailyrewards.cmds.CommandManager;
 import gq.bxteam.ndailyrewards.manager.UserManager;
+import gq.bxteam.ndailyrewards.hooks.external.PlaceholderExpansions;
 import gq.bxteam.ndailyrewards.tasks.SaveTask;
 import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
@@ -12,6 +13,7 @@ import gq.bxteam.ndailyrewards.data.DataManager;
 import gq.bxteam.ndailyrewards.hooks.HookManager;
 import gq.bxteam.ndailyrewards.data.IDataV2;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.command.CommandExecutor;
@@ -43,6 +45,9 @@ public class NDailyRewards extends JavaPlugin
         this.load();
         new SaveTask(this).start();
         this.MetricsCheck();
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderExpansions().register(); // this is a simple placeholder expansion, maybe soon it will be better and more. contributions are welcome :)
+        }
     }
 
     public void onDisable() {
