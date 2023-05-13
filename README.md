@@ -33,24 +33,17 @@ You can change the amount of days in a row from 1 to 54!
 - Autosaves player data every X mins
 - Dynamic GUI
 
-### ⌨ Commands / Permissions
+### ⌨ Commands & Permissions
 
-**Command**: /ndailyrewards - Opens rewards GUI
+|        Command         | Permission          |
+|:----------------------:|---------------------|
+|     /ndailyrewards     | ndailyrewards.user  |
+|  /ndailyrewards help   | ndailyrewards.user  |
+| /ndailyrewards version | ndailyrewards.user  |
+| /ndailyrewards reload  | ndailyrewards.admin |
+| /ndailyrewards backup  | ndailyrewards.admin |
 
-**Permission**: ndailyrewards.user
-
-**Command**: /ndailyrewards help - List of commands
-
-**Permission**: ndailyrewards.user
-
-**Command**: /ndailyrewards version - Sends current version of plugin
-
-**Permission**: ndailyrewards.user
-
-**Command**: /ndailyrewards reload - Reload configuration
-
-**Permission**: ndailyrewards.admin
-
+Also, NDailyRewards have command aliases, like: **/ndr**, **/rewards**, **/ndailyreward**, **/dailybonus**
 
 ### 📡 Metrics
 View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewards/13844)
@@ -60,8 +53,8 @@ View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewar
 
 ### 🔨 Download
 You can download plugin from [releases tab](https://github.com/BX-Team/NDailyRewards/releases/latest) or also from:
-- [CurseForge](http://curseforge.com/minecraft/bukkit-plugins/ndailyrewards)
-- [Modrinth](https://modrinth.com/plugin/ndailyrewards)
+- [CurseForge](http://curseforge.com/minecraft/bukkit-plugins/ndailyrewards) (takes longer to update)
+- [Modrinth](https://modrinth.com/plugin/ndailyrewards) (fast updates (recommended))
 - [Benkins (dev)](https://nonplayt.github.io/benkins/BX-Team/NDailyRewards/master)
 
 ### 👩‍💻 For developers
@@ -69,8 +62,8 @@ If you want to download and use NDailyRewards in your project, get it on maven a
 
 ```xml
 <dependency>
-  <groupId>gq.bxteam</groupId>
-  <artifactId>ndailyrewards</artifactId>
-  <version>1.6</version>
+    <groupId>gq.bxteam</groupId>
+    <artifactId>ndailyrewards</artifactId>
+    <version>1.6</version>
 </dependency>
 ```
