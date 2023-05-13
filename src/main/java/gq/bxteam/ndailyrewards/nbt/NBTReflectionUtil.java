@@ -24,7 +24,7 @@ import gq.bxteam.ndailyrewards.nbt.utils.nmsmappings.ReflectionMethod;
 /**
  * Utility class for translating NBTApi calls to reflections into NMS code All
  * methods are allowed to throw {@link NbtApiException}
- *
+ * 
  * @author tr7zw
  *
  */
@@ -51,7 +51,7 @@ public class NBTReflectionUtil {
 
     /**
      * Gets the NMS Entity for a given Bukkit Entity
-     *
+     * 
      * @param entity Bukkit Entity
      * @return NMS Entity
      */
@@ -65,7 +65,7 @@ public class NBTReflectionUtil {
 
     /**
      * Reads in a InputStream as NMS Compound
-     *
+     * 
      * @param stream InputStream of any NBT file
      * @return NMS Compound
      */
@@ -83,7 +83,7 @@ public class NBTReflectionUtil {
 
     /**
      * Writes a NMS Compound to an OutputStream
-     *
+     * 
      * @param nbt    NMS Compound
      * @param stream Stream to write to
      * @return ???
@@ -98,7 +98,7 @@ public class NBTReflectionUtil {
 
     /**
      * Writes a Compound to an OutputStream
-     *
+     * 
      * @param comp   Compound
      * @param stream Stream to write to
      */
@@ -120,7 +120,7 @@ public class NBTReflectionUtil {
     /**
      * Simulates getOrCreateTag. If an Item doesn't yet have a Tag, it will return a
      * new empty tag.
-     *
+     * 
      * @param nmsitem
      * @return NMS Compound
      */
@@ -135,7 +135,7 @@ public class NBTReflectionUtil {
 
     /**
      * Converts {@link NBTCompound} to NMS ItemStacks
-     *
+     * 
      * @param nbtcompound Any valid {@link NBTCompound}
      * @return NMS ItemStack
      */
@@ -154,7 +154,7 @@ public class NBTReflectionUtil {
 
     /**
      * Converts NMS ItemStacks to {@link NBTContainer}
-     *
+     * 
      * @param nmsitem NMS ItemStack
      * @return {@link NBTContainer} with all the data
      */
@@ -184,7 +184,7 @@ public class NBTReflectionUtil {
 
     /**
      * Gets the Vanilla NBT Compound from a given NMS Entity
-     *
+     * 
      * @param nmsEntity
      * @return NMS NBT Compound
      */
@@ -202,7 +202,7 @@ public class NBTReflectionUtil {
 
     /**
      * Loads all Vanilla tags from a NMS Compound into a NMS Entity
-     *
+     * 
      * @param nbtTag
      * @param nmsEntity
      * @return The NMS Entity
@@ -218,7 +218,7 @@ public class NBTReflectionUtil {
 
     /**
      * Gets the NMS Compound from a given TileEntity
-     *
+     * 
      * @param tile
      * @return NMS Compound with the Vanilla data
      */
@@ -253,7 +253,7 @@ public class NBTReflectionUtil {
 
     /**
      * Sets Vanilla tags from a NMS Compound to a TileEntity
-     *
+     * 
      * @param tile
      * @param comp
      */
@@ -284,7 +284,7 @@ public class NBTReflectionUtil {
 
     /**
      * Gets the subCompound with a given name from a NMS Compound
-     *
+     * 
      * @param compound
      * @param name
      * @return NMS Compound or null
@@ -294,7 +294,7 @@ public class NBTReflectionUtil {
             if ((boolean) ReflectionMethod.COMPOUND_HAS_KEY.run(compound, name)) {
                 return ReflectionMethod.COMPOUND_GET_COMPOUND.run(compound, name);
             } else {
-                throw new NbtApiException("Tried getting invalid compound '" + name + "' from '" + compound + "'!");
+                throw new NbtApiException("Tried getting invalide compound '" + name + "' from '" + compound + "'!");
             }
         } catch (Exception e) {
             throw new NbtApiException("Exception while getting NBT subcompounds!", e);
@@ -303,7 +303,7 @@ public class NBTReflectionUtil {
 
     /**
      * Creates a subCompound with a given name in the given NMS Compound
-     *
+     * 
      * @param comp
      * @param name
      */
@@ -331,7 +331,7 @@ public class NBTReflectionUtil {
 
     /**
      * Checks if the Compound is correctly linked to it's roots
-     *
+     * 
      * @param comp
      * @return true if this is a valide Compound, else false
      */
@@ -361,7 +361,7 @@ public class NBTReflectionUtil {
 
     /**
      * Merges the second {@link NBTCompound} into the first one
-     *
+     * 
      * @param comp           Target for the merge
      * @param nbtcompoundSrc Data to merge
      */
@@ -390,7 +390,7 @@ public class NBTReflectionUtil {
 
     /**
      * Returns the content for a given key inside a Compound
-     *
+     * 
      * @param comp
      * @param key
      * @return Content saved under this key
@@ -412,7 +412,7 @@ public class NBTReflectionUtil {
 
     /**
      * Sets a key in a {@link NBTCompound} to a given value
-     *
+     * 
      * @param comp
      * @param key
      * @param val
@@ -440,12 +440,12 @@ public class NBTReflectionUtil {
 
     /**
      * Returns the List saved with a given key.
-     *
+     * 
      * @param comp
      * @param key
      * @param type
      * @param clazz
-     * @return The list at that key. Null if it's an invalid type
+     * @return The list at that key. Null if it's an invalide type
      */
     @SuppressWarnings("unchecked")
     public static <T> NBTList<T> getList(NBTCompound comp, String key, NBTType type, Class<T> clazz) {
@@ -522,7 +522,7 @@ public class NBTReflectionUtil {
 
     /**
      * Uses Gson to set a {@link Serializable} value in a Compound
-     *
+     * 
      * @param comp
      * @param key
      * @param value
@@ -540,7 +540,7 @@ public class NBTReflectionUtil {
 
     /**
      * Uses Gson to load back a {@link Serializable} object from the Compound
-     *
+     * 
      * @param comp
      * @param key
      * @param type
@@ -558,7 +558,7 @@ public class NBTReflectionUtil {
 
     /**
      * Deletes the given key
-     *
+     * 
      * @param comp
      * @param key
      */
@@ -576,7 +576,7 @@ public class NBTReflectionUtil {
 
     /**
      * Gets the Keyset inside this Compound
-     *
+     * 
      * @param comp
      * @return Set of all keys
      */
@@ -594,7 +594,7 @@ public class NBTReflectionUtil {
 
     /**
      * Sets data inside the Compound
-     *
+     * 
      * @param comp
      * @param type
      * @param key
@@ -618,7 +618,7 @@ public class NBTReflectionUtil {
 
     /**
      * Gets data from the Compound
-     *
+     * 
      * @param comp
      * @param type
      * @param key

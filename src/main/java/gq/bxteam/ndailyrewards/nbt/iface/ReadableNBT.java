@@ -6,12 +6,12 @@ import java.util.UUID;
 
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.changeme.nbtapi.NBTType;
+import gq.bxteam.ndailyrewards.nbt.NBTType;
 
 /**
  * This interface only exposes methods that get data without any changes to the
  * underlying object.
- *
+ * 
  * @author tr7zw
  *
  */
@@ -19,7 +19,7 @@ public interface ReadableNBT {
 
     /**
      * Given a key, return the value associated with that key.
-     *
+     * 
      * @param key The key to get the value for.
      * @return The value of the key.
      */
@@ -28,7 +28,7 @@ public interface ReadableNBT {
     /**
      * Given a key, return the value associated with that key as an Integer, or 0 if
      * the key is not found.
-     *
+     * 
      * @param key The key to look up in the properties file.
      * @return The value of the key.
      */
@@ -37,7 +37,7 @@ public interface ReadableNBT {
     /**
      * Returns the value associated with the given key as a double, or false of not
      * found.
-     *
+     * 
      * @param key The key of the preference to retrieve.
      * @return A double value
      */
@@ -45,7 +45,7 @@ public interface ReadableNBT {
 
     /**
      * Get the value of the given key as a byte, or 0 if the key is not found.
-     *
+     * 
      * @param key The key to get the value for.
      * @return A byte
      */
@@ -53,7 +53,7 @@ public interface ReadableNBT {
 
     /**
      * Returns the value of the key as a Short, or 0 if the key is not found.
-     *
+     * 
      * @param key The key of the value you want to get.
      * @return A short value
      */
@@ -62,7 +62,7 @@ public interface ReadableNBT {
     /**
      * Returns the value associated with the given key as a Long, or 0 if the key is
      * not found.
-     *
+     * 
      * @param key The key of the value you want to get.
      * @return A Long object
      */
@@ -71,7 +71,7 @@ public interface ReadableNBT {
     /**
      * Returns the value of the given key as a Float, or 0 if the key does not
      * exist.
-     *
+     * 
      * @param key The key of the preference to retrieve.
      * @return A float value
      */
@@ -80,7 +80,7 @@ public interface ReadableNBT {
     /**
      * Returns the value associated with the given key as a byte array, or null if
      * the key is not found.
-     *
+     * 
      * @param key The key to use to retrieve the value.
      * @return A byte array.
      */
@@ -89,7 +89,7 @@ public interface ReadableNBT {
     /**
      * Returns the value associated with the given key as an array of integers, or
      * null if the key does not exist.
-     *
+     * 
      * @param key The key of the value you want to get.
      * @return An array of integers.
      */
@@ -98,7 +98,7 @@ public interface ReadableNBT {
     /**
      * Returns the value associated with the given key, or false if the key is not
      * found.
-     *
+     * 
      * @param key The key of the preference to retrieve.
      * @return A boolean value.
      */
@@ -107,7 +107,7 @@ public interface ReadableNBT {
     /**
      * It returns an ItemStack associated with the given key, or null if the key
      * does not exist.
-     *
+     * 
      * @param key The key of the itemstack you want to get.
      * @return An ItemStack
      */
@@ -116,7 +116,7 @@ public interface ReadableNBT {
     /**
      * Get an {@link ItemStack} array that was saved at the given key, or null if no
      * stored data was found
-     *
+     * 
      * @param key key
      * @return The stored {@link ItemStack} array, or null if stored data wasn't
      *         found
@@ -125,30 +125,17 @@ public interface ReadableNBT {
 
     /**
      * Given a key, return the UUID of the key.
-     *
+     * 
      * @param key The key to get the value from
      * @return A UUID object.
      */
     UUID getUUID(String key);
 
     /**
-     * Checks whether the provided key exists
-     *
      * @param key String key
      * @return true, if the key is set
      */
     boolean hasTag(String key);
-
-    /**
-     * Checks whether the provided key exists and has the specified type
-     *
-     * @param key  String key
-     * @param type nbt tag type
-     * @return whether the key is set and has the specified type
-     */
-    default boolean hasTag(String key, NBTType type) {
-        return hasTag(key) && getType(key) == type;
-    }
 
     /**
      * @return Set of all stored Keys
@@ -205,7 +192,7 @@ public interface ReadableNBT {
 
     /**
      * Returns the type of the list, null if not a list
-     *
+     * 
      * @param name
      * @return
      */
@@ -248,7 +235,7 @@ public interface ReadableNBT {
     /**
      * Get an Enum value that has been set via setEnum or setString(key,
      * value.name()). Passing null/invalid keys will return null.
-     *
+     * 
      * @param <E>
      * @param key
      * @param type
@@ -264,7 +251,7 @@ public interface ReadableNBT {
 
     /**
      * Write the content of this Compound into the provided stream.
-     *
+     * 
      * @param stream
      */
     void writeCompound(OutputStream stream);
