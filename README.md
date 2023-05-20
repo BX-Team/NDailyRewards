@@ -14,9 +14,9 @@
 This plugin gives you the ability to give players daily rewards for playing on your server!
 You can change the amount of days in a row from 1 to 54!
 
-**To run plugin, you need `Java 8+`, `Spigot 1.13+ (or DivineMC, Paper and etc.)`**
+**To run plugin, you need `Java 8+`, `Spigot 1.13+ (or Purpur, Paper and etc.)` and `NBT-API` plugin installed**
 
-### 🤖 Featrues
+### 🤖 Features
 - MySQL and SQLite support
 - Completely automated
 - High performance!
@@ -24,6 +24,7 @@ You can change the amount of days in a row from 1 to 54!
 - Set clickable NPC's **(Requires Citizens plugin)**
 - Fully customizable!
 - Unlock rewards after the midnight (Optional)
+- Have custom placeholders
 - Define the time between the rewards!
 - Execute commands and send messages in rewards!
 - GUI Fully customizable
@@ -53,9 +54,8 @@ View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewar
 
 ### 🔨 Download
 You can download plugin from [releases tab](https://github.com/BX-Team/NDailyRewards/releases/latest) or also from:
-- [CurseForge](http://curseforge.com/minecraft/bukkit-plugins/ndailyrewards) (takes longer to update)
 - [Modrinth](https://modrinth.com/plugin/ndailyrewards) (fast updates (recommended))
-- [Benkins (dev)](https://nonplayt.github.io/benkins/BX-Team/NDailyRewards/master)
+- [CurseForge](http://curseforge.com/minecraft/bukkit-plugins/ndailyrewards) (takes longer to update)
 
 ### 👩‍💻 For developers
 If you want to download and use NDailyRewards in your project, get it on maven and import to `pom.xml` like this:
@@ -64,6 +64,6 @@ If you want to download and use NDailyRewards in your project, get it on maven a
 <dependency>
     <groupId>gq.bxteam</groupId>
     <artifactId>ndailyrewards</artifactId>
-    <version>1.6</version>
+    <version>1.6.1</version>
 </dependency>
 ```
