@@ -2,7 +2,8 @@ name: NDailyRewards
 version: '${project.version}'
 main: gq.bxteam.ndailyrewards.NDailyRewards
 api-version: 1.13
-softdepend: [ Citizens ]
+depend: [ NBTAPI ]
+softdepend: [ Citizens, PlaceholderAPI ]
 authors: [ NONPLAY, Xenolit ]
 description: Reward players for playing on your server!
 website: https://discord.gg/p7cxhw7E2M

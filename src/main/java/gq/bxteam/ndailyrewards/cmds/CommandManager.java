@@ -2,6 +2,7 @@ package gq.bxteam.ndailyrewards.cmds;
 
 import java.util.Collections;
 
+import gq.bxteam.ndailyrewards.cmds.list.*;
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
 import java.util.ArrayList;
 import org.bukkit.entity.Player;
@@ -9,10 +10,6 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import java.util.Collection;
-import gq.bxteam.ndailyrewards.cmds.list.OpenCommand;
-import gq.bxteam.ndailyrewards.cmds.list.ReloadCommand;
-import gq.bxteam.ndailyrewards.cmds.list.HelpCommand;
-import gq.bxteam.ndailyrewards.cmds.list.VersionCommand;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import gq.bxteam.ndailyrewards.NDailyRewards;
@@ -35,6 +32,7 @@ public class CommandManager implements CommandExecutor, TabExecutor
         this.register(new HelpCommand(this.plugin));
         this.register(new ReloadCommand(this.plugin));
         this.register(new VersionCommand(this.plugin));
+        this.register(new BackupCommand(this.plugin));
     }
     
     public void shutdown() {
