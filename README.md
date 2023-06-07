@@ -62,6 +62,6 @@ If you want to download and use NDailyRewards in your project, get it on maven a
 <dependency>
     <groupId>gq.bxteam</groupId>
     <artifactId>ndailyrewards</artifactId>
-    <version>1.6.1</version>
+    <version>1.7</version>
 </dependency>
 ```
