@@ -6,7 +6,7 @@ depend: [ NBTAPI ]
 softdepend: [ Citizens, PlaceholderAPI ]
 authors: [ NONPLAY, Xenolit ]
 description: Reward players for playing on your server!
-website: https://discord.gg/p7cxhw7E2M
+website: https://modrinth.com/plugin/ndailyrewards
 commands:
   ndailyrewards:
     aliases: [rewards, ndailyreward, dailybonus, ndr]
