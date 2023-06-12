@@ -18,7 +18,7 @@ import org.bukkit.command.CommandExecutor;
 
 public class CommandManager implements CommandExecutor, TabExecutor
 {
-    private NDailyRewards plugin;
+    private final NDailyRewards plugin;
     private Map<String, ICmd> commands;
     private OpenCommand open;
     

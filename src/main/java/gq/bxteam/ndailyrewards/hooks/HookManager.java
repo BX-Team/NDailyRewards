@@ -9,7 +9,7 @@ import org.bukkit.plugin.PluginManager;
 
 public class HookManager
 {
-    private NDailyRewards plugin;
+    private final NDailyRewards plugin;
     
     public HookManager(final NDailyRewards plugin) {
         this.plugin = plugin;

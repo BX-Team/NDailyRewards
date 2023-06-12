@@ -29,11 +29,11 @@ import gq.bxteam.ndailyrewards.gui.GUI;
 
 public class RewardGUI extends GUI
 {
-    private int[] day_slots;
-    private ItemStack day_ready;
-    private ItemStack day_taken;
-    private ItemStack day_locked;
-    private ItemStack day_next;
+    private final int[] day_slots;
+    private final ItemStack day_ready;
+    private final ItemStack day_taken;
+    private final ItemStack day_locked;
+    private final ItemStack day_next;
     private Set<Player> opens;
 
     public RewardGUI(final NDailyRewards plugin, final String title, final int size, final LinkedHashMap<String, GUIItem> items, final int[] day_slots, final ItemStack day_ready, final ItemStack day_taken, final ItemStack day_locked, final ItemStack day_next) {
@@ -48,7 +48,7 @@ public class RewardGUI extends GUI
 
     public void start() {
         this.opens = new HashSet<Player>();
-        ((NDailyRewards)this.plugin).getServer().getScheduler().scheduleSyncRepeatingTask((Plugin)this.plugin, (Runnable)new Runnable() {
+        this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, new Runnable() {
             @Override
             public void run() {
                 for (final Player p : new ArrayList<Player>(RewardGUI.this.opens)) {
@@ -65,7 +65,7 @@ public class RewardGUI extends GUI
 
     private Inventory build(final Player p) {
         final Inventory inv = this.getInventory();
-        final DUser user = ((NDailyRewards)this.plugin).getUserManager().getOrLoadUser(p);
+        final DUser user = this.plugin.getUserManager().getOrLoadUser(p);
         for (final GUIItem gi : this.getContent().values()) {
             int[] slots;
             for (int length = (slots = gi.getSlots()).length, j = 0; j < length; ++j) {
@@ -130,7 +130,7 @@ public class RewardGUI extends GUI
                     lore.add(s);
                 }
             }
-            meta.setLore((List)lore);
+            meta.setLore(lore);
         }
         icon.setItemMeta(meta);
     }
@@ -155,7 +155,7 @@ public class RewardGUI extends GUI
             return false;
         }
         final int day = GUIUtils.getPage(item);
-        final DUser user = ((NDailyRewards)this.plugin).getUserManager().getOrLoadUser(p);
+        final DUser user = this.plugin.getUserManager().getOrLoadUser(p);
         if (user.getDayInRow() == day && user.hasActiveReward()) {
             final Reward r = Config.getRewardByDay(day);
             if (r == null) {

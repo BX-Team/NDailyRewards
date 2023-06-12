@@ -35,7 +35,7 @@ public abstract class ICmd
             return;
         }
         if (!this.hasPerm(sender)) {
-            sender.sendMessage(String.valueOf(Lang.Prefix.toMsg()) + Lang.Error_NoPerm.toMsg());
+            sender.sendMessage(Lang.Prefix.toMsg() + Lang.Error_NoPerm.toMsg());
             return;
         }
         this.perform(sender, args);
@@ -45,15 +45,14 @@ public abstract class ICmd
         if (this.getPermission() == null) {
             return true;
         }
-        if (sender instanceof Player) {
-            final Player p = (Player)sender;
+        if (sender instanceof Player p) {
             return p.hasPermission(this.getPermission());
         }
         return true;
     }
     
     protected void printUsage(final CommandSender sender) {
-        sender.sendMessage(ArchUtils.oneSpace(String.valueOf(Lang.Prefix.toMsg()) + Lang.Commands_Help_Usage.toMsg().replace("%usage%", this.usage()).replace("%command%", this.label())));
+        sender.sendMessage(ArchUtils.oneSpace(Lang.Prefix.toMsg() + Lang.Commands_Help_Usage.toMsg().replace("%usage%", this.usage()).replace("%command%", this.label())));
     }
     
     protected void errPerm(final CommandSender sender) {

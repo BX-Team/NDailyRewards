@@ -20,8 +20,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
-public class NDailyRewards extends JavaPlugin
-{
+public class NDailyRewards extends JavaPlugin {
     public static NDailyRewards instance;
     private CommandManager cmd;
     private ConfigManager cm;
@@ -39,7 +38,7 @@ public class NDailyRewards extends JavaPlugin
         // Plugin startup logic
         NDailyRewards.instance = this;
         (this.cmd = new CommandManager(this)).setup();
-        this.getCommand("ndailyrewards").setExecutor((CommandExecutor) this.cmd);
+        this.getCommand("ndailyrewards").setExecutor(this.cmd);
         this.pm = this.getServer().getPluginManager();
         (this.hm = new HookManager(this)).setup();
         this.load();
@@ -62,8 +61,8 @@ public class NDailyRewards extends JavaPlugin
 
     public void unload() {
         try {
-            this.getServer().getScheduler().cancelTasks((Plugin) this);
-            HandlerList.unregisterAll((Plugin) this);
+            this.getServer().getScheduler().cancelTasks(this);
+            HandlerList.unregisterAll(this);
             this.um.shutdown();
             this.data.shutdown();
         } catch (Exception e) {

@@ -20,10 +20,10 @@ public enum Lang
     Error_NoPlayer("Error_NoPlayer", 10, "&cPlayer not found!"),
     Error_Console("Error_Console", 11, "&cThis command is only for players!");
 
-    private String msg;
+    private final String msg;
     private static MyConfig config;
 
-    private Lang(final String name, final int ordinal, final String msg) {
+    Lang(final String name, final int ordinal, final String msg) {
         this.msg = msg;
     }
 
@@ -69,10 +69,10 @@ public enum Lang
                         final String s = array[j];
                         list.add(s);
                     }
-                    Lang.config.getConfig().set(lang.getPath(), (Object)list);
+                    Lang.config.getConfig().set(lang.getPath(), list);
                 }
                 else {
-                    Lang.config.getConfig().set(lang.getPath(), (Object)lang.getMsg());
+                    Lang.config.getConfig().set(lang.getPath(), lang.getMsg());
                 }
             }
         }

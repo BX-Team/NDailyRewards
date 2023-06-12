@@ -9,9 +9,9 @@ public enum LogType
     ERROR("ERROR", 2, ChatColor.RED), 
     DEBUG("DEBUG", 3, ChatColor.AQUA);
     
-    private ChatColor c;
+    private final ChatColor c;
     
-    private LogType(final String name, final int ordinal, final ChatColor c) {
+    LogType(final String name, final int ordinal, final ChatColor c) {
         this.c = c;
     }
     

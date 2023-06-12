@@ -33,13 +33,13 @@ public class ArchUtils
         }
         final List<String> ret = new ArrayList<String>();
         final List<String> sugg = new ArrayList<String>(source);
-        StringUtil.copyPartialMatches(arg, (Iterable)sugg, (Collection)ret);
+        StringUtil.copyPartialMatches(arg, sugg, (Collection)ret);
         Collections.sort(ret);
         return ret;
     }
     
     public static void execCmd(String cmd, final Player p) {
-        CommandSender cs = (CommandSender)p;
+        CommandSender cs = p;
         boolean op = false;
         if (cmd.startsWith("op:")) {
             cmd = cmd.replace("op:", "");
@@ -50,7 +50,7 @@ public class ArchUtils
         }
         else if (cmd.startsWith("console:")) {
             cmd = cmd.replace("console:", "");
-            cs = (CommandSender)Bukkit.getConsoleSender();
+            cs = Bukkit.getConsoleSender();
         }
         cmd = cmd.trim();
         Bukkit.dispatchCommand(cs, cmd.replace("%player%", p.getName()));
@@ -64,7 +64,7 @@ public class ArchUtils
             p.getWorld().dropItem(p.getLocation(), item);
         }
         else {
-            p.getInventory().addItem(new ItemStack[] { item });
+            p.getInventory().addItem(item);
         }
     }
     
@@ -114,19 +114,19 @@ public class ArchUtils
         days %= 7L;
         String tt = "";
         if (days > 0L) {
-            tt = String.valueOf(tt) + days + " " + Lang.Time_Day.toMsg();
+            tt = tt + days + " " + Lang.Time_Day.toMsg();
         }
         if (hours > 0L) {
-            tt = String.valueOf(tt) + " " + hours + " " + Lang.Time_Hour.toMsg();
+            tt = tt + " " + hours + " " + Lang.Time_Hour.toMsg();
         }
         if (mins > 0L) {
-            tt = String.valueOf(tt) + " " + mins + " " + Lang.Time_Min.toMsg();
+            tt = tt + " " + mins + " " + Lang.Time_Min.toMsg();
         }
         if (tt.isEmpty()) {
-            tt = String.valueOf(tt) + secs + " " + Lang.Time_Sec.toMsg();
+            tt = tt + secs + " " + Lang.Time_Sec.toMsg();
         }
         else if (secs > 0L) {
-            tt = String.valueOf(tt) + " " + secs + " " + Lang.Time_Sec.toMsg();
+            tt = tt + " " + secs + " " + Lang.Time_Sec.toMsg();
         }
         return oneSpace(tt);
     }
@@ -142,7 +142,7 @@ public class ArchUtils
         final UUID uuid = UUID.randomUUID();
         if (item.getType() == Material.PLAYER_HEAD) {
             final SkullMeta sm = (SkullMeta)item.getItemMeta();
-            final GameProfile profile = new GameProfile(uuid, (String)null);
+            final GameProfile profile = new GameProfile(uuid, null);
             Field profileField = null;
             try {
                 profileField = sm.getClass().getDeclaredField("profile");
@@ -154,7 +154,7 @@ public class ArchUtils
                 final Exception e1 = ex;
                 e1.printStackTrace();
             }
-            item.setItemMeta((ItemMeta)sm);
+            item.setItemMeta(sm);
         }
         return item;
     }
@@ -182,13 +182,13 @@ public class ArchUtils
             if (profile == null) {
                 return "";
             }
-            final Collection<Property> pr = (Collection<Property>)profile.getProperties().get((String) "textures");
+            final Collection<Property> pr = profile.getProperties().get("textures");
             for (final Property p : pr) {
                 if (p.getName().equalsIgnoreCase("textures") || p.getSignature().equalsIgnoreCase("textures")) {
                     return p.getValue();
                 }
             }
-            item.setItemMeta((ItemMeta)sm);
+            item.setItemMeta(sm);
         }
         return "";
     }

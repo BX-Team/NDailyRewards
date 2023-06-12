@@ -7,6 +7,6 @@ public enum ContentType
     EXIT("EXIT", 2), 
     NONE("NONE", 3);
     
-    private ContentType(final String name, final int ordinal) {
+    ContentType(final String name, final int ordinal) {
     }
 }

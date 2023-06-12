@@ -4,10 +4,10 @@ public enum Hook
 {
     CITIZENS("CITIZENS", 0, "Citizens");
     
-    private String name;
+    private final String name;
     private boolean e;
     
-    private Hook(final String name2, final int ordinal, final String name) {
+    Hook(final String name2, final int ordinal, final String name) {
         this.e = false;
         this.name = name;
     }

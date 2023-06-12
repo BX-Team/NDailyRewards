@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 
 public class DUser
 {
-    private String uuid;
-    private String name;
+    private final String uuid;
+    private final String name;
     private long login;
     private int day_row;
     private long next_reward;

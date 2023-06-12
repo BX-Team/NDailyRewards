@@ -23,7 +23,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class JYML extends YamlConfiguration
 {
-    private File f;
+    private final File f;
 
     public JYML(final String path, final String file) {
         this.f = new File(path, file);
@@ -61,7 +61,7 @@ public class JYML extends YamlConfiguration
         if (!this.isConfigurationSection(path)) {
             return Collections.emptySet();
         }
-        return (Set<String>)this.getConfigurationSection(path).getKeys(false);
+        return this.getConfigurationSection(path).getKeys(false);
     }
 
     public static List<JYML> getFilesFolder(final String path) {
@@ -86,41 +86,41 @@ public class JYML extends YamlConfiguration
 
     public ItemStack getItemFromSection(String path) {
         if (!path.endsWith(".")) {
-            path = String.valueOf(path) + ".";
+            path = path + ".";
         }
-        final String mat = this.getString(String.valueOf(path) + "material");
+        final String mat = this.getString(path + "material");
         ItemStack item = ArchUtils.buildItem(mat);
         if (item == null) {
             LogUtil.send("Invalid item material on &f'" + path + "'!" + " &c(" + this.f.getName() + ")", LogType.ERROR);
             return null;
         }
-        final String hash = this.getString(String.valueOf(path) + "skull-hash");
+        final String hash = this.getString(path + "skull-hash");
         if (hash != null) {
             final String[] ss = path.split("\\.");
             final String id = ss[ss.length - 1];
             item = ArchUtils.getHashed(item, hash, id);
         }
         final ItemMeta meta = item.getItemMeta();
-        final String name = this.getString(String.valueOf(path) + "name");
+        final String name = this.getString(path + "name");
         if (name != null) {
             meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
         }
         final List<String> lore = new ArrayList<String>();
-        for (final String s : this.getStringList(String.valueOf(path) + "lore")) {
+        for (final String s : this.getStringList(path + "lore")) {
             lore.add(ChatColor.translateAlternateColorCodes('&', s));
         }
-        meta.setLore((List)lore);
-        if (this.getBoolean(String.valueOf(path) + "enchanted")) {
+        meta.setLore(lore);
+        if (this.getBoolean(path + "enchanted")) {
             meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
         }
-        final List<String> flags = (List<String>)this.getStringList(String.valueOf(path) + "item-flags");
+        final List<String> flags = this.getStringList(path + "item-flags");
         if (flags.contains("*")) {
             meta.addItemFlags(ItemFlag.values());
         }
         else {
             for (final String flag : flags) {
                 try {
-                    meta.addItemFlags(new ItemFlag[] { ItemFlag.valueOf(flag.toUpperCase()) });
+                    meta.addItemFlags(ItemFlag.valueOf(flag.toUpperCase()));
                 }
                 catch (IllegalArgumentException ex) {}
             }
@@ -135,7 +135,7 @@ public class JYML extends YamlConfiguration
 
     public GUIItem getGUIItemFromSection(String path) {
         if (!path.endsWith(".")) {
-            path = String.valueOf(path) + ".";
+            path = path + ".";
         }
         final ItemStack item = this.getItemFromSection(path);
         if (item == null) {
@@ -147,8 +147,8 @@ public class JYML extends YamlConfiguration
         meta.setUnbreakable(true);
         item.setItemMeta(meta);
         int[] slots = { 0 };
-        if (this.contains(String.valueOf(path) + "slots")) {
-            final String[] raw = this.getString(String.valueOf(path) + "slots").replaceAll("\\s", "").split(",");
+        if (this.contains(path + "slots")) {
+            final String[] raw = this.getString(path + "slots").replaceAll("\\s", "").split(",");
             slots = new int[raw.length];
             for (int i = 0; i < raw.length; ++i) {
                 try {
@@ -159,7 +159,7 @@ public class JYML extends YamlConfiguration
         }
         ContentType type;
         try {
-            type = ContentType.valueOf(this.getString(String.valueOf(path) + "type", "NONE"));
+            type = ContentType.valueOf(this.getString(path + "type", "NONE"));
         }
         catch (IllegalArgumentException ex) {
             type = ContentType.NONE;
@@ -167,7 +167,7 @@ public class JYML extends YamlConfiguration
         final String[] ss = path.split("\\.");
         String id = ss[ss.length - 1];
         if (id.isEmpty()) {
-            id = String.valueOf(this.f.getName().replace(".yml", "")) + "-icon-" + ArchUtils.randInt(0, 3000);
+            id = this.f.getName().replace(".yml", "") + "-icon-" + ArchUtils.randInt(0, 3000);
         }
         final GUIItem gi = new GUIItem(id, type, item, slots);
         return gi;
@@ -178,33 +178,33 @@ public class JYML extends YamlConfiguration
             return;
         }
         if (!path.endsWith(".")) {
-            path = String.valueOf(path) + ".";
+            path = path + ".";
         }
         final Material m = item.getType();
         final ItemMeta meta = item.getItemMeta();
         final int data = item.getDurability();
-        final String mat = String.valueOf(m.name()) + ":" + data + ":" + item.getAmount();
-        this.set(String.valueOf(path) + "material", (Object)mat);
+        final String mat = m.name() + ":" + data + ":" + item.getAmount();
+        this.set(path + "material", mat);
         if (meta.hasDisplayName()) {
-            this.set(String.valueOf(path) + "name", (Object)meta.getDisplayName());
+            this.set(path + "name", meta.getDisplayName());
         }
         if (meta.hasLore()) {
-            this.set(String.valueOf(path) + "lore", (Object)meta.getLore());
+            this.set(path + "lore", meta.getLore());
         }
         final String hash = ArchUtils.getHashOf(item);
         if (hash != null && !hash.isEmpty()) {
-            this.set(String.valueOf(path) + "skull-hash", (Object)hash);
+            this.set(path + "skull-hash", hash);
         }
         if (meta.hasEnchants()) {
-            this.set(String.valueOf(path) + "enchanted", (Object)true);
+            this.set(path + "enchanted", true);
         }
         final List<String> f2 = new ArrayList<String>();
-        final Set<ItemFlag> flags = (Set<ItemFlag>)meta.getItemFlags();
+        final Set<ItemFlag> flags = meta.getItemFlags();
         for (final ItemFlag f3 : flags) {
             f2.add(f3.name());
         }
-        this.set(String.valueOf(path) + "item-flags", (Object)f2);
-        this.set(String.valueOf(path) + "unbreakable", (Object)meta.isUnbreakable());
+        this.set(path + "item-flags", f2);
+        this.set(path + "unbreakable", meta.isUnbreakable());
     }
 
     public void addMissing(final String path, final Object val) {

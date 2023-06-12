@@ -13,10 +13,10 @@ public abstract class AbstractListener<P extends Plugin> implements Listener
     }
 
     public void registerListeners() {
-        this.plugin.getServer().getPluginManager().registerEvents((Listener)this, (Plugin)this.plugin);
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     public void unregisterListeners() {
-        HandlerList.unregisterAll((Listener)this);
+        HandlerList.unregisterAll(this);
     }
 }

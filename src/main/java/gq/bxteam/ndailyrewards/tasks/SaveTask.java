@@ -6,7 +6,7 @@ import gq.bxteam.ndailyrewards.NDailyRewards;
 
 public class SaveTask
 {
-    private NDailyRewards plugin;
+    private final NDailyRewards plugin;
     private int id;
 
     public SaveTask(final NDailyRewards plugin) {
@@ -18,7 +18,7 @@ public class SaveTask
     }
 
     public void start() {
-        this.id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin)this.plugin, (Runnable)new Runnable() {
+        this.id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, new Runnable() {
             @Override
             public void run() {
                 SaveTask.this.plugin.getUserManager().autosave();

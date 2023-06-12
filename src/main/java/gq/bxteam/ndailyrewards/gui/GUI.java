@@ -15,13 +15,13 @@ import gq.bxteam.ndailyrewards.AbstractListener;
 
 public abstract class GUI extends AbstractListener<NDailyRewards> implements InventoryHolder
 {
-    private UUID uuid;
+    private final UUID uuid;
     protected String title;
     protected int size;
     protected LinkedHashMap<String, GUIItem> items;
     
     public GUI(final NDailyRewards plugin, final String title, final int size, final LinkedHashMap<String, GUIItem> items) {
-        super((NDailyRewards) plugin);
+        super(plugin);
         this.uuid = UUID.randomUUID();
         this.setTitle(title);
         this.setSize(size);
@@ -50,7 +50,7 @@ public abstract class GUI extends AbstractListener<NDailyRewards> implements Inv
     }
     
     public final Inventory getInventory() {
-        return ((NDailyRewards)this.plugin).getServer().createInventory((InventoryHolder)this, this.getSize(), this.getTitle());
+        return this.plugin.getServer().createInventory(this, this.getSize(), this.getTitle());
     }
     
     public void open(final Player p) {

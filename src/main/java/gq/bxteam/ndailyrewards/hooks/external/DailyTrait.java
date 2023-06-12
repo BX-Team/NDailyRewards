@@ -7,7 +7,7 @@ import net.citizensnpcs.api.trait.TraitName;
 import net.citizensnpcs.api.trait.Trait;
 
 @TraitName("ndailyrewards")
-@Deprecated(since = "1.7.1", forRemoval = true)
+@Deprecated(since = "1.7.1")
 public class DailyTrait extends Trait
 {
     public DailyTrait() {
