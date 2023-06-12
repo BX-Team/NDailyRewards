@@ -12,24 +12,21 @@ body:
   - type: dropdown
     attributes:
       label: Server Implementation
-      description: Which server Implementation are you using? If your server implementation is not listed, it is not supported. Switch to a supported version first.
+      description: Which server Implementation are you using?
       multiple: false
       options:
-        - Paper
         - Spigot
+        - Paper
+        - Pufferfish
+        - Purpur
+        - Any other fork of Paper
     validations:
       required: true
 
-  - type: dropdown
+  - type: textarea
     attributes:
       label: Server Version
-      description: Which server version version you using? If your server version is not listed, it is not supported. Update to a supported version first.
-      multiple: false
-      options:
-        - '1.19.4'
-        - '1.18.2'
-        - '1.17.1'
-        - '1.16.5'
+      description: What version of Minecraft are you running? (`/version`)
     validations:
       required: true
 
@@ -67,7 +64,7 @@ body:
   - type: input
     attributes:
       label: Error log (if applicable)
-      description: If you are reporting a console error, upload any relevant log excerpts to https://www.toptal.com/developers/hastebin/
+      description: If you are reporting a console error, upload any relevant log excerpts to https://pastes.dev
 
   - type: input
     attributes:
