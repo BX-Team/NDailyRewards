@@ -31,6 +31,7 @@ java.sourceCompatibility = JavaVersion.VERSION_16
 java {
     withSourcesJar()
     withJavadocJar()
+    toolchain.languageVersion.set(JavaLanguageVersion.of(16))
 }
 
 publishing {
