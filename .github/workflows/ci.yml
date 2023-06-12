@@ -21,6 +21,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
+    - name: Make Gradlew executable
+      run: chmod +x ./gradlew
     - name: Query Version
       run: |
         echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}')"
@@ -28,7 +30,6 @@ jobs:
     - name: Get Version
       run: |
         echo "version_name=${{steps.fetch-version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
-        chmod +x gradlew
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
