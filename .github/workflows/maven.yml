@@ -20,15 +20,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: maven
-    - name: Get version from pom.xml
-      uses: entimaniac/read-pom-version-action@1.0.0
-      id: fetch-version
-    - name: Get Version
-      run: |
-        echo "version_name=${{steps.fetch-version.outputs.version}}" >> $GITHUB_ENV
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+        cache: gradle
     - name: Upload to Modrinth (Alpha)
       uses: Kir-Antipov/mc-publish@v3.3
       with:
@@ -49,17 +41,10 @@ jobs:
           paper
           purpur
         game-versions: |
-          [1.13,1.13.2)
-          [1.14,1.14.4)
-          [1.15,1.15.2)
-          [1.16,1.16.5)
-          [1.17,1.17.1)
-          [1.18,1.18.2)
-          [1.19,1.19.4)
-          1.20
+          [1.16,1.20)
         fail-mode: fail
     - name: Upload NDailyRewards
       uses: actions/upload-artifact@v3.1.2
       with:
         name: NDailyRewards Dev Artifacts
-        path: "target/*ndailyrewards*.jar"
+        path: "build/libs/NDailyRewards-*.jar"

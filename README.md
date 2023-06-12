@@ -13,14 +13,14 @@
 This plugin gives you the ability to give players daily rewards for playing on your server!
 You can change the amount of days in a row from 1 to 54!
 
-**To run plugin, you need `Java 8+`, `Spigot 1.13+ (or Purpur, Paper and etc.)` and `NBT-API` plugin installed**
+**To run plugin, you need `Java 8+`, `Spigot 1.16+ (or Purpur, Paper and etc.)` and `NBT-API` plugin installed**
 
 ### 🤖 Features
 - MySQL and SQLite support
 - Completely automated
 - High performance!
 - Unlimited amount of rewards
-- Set clickable NPC's **(Requires Citizens plugin)**
+- Set clickable NPC's **(Requires Citizens plugin)** (deprecated)
 - Fully customizable!
 - Unlock rewards after the midnight (Optional)
 - Have custom placeholders
@@ -62,6 +62,6 @@ If you want to download and use NDailyRewards in your project, get it on maven a
 <dependency>
     <groupId>gq.bxteam</groupId>
     <artifactId>ndailyrewards</artifactId>
-    <version>1.7</version>
+    <version>1.7.1</version>
 </dependency>
 ```

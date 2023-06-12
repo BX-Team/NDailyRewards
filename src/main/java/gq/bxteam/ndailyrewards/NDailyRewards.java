@@ -44,9 +44,9 @@ public class NDailyRewards extends JavaPlugin
         (this.hm = new HookManager(this)).setup();
         this.load();
         new SaveTask(this).start();
-        this.MetricsCheck();
+        this.MetricsInit();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderExpansions().register(); // this is a simple placeholder expansion, maybe soon it will be better and more. contributions are welcome :)
+            new PlaceholderExpansions().register();
         }
     }
 
@@ -88,13 +88,10 @@ public class NDailyRewards extends JavaPlugin
         return this.um;
     }
 
-    public void MetricsCheck() {
+    public void MetricsInit() {
         if (Config.opt_metrics) {
-            // Metrics enabled - Initialize metrics
             int pluginId = 13844;
             Metrics metrics = new Metrics(this, pluginId);
-        } else {
-            // Metrics disabled
         }
     }
 }

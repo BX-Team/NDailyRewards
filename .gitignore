@@ -112,3 +112,10 @@ buildNumber.properties
 
 # Common working directory
 run/
+
+# Gradle files and folders
+.gradle/
+build/
+
+# Never ignore Gradle wrapper jar file
+!gradle/wrapper/gradle-wrapper.jar
