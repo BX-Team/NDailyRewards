@@ -21,6 +21,10 @@ jobs:
           distribution: 'temurin'
       - name: Make Gradlew executable
         run: chmod +x ./gradlew
+      - name: Get Gradle Properties
+        run: |
+          echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}')"
+        id: fetch-version
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v5
         with:
