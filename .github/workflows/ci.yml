@@ -30,7 +30,7 @@ jobs:
       id: fetch-version
     - name: Get Version
       run: |
-        echo "version_name=${{steps.fetch-version.outputs.VERSION_NAME}}-${{SHORT_SHA}}" >> $GITHUB_ENV
+        echo "version_name=${{steps.fetch-version.outputs.VERSION_NAME}}-${{steps.fetch-version.outputs.SHORT_SHA}}" >> $GITHUB_ENV
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
