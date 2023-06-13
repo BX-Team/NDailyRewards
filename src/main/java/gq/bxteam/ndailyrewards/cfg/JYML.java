@@ -21,6 +21,9 @@ import java.io.FileNotFoundException;
 import java.io.File;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+/**
+ * Integration with plugin GUI and config
+ */
 public class JYML extends YamlConfiguration
 {
     private final File f;

@@ -11,6 +11,10 @@ import gq.bxteam.ndailyrewards.NDailyRewards;
 import org.bukkit.ChatColor;
 import gq.bxteam.ndailyrewards.data.DataType;
 
+/**
+ * Reads and writes config file
+ * Also sends warning if you're using snapshot version
+ */
 public class Config
 {
     private static MyConfig config;
