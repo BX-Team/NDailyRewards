@@ -23,14 +23,17 @@ jobs:
         cache: gradle
     - name: Make Gradlew executable
       run: chmod +x ./gradlew
-    - name: Query Version
+    - name: Get Gradle Properties
       run: |
         echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}')"
-        echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
       id: fetch-version
-    - name: Get Version
+    - name: Get Short SHA
       run: |
-        echo "version_name=${{steps.fetch-version.outputs.VERSION_NAME}}-${{steps.fetch-version.outputs.SHORT_SHA}}" >> $GITHUB_ENV
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      id: fetch-sha
+    - name: Version Name
+      run: |
+        echo "version_name=${{steps.fetch-version.outputs.VERSION_NAME}}-${{steps.fetch-sha.outputs.sha_short}}" >> $GITHUB_ENV
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
