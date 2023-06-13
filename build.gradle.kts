@@ -20,7 +20,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:${paperAPIVersion}") // Paper API
 
     // Plugin dependencies
-    compileOnly("net.citizensnpcs:citizensapi:2.0.31-SNAPSHOT")
+    compileOnly("net.citizensnpcs:citizensapi:2.0.32-SNAPSHOT")
     compileOnly("com.mojang:authlib:3.16.29")
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.11.3")
     compileOnly("org.xerial:sqlite-jdbc:3.42.0.0")
