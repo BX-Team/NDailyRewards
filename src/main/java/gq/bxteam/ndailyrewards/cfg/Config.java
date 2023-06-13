@@ -64,7 +64,7 @@ public class Config
         Config.opt_auto_have = cfg.getBoolean(path + "auto-open.only-when-have");
         Config.opt_midnight = cfg.getBoolean(path + "unlock-after-midnight");
         Config.opt_metrics = cfg.getBoolean(path + "enable-metrics");
-        Config.opt_cd = cfg.getInt(path + "rewards-cooldown", 86400);
+        Config.opt_cd = cfg.getInt(path + "rewards-cool-down", 86400);
         Config.opt_days_row = cfg.getInt(path + "days-row");
         Config.rewards = new TreeMap<Integer, Reward>();
         for (final String d : cfg.getSection("rewards")) {
