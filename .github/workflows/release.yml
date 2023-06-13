@@ -21,10 +21,15 @@ jobs:
           distribution: 'temurin'
       - name: Make Gradlew executable
         run: chmod +x ./gradlew
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v5
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: build publish
       - name: Upload to Modrinth (Release)
         uses: Kir-Antipov/mc-publish@v3.3
         with:
