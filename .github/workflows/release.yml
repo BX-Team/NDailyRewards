@@ -1,0 +1,50 @@
+# Publishes a release to Modrinth when a release is published on GitHub.
+name: Release to Modrinth
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Make Gradlew executable
+        run: chmod +x ./gradlew
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+      - name: Upload to Modrinth (Release)
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ZiFzQAnz
+          modrinth-featured: true
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-dependencies: |
+            nfGCP9fk@2.11.3(required)
+          files: "build/libs/NDailyRewards-${{steps.fetch-version.outputs.VERSION_NAME}}.jar"
+          version-type: release
+          name: NDailyRewards ${{ github.event.release.tag_name }}
+          version: ${{ github.event.release.tag_name }}
+          game-version-filter: releases
+          changelog: ${{ github.event.release.body }}
+          loaders: |
+            bukkit
+            spigot
+            paper
+            purpur
+          game-versions: |
+            [1.16,1.20]
+          fail-mode: fail
+          java: 17

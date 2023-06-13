@@ -1,4 +1,5 @@
-name: Java CI with Maven
+# Builds the project with Gradle and uploads to Modrinth with alpha tag when a commit is pushed to master.
+name: Java CI with Gradle
 
 on:
   push:
@@ -58,7 +59,7 @@ jobs:
           paper
           purpur
         game-versions: |
-          [1.16,1.20)
+          [1.16,1.20]
         fail-mode: fail
         java: 17
     - name: Upload NDailyRewards
