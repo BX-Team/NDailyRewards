@@ -8,6 +8,7 @@ val paperAPIVersion = project.properties["mcVersion"]!!
 
 repositories {
     mavenLocal()
+    mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.citizensnpcs.co/")
     maven("https://libraries.minecraft.net")
@@ -25,6 +26,8 @@ dependencies {
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.11.3")
     compileOnly("org.xerial:sqlite-jdbc:3.42.0.0")
     compileOnly("me.clip:placeholderapi:2.11.3")
+    implementation("net.kyori:adventure-api:4.14.0")
+    implementation("net.kyori:adventure-text-minimessage:4.14.0")
 }
 
 group = project.group

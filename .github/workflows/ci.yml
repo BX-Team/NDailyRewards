@@ -38,6 +38,7 @@ jobs:
       with:
         arguments: build
     - name: Upload to Modrinth (Alpha)
+      if: "!contains(github.event.commits[0].message, '[mru-skip]')"
       uses: Kir-Antipov/mc-publish@v3.3
       with:
         modrinth-id: ZiFzQAnz
