@@ -19,6 +19,9 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
@@ -104,13 +107,39 @@ public class JYML extends YamlConfiguration
             item = ArchUtils.getHashed(item, hash, id);
         }
         final ItemMeta meta = item.getItemMeta();
-        final String name = this.getString(path + "name");
+        String name = this.getString(path + "name");
         if (name != null) {
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+            Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+            Matcher matcher = pattern.matcher(name);
+            while (matcher.find()) {
+                String hexCode = name.substring(matcher.start(), matcher.end());
+                String replaceSharp = hexCode.replace('#', 'x');
+                char[] ch = replaceSharp.toCharArray();
+                StringBuilder builder = new StringBuilder("");
+                for (char c : ch)
+                    builder.append("&" + c);
+                name = name.replace(hexCode, builder.toString());
+                matcher = pattern.matcher(name);
+            }
+            String pref = ChatColor.translateAlternateColorCodes('&', name);
+            meta.setDisplayName(pref);
         }
         final List<String> lore = new ArrayList<String>();
-        for (final String s : this.getStringList(path + "lore")) {
-            lore.add(ChatColor.translateAlternateColorCodes('&', s));
+        for (String s : this.getStringList(path + "lore")) {
+            Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+            Matcher matcher = pattern.matcher(s);
+            while (matcher.find()) {
+                String hexCode = s.substring(matcher.start(), matcher.end());
+                String replaceSharp = hexCode.replace('#', 'x');
+                char[] ch = replaceSharp.toCharArray();
+                StringBuilder builder = new StringBuilder("");
+                for (char c : ch)
+                    builder.append("&" + c);
+                s = s.replace(hexCode, builder.toString());
+                matcher = pattern.matcher(s);
+            }
+            String pref = ChatColor.translateAlternateColorCodes('&', s);
+            lore.add(pref);
         }
         meta.setLore(lore);
         if (this.getBoolean(path + "enchanted")) {

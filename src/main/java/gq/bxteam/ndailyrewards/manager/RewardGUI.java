@@ -24,6 +24,9 @@ import java.util.LinkedHashMap;
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import org.bukkit.entity.Player;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.inventory.ItemStack;
 import gq.bxteam.ndailyrewards.gui.GUI;
 
@@ -125,9 +128,20 @@ public class RewardGUI extends GUI
                     }
                 }
                 else {
-                    s = ChatColor.translateAlternateColorCodes('&', s);
-                    s = s.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward())).replace("%time%", ArchUtils.getTimeLeft(time)).replace("%day%", String.valueOf(day2));
-                    lore.add(s);
+                    Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+                    Matcher matcher = pattern.matcher(s);
+                    while (matcher.find()) {
+                        String hexCode = s.substring(matcher.start(), matcher.end());
+                        String replaceSharp = hexCode.replace('#', 'x');
+                        char[] ch = replaceSharp.toCharArray();
+                        StringBuilder builder = new StringBuilder("");
+                        for (char c : ch)
+                            builder.append("&" + c);
+                        s = s.replace(hexCode, builder.toString());
+                        matcher = pattern.matcher(s);
+                    }
+                    String pref = ChatColor.translateAlternateColorCodes('&', s);
+                    lore.add(pref.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward())).replace("%time%", ArchUtils.getTimeLeft(time)).replace("%day%", String.valueOf(day2)));
                 }
             }
             meta.setLore(lore);
