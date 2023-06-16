@@ -13,12 +13,15 @@ import gq.bxteam.ndailyrewards.data.DataManager;
 import gq.bxteam.ndailyrewards.hooks.HookManager;
 import gq.bxteam.ndailyrewards.data.IDataV2;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NDailyRewards extends JavaPlugin {
     public static NDailyRewards instance;
@@ -92,5 +95,21 @@ public class NDailyRewards extends JavaPlugin {
             int pluginId = 13844;
             Metrics metrics = new Metrics(this, pluginId);
         }
+    }
+
+    public static @NotNull String replaceHEXColorCode(String s) {
+        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+        Matcher matcher = pattern.matcher(s);
+        while (matcher.find()) {
+            String hexCode = s.substring(matcher.start(), matcher.end());
+            String replaceSharp = hexCode.replace('#', 'x');
+            char[] ch = replaceSharp.toCharArray();
+            StringBuilder builder = new StringBuilder();
+            for (char c : ch)
+                builder.append("&").append(c);
+            s = s.replace(hexCode, builder.toString());
+            matcher = pattern.matcher(s);
+        }
+        return ChatColor.translateAlternateColorCodes('&', s);
     }
 }

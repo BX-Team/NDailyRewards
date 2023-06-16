@@ -16,7 +16,6 @@ import gq.bxteam.ndailyrewards.cfg.Config;
 import gq.bxteam.ndailyrewards.manager.objects.DUser;
 import gq.bxteam.ndailyrewards.gui.GUIUtils;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.HashSet;
 import gq.bxteam.ndailyrewards.gui.GUIItem;
@@ -24,8 +23,6 @@ import java.util.LinkedHashMap;
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import org.bukkit.entity.Player;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.bukkit.inventory.ItemStack;
 import gq.bxteam.ndailyrewards.gui.GUI;
@@ -128,19 +125,7 @@ public class RewardGUI extends GUI
                     }
                 }
                 else {
-                    Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
-                    Matcher matcher = pattern.matcher(s);
-                    while (matcher.find()) {
-                        String hexCode = s.substring(matcher.start(), matcher.end());
-                        String replaceSharp = hexCode.replace('#', 'x');
-                        char[] ch = replaceSharp.toCharArray();
-                        StringBuilder builder = new StringBuilder();
-                        for (char c : ch)
-                            builder.append("&" + c);
-                        s = s.replace(hexCode, builder.toString());
-                        matcher = pattern.matcher(s);
-                    }
-                    String pref = ChatColor.translateAlternateColorCodes('&', s);
+                    String pref = NDailyRewards.replaceHEXColorCode(s);
                     lore.add(pref.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward())).replace("%time%", ArchUtils.getTimeLeft(time)).replace("%day%", String.valueOf(day2)));
                 }
             }

@@ -2,9 +2,8 @@ package gq.bxteam.ndailyrewards.cfg;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import gq.bxteam.ndailyrewards.NDailyRewards;
 import org.bukkit.ChatColor;
 
 @SuppressWarnings("javadoc")
@@ -39,20 +38,7 @@ public enum Lang
     }
 
     public String toMsg() {
-        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
-        String s = Lang.config.getConfig().getString(this.getPath());
-        Matcher matcher = pattern.matcher(s);
-        while (matcher.find()) {
-            String hexCode = s.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace('#', 'x');
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder();
-            for (char c : ch)
-                builder.append("&" + c);
-            s = s.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(s);
-        }
-        String pref = ChatColor.translateAlternateColorCodes('&', s);
+        String pref = NDailyRewards.replaceHEXColorCode(Lang.config.getConfig().getString(this.getPath()));
         return pref;
     }
 

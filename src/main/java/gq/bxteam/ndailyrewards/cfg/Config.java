@@ -7,8 +7,6 @@ import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import org.bukkit.inventory.ItemStack;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import org.bukkit.ChatColor;
@@ -82,19 +80,7 @@ public class Config
         }
         LogUtil.send("&eLoaded &6" + Config.rewards.size() + " &edaily rewards!", LogType.INFO);
         path = "gui.";
-        String p_title = cfg.getString(path + "title");
-        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
-        Matcher matcher = pattern.matcher(p_title);
-        while (matcher.find()) {
-            String hexCode = p_title.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace('#', 'x');
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder();
-            for (char c : ch)
-                builder.append("&" + c);
-            p_title = p_title.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(p_title);
-        }
+        String p_title = NDailyRewards.replaceHEXColorCode(cfg.getString(path + "title"));
         String g_title = ChatColor.translateAlternateColorCodes('&', p_title);
         final int g_size = cfg.getInt(path + "size");
         final LinkedHashMap<String, GUIItem> g_items = new LinkedHashMap<String, GUIItem>();

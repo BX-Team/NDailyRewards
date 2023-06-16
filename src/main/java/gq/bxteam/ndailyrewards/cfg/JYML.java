@@ -1,5 +1,6 @@
 package gq.bxteam.ndailyrewards.cfg;
 
+import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.gui.ContentType;
 import gq.bxteam.ndailyrewards.gui.GUIItem;
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
@@ -9,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +19,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -109,36 +107,12 @@ public class JYML extends YamlConfiguration
         final ItemMeta meta = item.getItemMeta();
         String name = this.getString(path + "name");
         if (name != null) {
-            Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
-            Matcher matcher = pattern.matcher(name);
-            while (matcher.find()) {
-                String hexCode = name.substring(matcher.start(), matcher.end());
-                String replaceSharp = hexCode.replace('#', 'x');
-                char[] ch = replaceSharp.toCharArray();
-                StringBuilder builder = new StringBuilder();
-                for (char c : ch)
-                    builder.append("&" + c);
-                name = name.replace(hexCode, builder.toString());
-                matcher = pattern.matcher(name);
-            }
-            String pref = ChatColor.translateAlternateColorCodes('&', name);
+            String pref = NDailyRewards.replaceHEXColorCode(name);
             meta.setDisplayName(pref);
         }
         final List<String> lore = new ArrayList<String>();
         for (String s : this.getStringList(path + "lore")) {
-            Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
-            Matcher matcher = pattern.matcher(s);
-            while (matcher.find()) {
-                String hexCode = s.substring(matcher.start(), matcher.end());
-                String replaceSharp = hexCode.replace('#', 'x');
-                char[] ch = replaceSharp.toCharArray();
-                StringBuilder builder = new StringBuilder();
-                for (char c : ch)
-                    builder.append("&" + c);
-                s = s.replace(hexCode, builder.toString());
-                matcher = pattern.matcher(s);
-            }
-            String pref = ChatColor.translateAlternateColorCodes('&', s);
+            String pref = NDailyRewards.replaceHEXColorCode(s);
             lore.add(pref);
         }
         meta.setLore(lore);
