@@ -26,6 +26,7 @@ options:
     only-when-have: true
   days-row: 7
   rewards-cool-down: 86400
+  gui-refresh-delay: 5
   unlock-after-midnight: false
   enable-metrics: true
 rewards:
