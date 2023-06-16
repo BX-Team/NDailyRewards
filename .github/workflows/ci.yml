@@ -3,7 +3,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    
+
 permissions:
   contents: read
   checks: write
@@ -50,7 +50,7 @@ jobs:
         version-type: alpha
         name: NDailyRewards v${{ env.version_name }}
         version: ${{ env.version_name }}
-        game-version-filter: releases
+        game-version-filter: releases | min-major | min-minor
         changelog: ${{ github.event.head_commit.message }}
         loaders: |
           bukkit
@@ -58,7 +58,7 @@ jobs:
           paper
           purpur
         game-versions: |
-          [1.16,1.20]
+          [1.16,1.20.1]
         fail-mode: fail
         java: 17
     - name: Upload NDailyRewards
