@@ -115,7 +115,7 @@ public class JYML extends YamlConfiguration
                 String hexCode = name.substring(matcher.start(), matcher.end());
                 String replaceSharp = hexCode.replace('#', 'x');
                 char[] ch = replaceSharp.toCharArray();
-                StringBuilder builder = new StringBuilder("");
+                StringBuilder builder = new StringBuilder();
                 for (char c : ch)
                     builder.append("&" + c);
                 name = name.replace(hexCode, builder.toString());
@@ -132,7 +132,7 @@ public class JYML extends YamlConfiguration
                 String hexCode = s.substring(matcher.start(), matcher.end());
                 String replaceSharp = hexCode.replace('#', 'x');
                 char[] ch = replaceSharp.toCharArray();
-                StringBuilder builder = new StringBuilder("");
+                StringBuilder builder = new StringBuilder();
                 for (char c : ch)
                     builder.append("&" + c);
                 s = s.replace(hexCode, builder.toString());
