@@ -58,7 +58,8 @@ jobs:
           paper
           purpur
         game-versions: |
-          [1.16,1.20.1]
+          [1.16,1.20]
+          1.20.1
         fail-mode: fail
         java: 17
     - name: Upload NDailyRewards
