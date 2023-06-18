@@ -3,22 +3,29 @@ package gq.bxteam.ndailyrewards.manager;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+
 import java.util.Collection;
+
 import org.bukkit.scheduler.BukkitRunnable;
 import gq.bxteam.ndailyrewards.data.DataType;
 import gq.bxteam.ndailyrewards.cfg.Config;
 import org.bukkit.entity.Player;
+
 import java.util.HashMap;
 import java.util.HashSet;
+
 import org.bukkit.plugin.Plugin;
+
 import java.util.Set;
+
 import gq.bxteam.ndailyrewards.manager.objects.DUser;
+
 import java.util.Map;
+
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.AbstractListener;
 
-public class UserManager extends AbstractListener<NDailyRewards>
-{
+public class UserManager extends AbstractListener<NDailyRewards> {
     private Map<String, DUser> users;
     private final Set<DUser> save;
 
@@ -87,8 +94,7 @@ public class UserManager extends AbstractListener<NDailyRewards>
                         UserManager.this.plugin.getData().save(user);
                     }
                 }.runTaskAsynchronously(this.plugin);
-            }
-            else {
+            } else {
                 this.save.add(user);
             }
             this.users.remove(ui);

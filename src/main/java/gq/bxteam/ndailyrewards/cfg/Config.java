@@ -6,6 +6,7 @@ import gq.bxteam.ndailyrewards.manager.objects.Reward;
 import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.*;
 
 import gq.bxteam.ndailyrewards.NDailyRewards;
@@ -16,8 +17,7 @@ import gq.bxteam.ndailyrewards.data.DataType;
  * Reads and writes config file
  * Also sends warning if you're using snapshot version
  */
-public class Config
-{
+public class Config {
     private static MyConfig config;
     public static int data_save;
     public static DataType storage;
@@ -49,8 +49,7 @@ public class Config
         final String m = cfg.getString(path + "type").toUpperCase();
         try {
             Config.storage = DataType.valueOf(m);
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             Config.storage = DataType.SQLITE;
             LogUtil.send("Unknown storage type: " + m + "! Switched to " + Config.storage.getName(), LogType.WARN);
         }
@@ -92,15 +91,15 @@ public class Config
         if (NDailyRewards.getInstance().getDescription().getVersion().contains("SNAPSHOT")) {
             LogUtil.send("&cYou are using a SNAPSHOT version of the plugin! Bugs & Errors may occur!", LogType.WARN);
         }
-        int[] slots = { 0 };
+        int[] slots = {0};
         if (cfg.contains(path + "days-positions")) {
             final String[] raw = cfg.getString(path + "days-positions").replaceAll("\\s", "").split(",");
             slots = new int[raw.length];
             for (int i = 0; i < raw.length; ++i) {
                 try {
                     slots[i] = Integer.parseInt(raw[i].trim());
+                } catch (NumberFormatException ex2) {
                 }
-                catch (NumberFormatException ex2) {}
             }
         }
         final ItemStack day_ready = cfg.getItemFromSection(path + "days-display.available");

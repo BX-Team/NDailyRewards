@@ -11,11 +11,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.util.Set;
+
 import org.bukkit.configuration.InvalidConfigurationException;
+
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -25,22 +28,18 @@ import org.bukkit.configuration.file.YamlConfiguration;
 /**
  * Integration with plugin GUI and config
  */
-public class JYML extends YamlConfiguration
-{
+public class JYML extends YamlConfiguration {
     private final File f;
 
     public JYML(final String path, final String file) {
         this.f = new File(path, file);
         try {
             this.load(this.f);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e2) {
+        } catch (IOException e2) {
             e2.printStackTrace();
-        }
-        catch (InvalidConfigurationException e3) {
+        } catch (InvalidConfigurationException e3) {
             e3.printStackTrace();
         }
     }
@@ -49,14 +48,11 @@ public class JYML extends YamlConfiguration
         this.f = f;
         try {
             this.load(this.f);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e2) {
+        } catch (IOException e2) {
             e2.printStackTrace();
-        }
-        catch (InvalidConfigurationException e3) {
+        } catch (InvalidConfigurationException e3) {
             e3.printStackTrace();
         }
     }
@@ -80,8 +76,7 @@ public class JYML extends YamlConfiguration
             final File f = array[i];
             if (f.isFile()) {
                 names.add(new JYML(f));
-            }
-            else if (f.isDirectory()) {
+            } else if (f.isDirectory()) {
                 names.addAll(getFilesFolder(f.getPath()));
             }
         }
@@ -122,16 +117,15 @@ public class JYML extends YamlConfiguration
         final List<String> flags = this.getStringList(path + "item-flags");
         if (flags.contains("*")) {
             meta.addItemFlags(ItemFlag.values());
-        }
-        else {
+        } else {
             for (final String flag : flags) {
                 try {
                     meta.addItemFlags(ItemFlag.valueOf(flag.toUpperCase()));
+                } catch (IllegalArgumentException ex) {
                 }
-                catch (IllegalArgumentException ex) {}
             }
         }
-        if (this.isSet(path + "custom-model-data")){
+        if (this.isSet(path + "custom-model-data")) {
             final int customModelData = this.getInt(path + "custom-model-data");
             meta.setCustomModelData(customModelData);
         }
@@ -152,22 +146,21 @@ public class JYML extends YamlConfiguration
         meta.addItemFlags(ItemFlag.values());
         meta.setUnbreakable(true);
         item.setItemMeta(meta);
-        int[] slots = { 0 };
+        int[] slots = {0};
         if (this.contains(path + "slots")) {
             final String[] raw = this.getString(path + "slots").replaceAll("\\s", "").split(",");
             slots = new int[raw.length];
             for (int i = 0; i < raw.length; ++i) {
                 try {
                     slots[i] = Integer.parseInt(raw[i].trim());
+                } catch (NumberFormatException ex2) {
                 }
-                catch (NumberFormatException ex2) {}
             }
         }
         ContentType type;
         try {
             type = ContentType.valueOf(this.getString(path + "type", "NONE"));
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             type = ContentType.NONE;
         }
         final String[] ss = path.split("\\.");
@@ -227,8 +220,7 @@ public class JYML extends YamlConfiguration
     public void save() {
         try {
             this.save(this.f);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             LogUtil.send("Unable to save config: &f" + this.f.getName() + "&7! &c(" + e.getMessage() + ")", LogType.ERROR);
         }
     }

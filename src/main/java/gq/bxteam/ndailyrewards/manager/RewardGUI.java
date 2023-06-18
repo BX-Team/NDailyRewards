@@ -7,7 +7,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.meta.ItemMeta;
+
 import java.util.List;
+
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
 import org.bukkit.ChatColor;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
@@ -16,19 +18,23 @@ import gq.bxteam.ndailyrewards.cfg.Config;
 import gq.bxteam.ndailyrewards.manager.objects.DUser;
 import gq.bxteam.ndailyrewards.gui.GUIUtils;
 import org.bukkit.inventory.Inventory;
+
 import java.util.ArrayList;
 import java.util.HashSet;
+
 import gq.bxteam.ndailyrewards.gui.GUIItem;
+
 import java.util.LinkedHashMap;
+
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import org.bukkit.entity.Player;
+
 import java.util.Set;
 
 import org.bukkit.inventory.ItemStack;
 import gq.bxteam.ndailyrewards.gui.GUI;
 
-public class RewardGUI extends GUI
-{
+public class RewardGUI extends GUI {
     private final int[] day_slots;
     private final ItemStack day_ready;
     private final ItemStack day_taken;
@@ -84,15 +90,12 @@ public class RewardGUI extends GUI
             if (user_day == day2) {
                 if (user.hasActiveReward()) {
                     icon = new ItemStack(this.day_ready);
-                }
-                else {
+                } else {
                     icon = new ItemStack(this.day_next);
                 }
-            }
-            else if (user_day > day2) {
+            } else if (user_day > day2) {
                 icon = new ItemStack(this.day_taken);
-            }
-            else {
+            } else {
                 icon = new ItemStack(this.day_locked);
             }
             this.replaceLore(icon, day2, user, time);
@@ -123,8 +126,7 @@ public class RewardGUI extends GUI
                     for (final String s2 : rewa.getLore()) {
                         lore.add(ChatColor.translateAlternateColorCodes('&', s2.replace("%day%", String.valueOf(day2))));
                     }
-                }
-                else {
+                } else {
                     String pref = NDailyRewards.replaceHEXColorCode(s);
                     lore.add(pref.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward())).replace("%time%", ArchUtils.getTimeLeft(time)).replace("%day%", String.valueOf(day2)));
                 }

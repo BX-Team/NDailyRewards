@@ -1,11 +1,9 @@
 package gq.bxteam.ndailyrewards.tasks;
 
 import gq.bxteam.ndailyrewards.cfg.Config;
-import org.bukkit.plugin.Plugin;
 import gq.bxteam.ndailyrewards.NDailyRewards;
 
-public class SaveTask
-{
+public class SaveTask {
     private final NDailyRewards plugin;
     private int id;
 

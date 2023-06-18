@@ -3,10 +3,10 @@ package gq.bxteam.ndailyrewards.manager.objects;
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
 import org.bukkit.entity.Player;
+
 import java.util.List;
 
-public class Reward
-{
+public class Reward {
     private final int day;
     private final List<String> lore;
     private final List<String> cmds;
@@ -18,23 +18,23 @@ public class Reward
         this.cmds = cmds;
         this.msg = msg;
     }
-    
+
     public int getDay() {
         return this.day;
     }
-    
+
     public List<String> getLore() {
         return this.lore;
     }
-    
+
     public List<String> getCommands() {
         return this.cmds;
     }
-    
+
     public List<String> getMessages() {
         return this.msg;
     }
-    
+
     public void give(final Player p) {
         for (final String s : this.cmds) {
             ArchUtils.execCmd(s.replace("%day%", String.valueOf(this.day)), p);

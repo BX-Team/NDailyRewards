@@ -4,8 +4,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-public abstract class AbstractListener<P extends Plugin> implements Listener
-{
+public abstract class AbstractListener<P extends Plugin> implements Listener {
     public final P plugin;
 
     public AbstractListener(final P plugin) {

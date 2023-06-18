@@ -13,8 +13,8 @@ import gq.bxteam.ndailyrewards.data.DataManager;
 import gq.bxteam.ndailyrewards.hooks.HookManager;
 import gq.bxteam.ndailyrewards.data.IDataV2;
 
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
