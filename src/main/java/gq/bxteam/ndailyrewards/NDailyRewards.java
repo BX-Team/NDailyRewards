@@ -68,8 +68,8 @@ public class NDailyRewards extends JavaPlugin {
             HandlerList.unregisterAll(this);
             this.um.shutdown();
             this.data.shutdown();
-        } catch (Exception e) {
-            LogUtil.send("&cError while saving plugin data: " + e.getMessage(), LogType.ERROR);
+        } catch (Exception ex) {
+            LogUtil.send("&cError while saving plugin data: " + ex.getMessage(), LogType.ERROR);
         }
     }
 
