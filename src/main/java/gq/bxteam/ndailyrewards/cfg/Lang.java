@@ -2,11 +2,12 @@ package gq.bxteam.ndailyrewards.cfg;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import gq.bxteam.ndailyrewards.NDailyRewards;
 import org.bukkit.ChatColor;
 
 @SuppressWarnings("javadoc")
-public enum Lang
-{
+public enum Lang {
     Prefix("Prefix", 0, "&6[&eNDailyRewards&6] &7"),
     Commands_Help_Usage("Commands_Help_Usage", 1, "&cUsage: &e/ndailyrewards %command% %usage%"),
     Commands_Help_Commands("Commands_Help_Commands", 2, "&8&m-----------&8&l[ &aNDailyRewards &8&l]&8&m-----------\n\n&2» &a/ndailyrewards &7- Open GUI.\n&2» &a/ndailyrewards help &7- Help page.\n&2» &a/ndailyrewards reload &7- Reload the plugin.\n&2» &a/ndailyrewards version &7- Sends current plugin version.\n&2» &a/ndailyrewards backup &7- Saves your config and database.\n\n&8&m--------------------------------------"),
@@ -20,10 +21,10 @@ public enum Lang
     Error_NoPlayer("Error_NoPlayer", 10, "&cPlayer not found!"),
     Error_Console("Error_Console", 11, "&cThis command is only for players!");
 
-    private String msg;
+    private final String msg;
     private static MyConfig config;
 
-    private Lang(final String name, final int ordinal, final String msg) {
+    Lang(final String name, final int ordinal, final String msg) {
         this.msg = msg;
     }
 
@@ -36,7 +37,8 @@ public enum Lang
     }
 
     public String toMsg() {
-        return ChatColor.translateAlternateColorCodes('&', Lang.config.getConfig().getString(this.getPath()));
+        String pref = NDailyRewards.replaceHEXColorCode(Lang.config.getConfig().getString(this.getPath()));
+        return pref;
     }
 
     public List<String> getList() {
@@ -69,10 +71,9 @@ public enum Lang
                         final String s = array[j];
                         list.add(s);
                     }
-                    Lang.config.getConfig().set(lang.getPath(), (Object)list);
-                }
-                else {
-                    Lang.config.getConfig().set(lang.getPath(), (Object)lang.getMsg());
+                    Lang.config.getConfig().set(lang.getPath(), list);
+                } else {
+                    Lang.config.getConfig().set(lang.getPath(), lang.getMsg());
                 }
             }
         }

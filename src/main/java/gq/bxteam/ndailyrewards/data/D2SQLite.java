@@ -26,7 +26,7 @@ public class D2SQLite extends IDataV2
     
     private D2SQLite(final NDailyRewards plugin) throws SQLException {
         super(plugin);
-        DriverManager.registerDriver((Driver)new JDBC());
+        DriverManager.registerDriver(new JDBC());
     }
     
     @Override

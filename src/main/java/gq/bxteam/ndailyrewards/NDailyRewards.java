@@ -14,14 +14,16 @@ import gq.bxteam.ndailyrewards.hooks.HookManager;
 import gq.bxteam.ndailyrewards.data.IDataV2;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 
-public class NDailyRewards extends JavaPlugin
-{
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class NDailyRewards extends JavaPlugin {
     public static NDailyRewards instance;
     private CommandManager cmd;
     private ConfigManager cm;
@@ -39,14 +41,14 @@ public class NDailyRewards extends JavaPlugin
         // Plugin startup logic
         NDailyRewards.instance = this;
         (this.cmd = new CommandManager(this)).setup();
-        this.getCommand("ndailyrewards").setExecutor((CommandExecutor) this.cmd);
+        this.getCommand("ndailyrewards").setExecutor(this.cmd);
         this.pm = this.getServer().getPluginManager();
         (this.hm = new HookManager(this)).setup();
         this.load();
         new SaveTask(this).start();
-        this.MetricsCheck();
+        this.MetricsInit();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderExpansions().register(); // this is a simple placeholder expansion, maybe soon it will be better and more. contributions are welcome :)
+            new PlaceholderExpansions().register();
         }
     }
 
@@ -62,12 +64,12 @@ public class NDailyRewards extends JavaPlugin
 
     public void unload() {
         try {
-            this.getServer().getScheduler().cancelTasks((Plugin) this);
-            HandlerList.unregisterAll((Plugin) this);
+            this.getServer().getScheduler().cancelTasks(this);
+            HandlerList.unregisterAll(this);
             this.um.shutdown();
             this.data.shutdown();
-        } catch (Exception e) {
-            LogUtil.send("&cError while saving plugin data: " + e.getMessage(), LogType.ERROR);
+        } catch (Exception ex) {
+            LogUtil.send("&cError while saving plugin data: " + ex.getMessage(), LogType.ERROR);
         }
     }
 
@@ -88,13 +90,26 @@ public class NDailyRewards extends JavaPlugin
         return this.um;
     }
 
-    public void MetricsCheck() {
+    public void MetricsInit() {
         if (Config.opt_metrics) {
-            // Metrics enabled - Initialize metrics
             int pluginId = 13844;
             Metrics metrics = new Metrics(this, pluginId);
-        } else {
-            // Metrics disabled
         }
+    }
+
+    public static @NotNull String replaceHEXColorCode(String s) {
+        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+        Matcher matcher = pattern.matcher(s);
+        while (matcher.find()) {
+            String hexCode = s.substring(matcher.start(), matcher.end());
+            String replaceSharp = hexCode.replace('#', 'x');
+            char[] ch = replaceSharp.toCharArray();
+            StringBuilder builder = new StringBuilder();
+            for (char c : ch)
+                builder.append("&").append(c);
+            s = s.replace(hexCode, builder.toString());
+            matcher = pattern.matcher(s);
+        }
+        return ChatColor.translateAlternateColorCodes('&', s);
     }
 }

@@ -3,33 +3,40 @@ package gq.bxteam.ndailyrewards.manager;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+
 import java.util.Collection;
+
 import org.bukkit.scheduler.BukkitRunnable;
 import gq.bxteam.ndailyrewards.data.DataType;
 import gq.bxteam.ndailyrewards.cfg.Config;
 import org.bukkit.entity.Player;
+
 import java.util.HashMap;
 import java.util.HashSet;
+
 import org.bukkit.plugin.Plugin;
+
 import java.util.Set;
+
 import gq.bxteam.ndailyrewards.manager.objects.DUser;
+
 import java.util.Map;
+
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.AbstractListener;
 
-public class UserManager extends AbstractListener<NDailyRewards>
-{
+public class UserManager extends AbstractListener<NDailyRewards> {
     private Map<String, DUser> users;
-    private Set<DUser> save;
+    private final Set<DUser> save;
 
     public UserManager(final NDailyRewards plugin) {
-        super((NDailyRewards) plugin);
+        super(plugin);
         this.save = new HashSet<DUser>();
     }
 
     public void setup() {
         this.users = new HashMap<String, DUser>();
-        for (final Player p : ((NDailyRewards)this.plugin).getServer().getOnlinePlayers()) {
+        for (final Player p : this.plugin.getServer().getOnlinePlayers()) {
             this.getOrLoadUser(p);
         }
         this.registerListeners();
@@ -44,11 +51,11 @@ public class UserManager extends AbstractListener<NDailyRewards>
 
     public void autosave() {
         for (final DUser cu : this.save) {
-            ((NDailyRewards)this.plugin).getData().save(cu);
+            this.plugin.getData().save(cu);
         }
         this.save.clear();
         for (final DUser cu : this.getUsers()) {
-            ((NDailyRewards)this.plugin).getData().save(cu);
+            this.plugin.getData().save(cu);
             this.users.put(cu.getUUID(), cu);
         }
     }
@@ -65,13 +72,13 @@ public class UserManager extends AbstractListener<NDailyRewards>
                 return cu;
             }
         }
-        DUser user = ((NDailyRewards)this.plugin).getData().getByUUID(uuid);
+        DUser user = this.plugin.getData().getByUUID(uuid);
         if (user != null) {
             this.users.put(uuid, user);
             return user;
         }
         user = new DUser(p);
-        ((NDailyRewards)this.plugin).getData().add(user);
+        this.plugin.getData().add(user);
         this.users.put(uuid, user);
         return user;
     }
@@ -84,11 +91,10 @@ public class UserManager extends AbstractListener<NDailyRewards>
             if (Config.storage == DataType.MYSQL) {
                 new BukkitRunnable() {
                     public void run() {
-                        ((NDailyRewards)UserManager.this.plugin).getData().save(user);
+                        UserManager.this.plugin.getData().save(user);
                     }
-                }.runTaskAsynchronously((Plugin)this.plugin);
-            }
-            else {
+                }.runTaskAsynchronously(this.plugin);
+            } else {
                 this.save.add(user);
             }
             this.users.remove(ui);
@@ -109,7 +115,7 @@ public class UserManager extends AbstractListener<NDailyRewards>
                 public void run() {
                     Config.rewards_gui.open(p);
                 }
-            }.runTaskLater((Plugin)this.plugin, 10L);
+            }.runTaskLater(this.plugin, 10L);
         }
     }
 

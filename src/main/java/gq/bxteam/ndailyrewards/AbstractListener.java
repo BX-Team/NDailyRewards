@@ -4,8 +4,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-public abstract class AbstractListener<P extends Plugin> implements Listener
-{
+public abstract class AbstractListener<P extends Plugin> implements Listener {
     public final P plugin;
 
     public AbstractListener(final P plugin) {
@@ -13,10 +12,10 @@ public abstract class AbstractListener<P extends Plugin> implements Listener
     }
 
     public void registerListeners() {
-        this.plugin.getServer().getPluginManager().registerEvents((Listener)this, (Plugin)this.plugin);
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     public void unregisterListeners() {
-        HandlerList.unregisterAll((Listener)this);
+        HandlerList.unregisterAll(this);
     }
 }

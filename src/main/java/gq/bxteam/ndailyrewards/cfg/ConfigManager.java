@@ -4,7 +4,7 @@ import gq.bxteam.ndailyrewards.NDailyRewards;
 
 public class ConfigManager
 {
-    private NDailyRewards plugin;
+    private final NDailyRewards plugin;
     public MyConfig configLang;
     public MyConfig configMain;
 

@@ -9,9 +9,9 @@ import gq.bxteam.ndailyrewards.NDailyRewards;
 
 public class MyConfig
 {
-    private NDailyRewards plugin;
-    private String name;
-    private String path;
+    private final NDailyRewards plugin;
+    private final String name;
+    private final String path;
     private JYML fileConfiguration;
     private File file;
 
@@ -32,7 +32,7 @@ public class MyConfig
         }
         final File file = new File(this.plugin.getDataFolder() + "/" + this.path, this.name);
         if (!file.exists()) {
-            Files.copy(NDailyRewards.class.getResourceAsStream(String.valueOf(this.path) + "/" + this.name), file);
+            Files.copy(NDailyRewards.class.getResourceAsStream(this.path + "/" + this.name), file);
         }
         this.file = file;
         this.fileConfiguration = new JYML(file);

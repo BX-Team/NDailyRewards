@@ -7,7 +7,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.meta.ItemMeta;
+
 import java.util.List;
+
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
 import org.bukkit.ChatColor;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
@@ -16,24 +18,28 @@ import gq.bxteam.ndailyrewards.cfg.Config;
 import gq.bxteam.ndailyrewards.manager.objects.DUser;
 import gq.bxteam.ndailyrewards.gui.GUIUtils;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.Plugin;
+
 import java.util.ArrayList;
 import java.util.HashSet;
+
 import gq.bxteam.ndailyrewards.gui.GUIItem;
+
 import java.util.LinkedHashMap;
+
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import org.bukkit.entity.Player;
+
 import java.util.Set;
+
 import org.bukkit.inventory.ItemStack;
 import gq.bxteam.ndailyrewards.gui.GUI;
 
-public class RewardGUI extends GUI
-{
-    private int[] day_slots;
-    private ItemStack day_ready;
-    private ItemStack day_taken;
-    private ItemStack day_locked;
-    private ItemStack day_next;
+public class RewardGUI extends GUI {
+    private final int[] day_slots;
+    private final ItemStack day_ready;
+    private final ItemStack day_taken;
+    private final ItemStack day_locked;
+    private final ItemStack day_next;
     private Set<Player> opens;
 
     public RewardGUI(final NDailyRewards plugin, final String title, final int size, final LinkedHashMap<String, GUIItem> items, final int[] day_slots, final ItemStack day_ready, final ItemStack day_taken, final ItemStack day_locked, final ItemStack day_next) {
@@ -48,7 +54,7 @@ public class RewardGUI extends GUI
 
     public void start() {
         this.opens = new HashSet<Player>();
-        ((NDailyRewards)this.plugin).getServer().getScheduler().scheduleSyncRepeatingTask((Plugin)this.plugin, (Runnable)new Runnable() {
+        this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, new Runnable() {
             @Override
             public void run() {
                 for (final Player p : new ArrayList<Player>(RewardGUI.this.opens)) {
@@ -65,7 +71,7 @@ public class RewardGUI extends GUI
 
     private Inventory build(final Player p) {
         final Inventory inv = this.getInventory();
-        final DUser user = ((NDailyRewards)this.plugin).getUserManager().getOrLoadUser(p);
+        final DUser user = this.plugin.getUserManager().getOrLoadUser(p);
         for (final GUIItem gi : this.getContent().values()) {
             int[] slots;
             for (int length = (slots = gi.getSlots()).length, j = 0; j < length; ++j) {
@@ -84,15 +90,12 @@ public class RewardGUI extends GUI
             if (user_day == day2) {
                 if (user.hasActiveReward()) {
                     icon = new ItemStack(this.day_ready);
-                }
-                else {
+                } else {
                     icon = new ItemStack(this.day_next);
                 }
-            }
-            else if (user_day > day2) {
+            } else if (user_day > day2) {
                 icon = new ItemStack(this.day_taken);
-            }
-            else {
+            } else {
                 icon = new ItemStack(this.day_locked);
             }
             this.replaceLore(icon, day2, user, time);
@@ -123,14 +126,12 @@ public class RewardGUI extends GUI
                     for (final String s2 : rewa.getLore()) {
                         lore.add(ChatColor.translateAlternateColorCodes('&', s2.replace("%day%", String.valueOf(day2))));
                     }
-                }
-                else {
-                    s = ChatColor.translateAlternateColorCodes('&', s);
-                    s = s.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward())).replace("%time%", ArchUtils.getTimeLeft(time)).replace("%day%", String.valueOf(day2));
-                    lore.add(s);
+                } else {
+                    String pref = NDailyRewards.replaceHEXColorCode(s);
+                    lore.add(pref.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward())).replace("%time%", ArchUtils.getTimeLeft(time)).replace("%day%", String.valueOf(day2)));
                 }
             }
-            meta.setLore((List)lore);
+            meta.setLore(lore);
         }
         icon.setItemMeta(meta);
     }
@@ -155,7 +156,7 @@ public class RewardGUI extends GUI
             return false;
         }
         final int day = GUIUtils.getPage(item);
-        final DUser user = ((NDailyRewards)this.plugin).getUserManager().getOrLoadUser(p);
+        final DUser user = this.plugin.getUserManager().getOrLoadUser(p);
         if (user.getDayInRow() == day && user.hasActiveReward()) {
             final Reward r = Config.getRewardByDay(day);
             if (r == null) {

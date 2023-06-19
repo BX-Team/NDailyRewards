@@ -14,7 +14,7 @@ public class ReloadCommand extends ICmd
     @Override
     public void perform(final CommandSender sender, final String[] args) {
         this.plugin.reload();
-        sender.sendMessage(String.valueOf(Lang.Prefix.toMsg()) + Lang.Command_Reload_Exec.toMsg());
+        sender.sendMessage(Lang.Prefix.toMsg() + Lang.Command_Reload_Exec.toMsg());
     }
     
     @Override

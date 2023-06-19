@@ -31,10 +31,10 @@ public class BackupCommand extends ICmd
         try {
             Files.copy(configFile.toPath(), backupConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Files.copy(dataFile.toPath(), backupDataFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            sender.sendMessage(String.valueOf(Lang.Prefix.toMsg()) + "Successfully backed up files!");
+            sender.sendMessage(Lang.Prefix.toMsg() + "Successfully backed up files!");
         }
         catch (Exception ex) {
-            sender.sendMessage(String.valueOf(Lang.Prefix.toMsg()) + "Failed to backup files! Please check your console for more information.");
+            sender.sendMessage(Lang.Prefix.toMsg() + "Failed to backup files! Please check your console for more information.");
             ex.printStackTrace();
         }
     }

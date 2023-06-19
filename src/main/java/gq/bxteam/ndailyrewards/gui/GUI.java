@@ -7,21 +7,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Inventory;
+
 import java.util.LinkedHashMap;
 import java.util.UUID;
+
 import org.bukkit.inventory.InventoryHolder;
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.AbstractListener;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class GUI extends AbstractListener<NDailyRewards> implements InventoryHolder
-{
-    private UUID uuid;
+public abstract class GUI extends AbstractListener<NDailyRewards> implements InventoryHolder {
+    private final UUID uuid;
     protected String title;
     protected int size;
     protected LinkedHashMap<String, GUIItem> items;
-    
+
     public GUI(final NDailyRewards plugin, final String title, final int size, final LinkedHashMap<String, GUIItem> items) {
-        super((NDailyRewards) plugin);
+        super(plugin);
         this.uuid = UUID.randomUUID();
         this.setTitle(title);
         this.setSize(size);
@@ -32,15 +34,15 @@ public abstract class GUI extends AbstractListener<NDailyRewards> implements Inv
         this.items = map;
         this.registerListeners();
     }
-    
+
     public void shutdown() {
         this.unregisterListeners();
     }
-    
+
     public UUID getUUID() {
         return this.uuid;
     }
-    
+
     protected ItemStack getItem(final Inventory inv, final int slot) {
         final ItemStack i = inv.getItem(slot);
         if (i == null) {
@@ -48,19 +50,19 @@ public abstract class GUI extends AbstractListener<NDailyRewards> implements Inv
         }
         return new ItemStack(i);
     }
-    
+
     public final Inventory getInventory() {
-        return ((NDailyRewards)this.plugin).getServer().createInventory((InventoryHolder)this, this.getSize(), this.getTitle());
+        return this.plugin.getServer().createInventory(this, this.getSize(), this.getTitle());
     }
-    
+
     public void open(final Player p) {
         p.openInventory(this.addDefaults());
     }
-    
+
     protected boolean ignoreNullClick() {
         return true;
     }
-    
+
     protected final Inventory addDefaults() {
         final Inventory inv = this.getInventory();
         for (final GUIItem gi : this.getContent().values()) {
@@ -72,27 +74,27 @@ public abstract class GUI extends AbstractListener<NDailyRewards> implements Inv
         }
         return inv;
     }
-    
+
     public String getTitle() {
         return this.title;
     }
-    
+
     public void setTitle(final String title) {
         this.title = title;
     }
-    
+
     public int getSize() {
         return this.size;
     }
-    
+
     public void setSize(final int size) {
         this.size = size;
     }
-    
+
     public LinkedHashMap<String, GUIItem> getContent() {
         return this.items;
     }
-    
+
     public boolean click(final Player p, final ItemStack item, final ContentType type, final int slot, final InventoryClickEvent e) {
         if (type == ContentType.EXIT) {
             p.closeInventory();
@@ -100,11 +102,11 @@ public abstract class GUI extends AbstractListener<NDailyRewards> implements Inv
         }
         return true;
     }
-    
+
     public boolean onClose(final Player p, final InventoryCloseEvent e) {
         return true;
     }
-    
+
     @EventHandler(ignoreCancelled = true)
     public void onClick(final InventoryClickEvent e) {
         final InventoryHolder ih = e.getInventory().getHolder();
@@ -112,7 +114,7 @@ public abstract class GUI extends AbstractListener<NDailyRewards> implements Inv
             return;
         }
         e.setCancelled(true);
-        final GUI g = (GUI)ih;
+        final GUI g = (GUI) ih;
         if (!g.getUUID().equals(this.uuid)) {
             return;
         }
@@ -120,19 +122,19 @@ public abstract class GUI extends AbstractListener<NDailyRewards> implements Inv
         if (this.ignoreNullClick() && (item == null || item.getType() == Material.AIR)) {
             return;
         }
-        this.click((Player)e.getWhoClicked(), item, GUIUtils.getItemType(item), e.getRawSlot(), e);
+        this.click((Player) e.getWhoClicked(), item, GUIUtils.getItemType(item), e.getRawSlot(), e);
     }
-    
+
     @EventHandler
-    public void onClose(final InventoryCloseEvent e) {
+    public void onClose(final @NotNull InventoryCloseEvent e) {
         final InventoryHolder ih = e.getInventory().getHolder();
         if (ih == null || !ih.getClass().isInstance(this)) {
             return;
         }
-        final GUI g = (GUI)ih;
+        final GUI g = (GUI) ih;
         if (!g.getUUID().equals(this.uuid)) {
             return;
         }
-        this.onClose((Player)e.getPlayer(), e);
+        this.onClose((Player) e.getPlayer(), e);
     }
 }

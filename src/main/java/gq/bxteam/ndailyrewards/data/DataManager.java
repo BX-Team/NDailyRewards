@@ -10,7 +10,7 @@ import org.bukkit.plugin.Plugin;
 
 public class DataManager
 {
-    private NDailyRewards plugin;
+    private final NDailyRewards plugin;
     private IDataV2 data;
     
     public DataManager(final NDailyRewards plugin) {
@@ -28,7 +28,7 @@ public class DataManager
                 catch (SQLException e) {
                     LogUtil.send("Unable to connect to " + d.getName() + "!", LogType.ERROR);
                     LogUtil.send(e.getMessage(), LogType.ERROR);
-                    this.plugin.getPluginManager().disablePlugin((Plugin)this.plugin);
+                    this.plugin.getPluginManager().disablePlugin(this.plugin);
                     return;
                 }
             }
@@ -39,7 +39,7 @@ public class DataManager
                 catch (SQLException e) {
                     LogUtil.send("Unable to connect to " + d.getName() + "!", LogType.ERROR);
                     LogUtil.send(e.getMessage(), LogType.ERROR);
-                    this.plugin.getPluginManager().disablePlugin((Plugin)this.plugin);
+                    this.plugin.getPluginManager().disablePlugin(this.plugin);
                     return;
                 }
                 break;

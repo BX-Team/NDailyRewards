@@ -1,8 +1,13 @@
 package gq.bxteam.ndailyrewards.gui;
 
 import de.tr7zw.nbtapi.NBTItem;
+import gq.bxteam.ndailyrewards.NDailyRewards;
+import gq.bxteam.ndailyrewards.cfg.Config;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.concurrent.TimeUnit;
 
 public class GUIUtils
 {
@@ -32,6 +37,15 @@ public class GUIUtils
         }
         final NBTItem nbt = new NBTItem(item);
         nbt.setInteger("archGUI_PAGE", page);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    TimeUnit.SECONDS.sleep(Config.opt_grd);
+                }
+                catch (InterruptedException ignored) {}
+            }
+        }.runTaskAsynchronously(NDailyRewards.getInstance());
         return nbt.getItem();
     }
     

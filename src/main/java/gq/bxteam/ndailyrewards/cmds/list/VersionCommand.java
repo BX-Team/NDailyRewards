@@ -13,7 +13,7 @@ public class VersionCommand extends ICmd
 
     @Override
     public void perform(final CommandSender sender, final String[] args) {
-        sender.sendMessage(String.valueOf(Lang.Prefix.toMsg()) + "Current installed version is: " + this.plugin.getDescription().getVersion());
+        sender.sendMessage(Lang.Prefix.toMsg() + "Current installed version is: " + this.plugin.getDescription().getVersion());
     }
 
     @Override

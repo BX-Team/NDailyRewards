@@ -1,6 +1,7 @@
 package gq.bxteam.ndailyrewards.utils;
 
 import gq.bxteam.ndailyrewards.NDailyRewards;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
@@ -8,8 +9,7 @@ import java.io.FileOutputStream;
 import java.io.File;
 import java.io.InputStream;
 
-public class Files
-{
+public class Files {
     public static void copy(final InputStream inputStream, final File file) {
         try {
             final FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -20,31 +20,28 @@ public class Files
             }
             fileOutputStream.close();
             inputStream.close();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
-    
+
     public static void mkdir(final File file) {
         try {
             file.mkdir(); // Create dir
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
+
     public static void create(final File f) {
         f.getParentFile().mkdirs();
         try {
             f.createNewFile();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     public static List<String> getFilesFolder(final String folderz) {
         final List<String> names = new ArrayList<String>();
         final File folder = new File(NDailyRewards.instance.getDataFolder() + folderz + "/");

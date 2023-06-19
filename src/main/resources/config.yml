@@ -6,6 +6,8 @@
 # ╚═╝░░╚══╝╚═════╝░╚═╝░░╚═╝╚═╝╚══════╝░░░╚═╝░░░╚═╝░░╚═╝╚══════╝░░░╚═╝░░░╚═╝░░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚═════╝░
 
 # Material names: https://minecraft.fandom.com/wiki/Materials#Materials
+# Wiki: https://github.com/BX-Team/NDailyRewards/wiki
+
 # Discord server: https://discord.gg/p7cxhw7E2M
 # Modrinth: https://modrinth.com/plugin/ndailyrewards
 
@@ -26,6 +28,7 @@ options:
     only-when-have: true
   days-row: 7
   rewards-cool-down: 86400
+  gui-refresh-delay: 5
   unlock-after-midnight: false
   enable-metrics: true
 rewards:
