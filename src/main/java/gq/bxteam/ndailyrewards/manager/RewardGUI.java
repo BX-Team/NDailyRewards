@@ -124,7 +124,7 @@ public class RewardGUI extends GUI {
                 }
                 if (s.equalsIgnoreCase("%reward-lore%")) {
                     for (final String s2 : rewa.getLore()) {
-                        lore.add(ChatColor.translateAlternateColorCodes('&', s2.replace("%day%", String.valueOf(day2))));
+                        lore.add(NDailyRewards.replaceHEXColorCode(s2.replace("%day%", String.valueOf(day2))));
                     }
                 } else {
                     String pref = NDailyRewards.replaceHEXColorCode(s);

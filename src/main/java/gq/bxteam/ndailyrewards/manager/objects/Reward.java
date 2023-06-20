@@ -39,7 +39,7 @@ public class Reward {
         for (final String s : this.cmds) {
             ArchUtils.execCmd(s.replace("%day%", String.valueOf(this.day)), p);
         }
-        for (String s : this.msg) {
+        for (final String s : this.msg) {
             String pref = NDailyRewards.replaceHEXColorCode(s);
             p.sendMessage(pref.replace("%day%", String.valueOf(this.day)));
         }

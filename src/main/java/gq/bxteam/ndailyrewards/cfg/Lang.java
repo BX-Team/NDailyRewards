@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gq.bxteam.ndailyrewards.NDailyRewards;
-import org.bukkit.ChatColor;
 
 @SuppressWarnings("javadoc")
 public enum Lang {
@@ -37,20 +36,19 @@ public enum Lang {
     }
 
     public String toMsg() {
-        String pref = NDailyRewards.replaceHEXColorCode(Lang.config.getConfig().getString(this.getPath()));
-        return pref;
+        return NDailyRewards.replaceHEXColorCode(Lang.config.getConfig().getString(this.getPath()));
     }
 
     public List<String> getList() {
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         for (final String s : Lang.config.getConfig().getStringList(this.getPath())) {
-            list.add(ChatColor.translateAlternateColorCodes('&', s));
+            list.add(NDailyRewards.replaceHEXColorCode(s));
         }
         return list;
     }
 
     public static String getCustom(final String path) {
-        return ChatColor.translateAlternateColorCodes('&', Lang.config.getConfig().getString(path));
+        return NDailyRewards.replaceHEXColorCode(Lang.config.getConfig().getString(path));
     }
 
     public static void setup(final MyConfig config) {
@@ -64,7 +62,7 @@ public enum Lang {
             final Lang lang = values[i];
             if (Lang.config.getConfig().getString(lang.getPath()) == null) {
                 if (lang.getMsg().contains("\n")) {
-                    final List<String> list = new ArrayList<String>();
+                    final List<String> list = new ArrayList<>();
                     final String[] ss = lang.getMsg().split("\n");
                     String[] array;
                     for (int length2 = (array = ss).length, j = 0; j < length2; ++j) {

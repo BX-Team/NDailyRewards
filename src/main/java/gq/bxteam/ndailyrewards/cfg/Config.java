@@ -79,8 +79,7 @@ public class Config {
         }
         LogUtil.send("&eLoaded &6" + Config.rewards.size() + " &edaily rewards!", LogType.INFO);
         path = "gui.";
-        String p_title = NDailyRewards.replaceHEXColorCode(cfg.getString(path + "title"));
-        String g_title = ChatColor.translateAlternateColorCodes('&', p_title);
+        String g_title = NDailyRewards.replaceHEXColorCode(cfg.getString(path + "title"));
         final int g_size = cfg.getInt(path + "size");
         final LinkedHashMap<String, GUIItem> g_items = new LinkedHashMap<String, GUIItem>();
         for (final String id : cfg.getSection(path + "items")) {
