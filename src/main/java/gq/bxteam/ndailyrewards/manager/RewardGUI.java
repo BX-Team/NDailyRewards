@@ -40,15 +40,17 @@ public class RewardGUI extends GUI {
     private final ItemStack day_taken;
     private final ItemStack day_locked;
     private final ItemStack day_next;
+    private final ItemStack day_warmup;
     private Set<Player> opens;
 
-    public RewardGUI(final NDailyRewards plugin, final String title, final int size, final LinkedHashMap<String, GUIItem> items, final int[] day_slots, final ItemStack day_ready, final ItemStack day_taken, final ItemStack day_locked, final ItemStack day_next) {
+    public RewardGUI(final NDailyRewards plugin, final String title, final int size, final LinkedHashMap<String, GUIItem> items, final int[] day_slots, final ItemStack day_ready, final ItemStack day_taken, final ItemStack day_locked, final ItemStack day_next, final ItemStack day_warmup) {
         super(plugin, title, size, items);
         this.day_slots = day_slots;
         this.day_ready = day_ready;
         this.day_taken = day_taken;
         this.day_locked = day_locked;
         this.day_next = day_next;
+        this.day_warmup = day_warmup;
         this.start();
     }
 
@@ -89,7 +91,12 @@ public class RewardGUI extends GUI {
             ItemStack icon;
             if (user_day == day2) {
                 if (user.hasActiveReward()) {
-                    icon = new ItemStack(this.day_ready);
+                    if (!user.pastLoginDurationThreshold()) {
+                        icon = new ItemStack(this.day_warmup);
+                    }
+                    else {
+                        icon = new ItemStack(this.day_ready);
+                    }
                 } else {
                     icon = new ItemStack(this.day_next);
                 }
@@ -126,9 +133,15 @@ public class RewardGUI extends GUI {
                     for (final String s2 : rewa.getLore()) {
                         lore.add(NDailyRewards.replaceHEXColorCode(s2.replace("%day%", String.valueOf(day2))));
                     }
-                } else {
+                }
+                else {
                     String pref = NDailyRewards.replaceHEXColorCode(s);
-                    lore.add(pref.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward())).replace("%time%", ArchUtils.getTimeLeft(time)).replace("%day%", String.valueOf(day2)));
+                    long timeWarmupFactored = (Config.opt_wm > 0 && !user.pastLoginDurationThreshold()) ? user.warmupDurationUntil() : time;
+                    lore.add(pref.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward()))
+                            .replace("%reward-warmup-remaining%", ArchUtils.getTimeLeft(user.warmupDurationUntil()))
+                            .replace("%time%", ArchUtils.getTimeLeft(time))
+                            .replace("%time-warmupfactored%", ArchUtils.getTimeLeft(timeWarmupFactored))
+                            .replace("%day%", String.valueOf(day2)));
                 }
             }
             meta.setLore(lore);
@@ -157,7 +170,7 @@ public class RewardGUI extends GUI {
         }
         final int day = GUIUtils.getPage(item);
         final DUser user = this.plugin.getUserManager().getOrLoadUser(p);
-        if (user.getDayInRow() == day && user.hasActiveReward()) {
+        if (user.getDayInRow() == day && user.hasActiveReward() && user.pastLoginDurationThreshold()) {
             final Reward r = Config.getRewardByDay(day);
             if (r == null) {
                 LogUtil.send("&cError! Not found reward for &f" + day + "th day!", LogType.ERROR);

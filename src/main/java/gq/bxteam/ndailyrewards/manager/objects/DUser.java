@@ -109,4 +109,37 @@ public class DUser {
         }
         return Config.opt_cd * 1000L;
     }
+
+    public boolean pastLoginDurationThreshold() {
+        // Get the current system time
+        long currentTime = System.currentTimeMillis();
+
+        // Calculate the login time plus the duration threshold
+        long thresholdTime = login + (Config.opt_wm * 1000); // Convert seconds to milliseconds
+
+        // Check if the current time is past the threshold time
+        boolean isPastThreshold = currentTime > thresholdTime;
+
+        return isPastThreshold;
+    }
+
+    public long remainingLoginDuration() {
+        // Get the current system time
+        long currentTime = System.currentTimeMillis();
+
+        // Calculate the login time plus the duration threshold
+        long thresholdTime = login + (Config.opt_wm * 1000); // Convert seconds to milliseconds
+
+        // Check if the current time is past the threshold time
+        long difference = thresholdTime - currentTime;
+
+        return difference;
+    }
+
+    public long warmupDurationUntil() {
+        // Calculate the login time plus the duration threshold
+        long thresholdTime = login + (Config.opt_wm * 1000); // Convert seconds to milliseconds
+
+        return thresholdTime;
+    }
 }
