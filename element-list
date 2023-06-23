@@ -1,0 +1,14 @@
+gq.bxteam.ndailyrewards
+gq.bxteam.ndailyrewards.cfg
+gq.bxteam.ndailyrewards.cmds
+gq.bxteam.ndailyrewards.cmds.list
+gq.bxteam.ndailyrewards.data
+gq.bxteam.ndailyrewards.gui
+gq.bxteam.ndailyrewards.hooks
+gq.bxteam.ndailyrewards.hooks.external
+gq.bxteam.ndailyrewards.manager
+gq.bxteam.ndailyrewards.manager.objects
+gq.bxteam.ndailyrewards.tasks
+gq.bxteam.ndailyrewards.utils
+gq.bxteam.ndailyrewards.utils.logs
+gq.bxteam.ndailyrewards.utils.metrics
