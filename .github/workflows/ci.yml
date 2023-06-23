@@ -50,10 +50,8 @@ jobs:
         version-type: alpha
         name: NDailyRewards v${{ env.version_name }}
         version: ${{ env.version_name }}
-        game-version-filter: releases | min-major | min-minor
         changelog: ${{ github.event.head_commit.message }}
         loaders: |
-          bukkit
           spigot
           paper
           purpur

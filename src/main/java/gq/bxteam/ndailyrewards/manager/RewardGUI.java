@@ -11,7 +11,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
-import org.bukkit.ChatColor;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.cfg.Config;
@@ -33,6 +32,8 @@ import java.util.Set;
 
 import org.bukkit.inventory.ItemStack;
 import gq.bxteam.ndailyrewards.gui.GUI;
+
+import org.jetbrains.annotations.NotNull;
 
 public class RewardGUI extends GUI {
     private final int[] day_slots;
@@ -93,8 +94,7 @@ public class RewardGUI extends GUI {
                 if (user.hasActiveReward()) {
                     if (!user.pastLoginDurationThreshold()) {
                         icon = new ItemStack(this.day_warmup);
-                    }
-                    else {
+                    } else {
                         icon = new ItemStack(this.day_ready);
                     }
                 } else {
@@ -133,14 +133,13 @@ public class RewardGUI extends GUI {
                     for (final String s2 : rewa.getLore()) {
                         lore.add(NDailyRewards.replaceHEXColorCode(s2.replace("%day%", String.valueOf(day2))));
                     }
-                }
-                else {
+                } else {
                     String pref = NDailyRewards.replaceHEXColorCode(s);
                     long timeWarmupFactored = (Config.opt_wm > 0 && !user.pastLoginDurationThreshold()) ? user.warmupDurationUntil() : time;
                     lore.add(pref.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward()))
                             .replace("%reward-warmup-remaining%", ArchUtils.getTimeLeft(user.warmupDurationUntil()))
                             .replace("%time%", ArchUtils.getTimeLeft(time))
-                            .replace("%time-warmupfactored%", ArchUtils.getTimeLeft(timeWarmupFactored))
+                            .replace("%time-warmup-factored%", ArchUtils.getTimeLeft(timeWarmupFactored))
                             .replace("%day%", String.valueOf(day2)));
                 }
             }
@@ -150,9 +149,9 @@ public class RewardGUI extends GUI {
     }
 
     @EventHandler
-    public void onOpen(final InventoryOpenEvent e) {
+    public void onOpen(final @NotNull InventoryOpenEvent e) {
         if (e.getInventory().getHolder() instanceof RewardGUI) {
-            this.opens.add((Player)e.getPlayer());
+            this.opens.add((Player) e.getPlayer());
         }
     }
 

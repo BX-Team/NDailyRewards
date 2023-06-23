@@ -115,12 +115,10 @@ public class DUser {
         long currentTime = System.currentTimeMillis();
 
         // Calculate the login time plus the duration threshold
-        long thresholdTime = login + (Config.opt_wm * 1000); // Convert seconds to milliseconds
+        long thresholdTime = login + (Config.opt_wm * 1000L); // Convert seconds to milliseconds
 
         // Check if the current time is past the threshold time
-        boolean isPastThreshold = currentTime > thresholdTime;
-
-        return isPastThreshold;
+        return currentTime > thresholdTime;
     }
 
     public long remainingLoginDuration() {
@@ -128,18 +126,14 @@ public class DUser {
         long currentTime = System.currentTimeMillis();
 
         // Calculate the login time plus the duration threshold
-        long thresholdTime = login + (Config.opt_wm * 1000); // Convert seconds to milliseconds
+        long thresholdTime = login + (Config.opt_wm * 1000L); // Convert seconds to milliseconds
 
         // Check if the current time is past the threshold time
-        long difference = thresholdTime - currentTime;
-
-        return difference;
+        return thresholdTime - currentTime;
     }
 
     public long warmupDurationUntil() {
         // Calculate the login time plus the duration threshold
-        long thresholdTime = login + (Config.opt_wm * 1000); // Convert seconds to milliseconds
-
-        return thresholdTime;
+        return login + (Config.opt_wm * 1000L);
     }
 }

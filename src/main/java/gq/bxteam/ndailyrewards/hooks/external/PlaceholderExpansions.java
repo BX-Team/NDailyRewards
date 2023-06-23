@@ -34,7 +34,7 @@ public class PlaceholderExpansions extends me.clip.placeholderapi.expansion.Plac
         return true;
     }
 
-    public String onRequest(OfflinePlayer player, String identifier) {
+    public String onRequest(OfflinePlayer player, @NotNull String identifier) {
         if (identifier.equalsIgnoreCase("next_reward_time")) {
             String unix = String.valueOf(new DUser(Objects.requireNonNull(player.getPlayer())).getTimeToGetReward());
             String format = this.getString("date_format", "dd/MM/yyyy hh:mma");
