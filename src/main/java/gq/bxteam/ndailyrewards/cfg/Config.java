@@ -32,6 +32,7 @@ public class Config {
     public static boolean opt_midnight;
     public static boolean opt_metrics;
     public static int opt_cd;
+    public static int opt_wm;
     public static int opt_grd;
     public static int opt_days_row;
     public static Map<Integer, Reward> rewards;
@@ -66,6 +67,7 @@ public class Config {
         Config.opt_midnight = cfg.getBoolean(path + "unlock-after-midnight");
         Config.opt_metrics = cfg.getBoolean(path + "enable-metrics");
         Config.opt_cd = cfg.getInt(path + "rewards-cool-down", 86400);
+        Config.opt_wm = cfg.getInt(path + "reward-login-delay", 0);
         Config.opt_grd = cfg.getInt(path + "gui-refresh-delay", 5);
         Config.opt_days_row = cfg.getInt(path + "days-row");
         Config.rewards = new TreeMap<Integer, Reward>();
@@ -105,7 +107,8 @@ public class Config {
         final ItemStack day_taken = cfg.getItemFromSection(path + "days-display.taken");
         final ItemStack day_locked = cfg.getItemFromSection(path + "days-display.locked");
         final ItemStack day_next = cfg.getItemFromSection(path + "days-display.next");
-        Config.rewards_gui = new RewardGUI(NDailyRewards.getInstance(), g_title, g_size, g_items, slots, day_ready, day_taken, day_locked, day_next);
+        final ItemStack day_warmup = cfg.getItemFromSection(path + "days-display.warmup");
+        Config.rewards_gui = new RewardGUI(NDailyRewards.getInstance(), g_title, g_size, g_items, slots, day_ready, day_taken, day_locked, day_next, day_warmup);
     }
 
     public static Reward getRewardByDay(final int day) {

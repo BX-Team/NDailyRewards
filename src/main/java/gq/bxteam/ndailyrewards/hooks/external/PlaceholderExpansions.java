@@ -42,6 +42,13 @@ public class PlaceholderExpansions extends me.clip.placeholderapi.expansion.Plac
             return new java.text.SimpleDateFormat(format).format(new java.util.Date(Long.parseLong(unix)));
         }
 
+        if (identifier.equalsIgnoreCase("warmup_reward_time")) {
+            String unix = String.valueOf(new DUser(Objects.requireNonNull(player.getPlayer())).remainingLoginDuration());
+            String format = this.getString("date_format", "dd/MM/yyyy hh:mma");
+
+            return new java.text.SimpleDateFormat(format).format(new java.util.Date(Long.parseLong(unix)));
+        }
+
         return null;
     }
 }
