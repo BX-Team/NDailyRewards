@@ -20,14 +20,16 @@ You can change the amount of days in a row from 1 to 54!
 - Completely automated
 - High performance!
 - Unlimited amount of rewards
-- Set clickable NPC's **(Requires Citizens plugin)** (deprecated)
+- [Set clickable NPC's]() **(Requires Citizens plugin)** (deprecated)
 - Fully customizable!
 - Unlock rewards after the midnight (Optional)
-- Have custom placeholders
+- [Warmup system](https://github.com/BX-Team/NDailyRewards/wiki/Warmup-system)
+- Have custom [placeholders](https://github.com/BX-Team/NDailyRewards/wiki/Placeholders)
+- [HEX](https://github.com/BX-Team/NDailyRewards/wiki/HEX-Colors) color code support
 - Define the time between the rewards!
 - Execute commands and send messages in rewards!
 - GUI Fully customizable
-- Custom model data support!
+- [Custom model data](https://github.com/BX-Team/NDailyRewards/wiki/Custom-Model-Data) support!
 - You can change amount of days in a row to reward
 - Auto opens on join (toggleable)
 - Autosaves player data every X mins
@@ -55,9 +57,12 @@ View plugin metrics at [bStats.org](https://bstats.org/plugin/bukkit/NDailyRewar
 You can download plugin from [releases tab](https://github.com/BX-Team/NDailyRewards/releases/latest) or also from:
 - [Modrinth](https://modrinth.com/plugin/ndailyrewards) (fast updates (recommended))
 
-### 👩‍💻 For developers (outdated)
-If you want to download and use NDailyRewards in your project, get it on maven and import to `pom.xml` like this:
+### 👩‍💻 For developers
 
+#### 🚛 Artifacts (outdated)
+If you want to download and use NDailyRewards in your project, get it on maven and import to **`pom.xml`** or **`build.gradle`** like this:
+
+**Maven:**
 ```xml
 <dependency>
     <groupId>gq.bxteam</groupId>
@@ -65,3 +70,18 @@ If you want to download and use NDailyRewards in your project, get it on maven a
     <version>1.7.1</version>
 </dependency>
 ```
+
+**Gradle (Kotlin):**
+```groovy
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly("gq.bxteam.ndailyrewards:1.7.1")
+}
+```
+
+#### 📚 Javadoc
+
+You can view Javadocs for plugin [here](https://bx-team.github.io/NDailyRewards)
