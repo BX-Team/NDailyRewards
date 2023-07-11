@@ -4,6 +4,7 @@ import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.gui.ContentType;
 import gq.bxteam.ndailyrewards.gui.GUIItem;
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
+import gq.bxteam.ndailyrewards.utils.HeadUtil;
 import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import org.bukkit.Material;
@@ -11,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +24,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
-
-import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * Integration with plugin GUI and config
@@ -93,11 +93,10 @@ public class JYML extends YamlConfiguration {
             LogUtil.send("Invalid item material on &f'" + path + "'!" + " &c(" + this.f.getName() + ")", LogType.ERROR);
             return null;
         }
-        final String hash = this.getString(path + "skull-hash");
-        if (hash != null) {
-            final String[] ss = path.split("\\.");
-            final String id = ss[ss.length - 1];
-            item = ArchUtils.getHashed(item, hash, id);
+        final String texture = this.getString(path + "player-head-texture");
+        if (texture != null) {
+            String textureLink = "https://textures.minecraft.net/texture/" + texture;
+            item = HeadUtil.itemFromUrl(textureLink);
         }
         final ItemMeta meta = item.getItemMeta();
         String name = this.getString(path + "name");
