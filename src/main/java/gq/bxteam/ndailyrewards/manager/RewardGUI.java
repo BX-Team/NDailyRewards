@@ -1,37 +1,31 @@
 package gq.bxteam.ndailyrewards.manager;
 
+import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.manager.objects.Reward;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import gq.bxteam.ndailyrewards.gui.ContentType;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.List;
-
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.cfg.Config;
 import gq.bxteam.ndailyrewards.manager.objects.DUser;
 import gq.bxteam.ndailyrewards.gui.GUIUtils;
+import gq.bxteam.ndailyrewards.gui.GUIItem;
+import gq.bxteam.ndailyrewards.gui.GUI;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import gq.bxteam.ndailyrewards.gui.GUIItem;
-
 import java.util.LinkedHashMap;
-
-import gq.bxteam.ndailyrewards.NDailyRewards;
-import org.bukkit.entity.Player;
-
 import java.util.Set;
-
-import org.bukkit.inventory.ItemStack;
-import gq.bxteam.ndailyrewards.gui.GUI;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -57,14 +51,14 @@ public class RewardGUI extends GUI {
 
     public void start() {
         this.opens = new HashSet<Player>();
-        this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, new Runnable() {
+        new BukkitRunnable() {
             @Override
             public void run() {
                 for (final Player p : new ArrayList<Player>(RewardGUI.this.opens)) {
                     RewardGUI.this.open(p);
                 }
             }
-        }, 0L, 20L);
+        }.runTaskAsynchronously(NDailyRewards.getInstance());
     }
 
     @Override

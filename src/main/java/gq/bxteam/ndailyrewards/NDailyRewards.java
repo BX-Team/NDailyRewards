@@ -46,7 +46,11 @@ public class NDailyRewards extends JavaPlugin {
         (this.hm = new HookManager(this)).setup();
         this.load();
         new SaveTask(this).start();
-        this.MetricsInit();
+
+        if (Config.opt_metrics) {
+            int pluginId = 13844;
+            Metrics metrics = new Metrics(this, pluginId);
+        }
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderExpansions().register();
         }
@@ -88,13 +92,6 @@ public class NDailyRewards extends JavaPlugin {
 
     public UserManager getUserManager() {
         return this.um;
-    }
-
-    public void MetricsInit() {
-        if (Config.opt_metrics) {
-            int pluginId = 13844;
-            Metrics metrics = new Metrics(this, pluginId);
-        }
     }
 
     public static @NotNull String replaceHEXColorCode(String s) {
