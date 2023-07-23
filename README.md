@@ -13,7 +13,7 @@
 This plugin gives you the ability to give players daily rewards for playing on your server!
 You can change the amount of days in a row from 1 to 54!
 
-**To run plugin, you need `Java 8+`, `Paper 1.16+ (or any other Paper forks)` and `NBT-API` plugin installed**
+**To run plugin, you need `Java 17+`, `Paper 1.16+ (or any other Paper forks)` and `NBT-API` plugin installed**
 
 ### 🤖 Features
 - MySQL and SQLite support
