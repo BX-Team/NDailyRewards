@@ -1,0 +1,60 @@
+plugins {
+    id 'java-library'
+    id 'java'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        name = "citizens-npc"
+        url = "https://repo.citizensnpcs.co/"
+    }
+    maven {
+        name = "minecraft"
+        url = "https://libraries.minecraft.net"
+    }
+    maven {
+        name = "codemc"
+        url = "https://repo.codemc.org/repository/maven-public/"
+    }
+    maven {
+        name = "placeholder-api"
+        url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
+    }
+}
+
+dependencies {
+    compileOnly("io.papermc.paper:paper-api:${project.paper_api}") // Paper API
+
+    // Plugin dependencies
+    compileOnly("net.citizensnpcs:citizensapi:${project.citizensapi}")
+    compileOnly("com.mojang:authlib:${project.authlib}")
+    compileOnly("de.tr7zw:item-nbt-api-plugin:${project.nbt_api_plugin}")
+    compileOnly("org.xerial:sqlite-jdbc:${project.sqlite_jdbc}")
+    compileOnly("me.clip:placeholderapi:${project.placeholder_api}")
+}
+
+group = project.group
+version = project.version
+description = "Reward players for playing on your server"
+java.sourceCompatibility = JavaVersion.VERSION_17
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
