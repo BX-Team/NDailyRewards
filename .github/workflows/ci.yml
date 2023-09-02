@@ -23,7 +23,7 @@ jobs:
     - name: Make Gradlew executable
       run: chmod +x ./gradlew
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@master
+      uses: gradle/gradle-build-action@v2.8.0
       with:
         arguments: build
     - name: Upload NDailyRewards
