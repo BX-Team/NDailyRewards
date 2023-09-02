@@ -32,28 +32,4 @@ public class Files {
             ex.printStackTrace();
         }
     }
-
-    public static void create(final File f) {
-        f.getParentFile().mkdirs();
-        try {
-            f.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static List<String> getFilesFolder(final String folderz) {
-        final List<String> names = new ArrayList<String>();
-        final File folder = new File(NDailyRewards.instance.getDataFolder() + folderz + "/");
-        final File[] listOfFiles = folder.listFiles();
-        if (listOfFiles == null) {
-            return names;
-        }
-        for (int i = 0; i < listOfFiles.length; ++i) {
-            if (listOfFiles[i].isFile()) {
-                names.add(listOfFiles[i].getName());
-            }
-        }
-        return names;
-    }
 }
