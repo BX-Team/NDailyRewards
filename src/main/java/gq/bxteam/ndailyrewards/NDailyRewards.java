@@ -38,18 +38,18 @@ public class NDailyRewards extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
         NDailyRewards.instance = this;
         (this.cmd = new CommandManager(this)).setup();
         this.getCommand("ndailyrewards").setExecutor(this.cmd);
         this.pm = this.getServer().getPluginManager();
         (this.hm = new HookManager(this)).setup();
+
         this.load();
         new SaveTask(this).start();
 
         if (Config.opt_metrics) {
             int pluginId = 13844;
-            Metrics metrics = new Metrics(this, pluginId);
+            new Metrics(this, pluginId);
         }
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderExpansions().register();
@@ -61,6 +61,7 @@ public class NDailyRewards extends JavaPlugin {
     }
 
     public void load() {
+
         (this.cm = new ConfigManager(this)).setup();
         (this.data = new DataManager(this)).setup();
         (this.um = new UserManager(this)).setup();
@@ -92,21 +93,5 @@ public class NDailyRewards extends JavaPlugin {
 
     public UserManager getUserManager() {
         return this.um;
-    }
-
-    public static @NotNull String replaceHEXColorCode(String s) {
-        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
-        Matcher matcher = pattern.matcher(s);
-        while (matcher.find()) {
-            String hexCode = s.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace('#', 'x');
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder();
-            for (char c : ch)
-                builder.append("&").append(c);
-            s = s.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(s);
-        }
-        return ChatColor.translateAlternateColorCodes('&', s);
     }
 }

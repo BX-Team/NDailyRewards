@@ -4,6 +4,7 @@ import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.manager.objects.Reward;
 import gq.bxteam.ndailyrewards.gui.ContentType;
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
+import gq.bxteam.ndailyrewards.utils.TextUtils;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.cfg.Config;
@@ -125,10 +126,10 @@ public class RewardGUI extends GUI {
                 }
                 if (s.equalsIgnoreCase("%reward-lore%")) {
                     for (final String s2 : rewa.getLore()) {
-                        lore.add(NDailyRewards.replaceHEXColorCode(s2.replace("%day%", String.valueOf(day2))));
+                        lore.add(TextUtils.applyColor(s2.replace("%day%", String.valueOf(day2))));
                     }
                 } else {
-                    String pref = NDailyRewards.replaceHEXColorCode(s);
+                    String pref = TextUtils.applyColor(s);
                     long timeWarmupFactored = (Config.opt_wm > 0 && !user.pastLoginDurationThreshold()) ? user.warmupDurationUntil() : time;
                     lore.add(pref.replace("%expire%", ArchUtils.getTimeLeft(user.getTimeToGetReward()))
                             .replace("%reward-warmup-remaining%", ArchUtils.getTimeLeft(user.warmupDurationUntil()))

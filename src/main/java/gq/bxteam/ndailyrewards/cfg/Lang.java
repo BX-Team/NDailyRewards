@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gq.bxteam.ndailyrewards.NDailyRewards;
+import gq.bxteam.ndailyrewards.utils.TextUtils;
 
-@SuppressWarnings("javadoc")
 public enum Lang {
     Prefix("Prefix", 0, "&6[&eNDailyRewards&6] &7"),
     Commands_Help_Usage("Commands_Help_Usage", 1, "&cUsage: &e/ndailyrewards %command% %usage%"),
@@ -36,19 +36,15 @@ public enum Lang {
     }
 
     public String toMsg() {
-        return NDailyRewards.replaceHEXColorCode(Lang.config.getConfig().getString(this.getPath()));
+        return TextUtils.applyColor(Lang.config.getConfig().getString(this.getPath()));
     }
 
     public List<String> getList() {
         final List<String> list = new ArrayList<>();
         for (final String s : Lang.config.getConfig().getStringList(this.getPath())) {
-            list.add(NDailyRewards.replaceHEXColorCode(s));
+            list.add(TextUtils.applyColor(s));
         }
         return list;
-    }
-
-    public static String getCustom(final String path) {
-        return NDailyRewards.replaceHEXColorCode(Lang.config.getConfig().getString(path));
     }
 
     public static void setup(final MyConfig config) {

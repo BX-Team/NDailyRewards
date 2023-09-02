@@ -3,6 +3,7 @@ package gq.bxteam.ndailyrewards.cfg;
 import gq.bxteam.ndailyrewards.gui.GUIItem;
 import gq.bxteam.ndailyrewards.manager.RewardGUI;
 import gq.bxteam.ndailyrewards.manager.objects.Reward;
+import gq.bxteam.ndailyrewards.utils.TextUtils;
 import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import org.bukkit.inventory.ItemStack;
@@ -81,7 +82,7 @@ public class Config {
         }
         LogUtil.send("&eLoaded &6" + Config.rewards.size() + " &edaily rewards!", LogType.INFO);
         path = "gui.";
-        String g_title = NDailyRewards.replaceHEXColorCode(cfg.getString(path + "title"));
+        String g_title = TextUtils.applyColor(cfg.getString(path + "title"));
         final int g_size = cfg.getInt(path + "size");
         final LinkedHashMap<String, GUIItem> g_items = new LinkedHashMap<String, GUIItem>();
         for (final String id : cfg.getSection(path + "items")) {

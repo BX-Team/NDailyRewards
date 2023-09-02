@@ -2,6 +2,7 @@ package gq.bxteam.ndailyrewards.manager.objects;
 
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
+import gq.bxteam.ndailyrewards.utils.TextUtils;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class Reward {
             ArchUtils.execCmd(s.replace("%day%", String.valueOf(this.day)), p);
         }
         for (final String s : this.msg) {
-            String pref = NDailyRewards.replaceHEXColorCode(s);
+            String pref = TextUtils.applyColor(s);
             p.sendMessage(pref.replace("%day%", String.valueOf(this.day)));
         }
     }

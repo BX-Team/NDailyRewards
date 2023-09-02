@@ -3,6 +3,7 @@ package gq.bxteam.ndailyrewards.cmds.list;
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.cfg.Lang;
 import gq.bxteam.ndailyrewards.cmds.ICmd;
+import gq.bxteam.ndailyrewards.utils.TextUtils;
 import org.bukkit.command.CommandSender;
 
 public class HelpCommand extends ICmd {
@@ -14,7 +15,7 @@ public class HelpCommand extends ICmd {
     public void perform(final CommandSender sender, final String[] args) {
         if (args.length <= 1) {
             for (String s : Lang.Commands_Help_Commands.getList()) {
-                String performCmd = NDailyRewards.replaceHEXColorCode(s);
+                String performCmd = TextUtils.applyColor(s);
                 sender.sendMessage(performCmd);
             }
         }

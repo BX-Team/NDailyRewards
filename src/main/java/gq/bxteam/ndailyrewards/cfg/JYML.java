@@ -5,6 +5,7 @@ import gq.bxteam.ndailyrewards.gui.ContentType;
 import gq.bxteam.ndailyrewards.gui.GUIItem;
 import gq.bxteam.ndailyrewards.utils.ArchUtils;
 import gq.bxteam.ndailyrewards.utils.HeadUtil;
+import gq.bxteam.ndailyrewards.utils.TextUtils;
 import gq.bxteam.ndailyrewards.utils.logs.LogType;
 import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import org.bukkit.Material;
@@ -101,12 +102,12 @@ public class JYML extends YamlConfiguration {
         final ItemMeta meta = item.getItemMeta();
         String name = this.getString(path + "name");
         if (name != null) {
-            String pref = NDailyRewards.replaceHEXColorCode(name);
+            String pref = TextUtils.applyColor(name);
             meta.setDisplayName(pref);
         }
         final List<String> lore = new ArrayList<String>();
         for (String s : this.getStringList(path + "lore")) {
-            String pref = NDailyRewards.replaceHEXColorCode(s);
+            String pref = TextUtils.applyColor(s);
             lore.add(pref);
         }
         meta.setLore(lore);
