@@ -3,7 +3,6 @@ package gq.bxteam.ndailyrewards.cmds.list;
 import gq.bxteam.ndailyrewards.NDailyRewards;
 import gq.bxteam.ndailyrewards.cfg.Lang;
 import gq.bxteam.ndailyrewards.cmds.ICmd;
-import gq.bxteam.ndailyrewards.utils.logs.LogUtil;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
@@ -26,11 +25,14 @@ public class BackupCommand extends ICmd
 
         File configFile = new File(pluginFolder, "config.yml");
         File dataFile = new File(pluginFolder, "data.db");
+        File messagesFile = new File(pluginFolder, "messages.yml");
         File backupConfigFile = new File(backupFolder, "config.yml");
         File backupDataFile = new File(backupFolder, "data.db");
+        File backupMessagesFile = new File(backupFolder, "messages.yml");
         try {
             Files.copy(configFile.toPath(), backupConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Files.copy(dataFile.toPath(), backupDataFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(messagesFile.toPath(), backupMessagesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             sender.sendMessage(Lang.Prefix.toMsg() + "Successfully backed up files!");
         }
         catch (Exception ex) {
