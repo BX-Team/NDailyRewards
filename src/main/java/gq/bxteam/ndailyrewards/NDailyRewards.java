@@ -95,10 +95,11 @@ public class NDailyRewards extends JavaPlugin {
         this.load();
     }
 
+    @SuppressWarnings("deprecation")
     public static Optional<String> checkForUpdates() {
         final String mcVersion = NDailyRewards.getInstance().getServer().getMinecraftVersion();
-        final String pluginName = NDailyRewards.getInstance().getPluginMeta().getName();
-        final String pluginVersion = NDailyRewards.getInstance().getPluginMeta().getVersion();
+        final String pluginName = NDailyRewards.getInstance().getDescription().getName();
+        final String pluginVersion = NDailyRewards.getInstance().getDescription().getVersion();
         try {
             final HttpClient client = HttpClient.newHttpClient();
             final HttpRequest req = HttpRequest.newBuilder()
