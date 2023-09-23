@@ -2,6 +2,7 @@ package gq.bxteam.ndailyrewards.tasks;
 
 import gq.bxteam.ndailyrewards.cfg.Config;
 import gq.bxteam.ndailyrewards.NDailyRewards;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class SaveTask {
     private final NDailyRewards plugin;
@@ -16,11 +17,11 @@ public class SaveTask {
     }
 
     public void start() {
-        this.id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, new Runnable() {
+        this.id = new BukkitRunnable() {
             @Override
             public void run() {
                 SaveTask.this.plugin.getUserManager().autosave();
             }
-        }, 0L, Config.data_save * 60L * 1000L);
+        }.runTaskTimer(NDailyRewards.getInstance(), 0L, Config.data_save * 60L * 1000L).getTaskId();
     }
 }
