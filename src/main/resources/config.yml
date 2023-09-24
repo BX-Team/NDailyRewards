@@ -12,7 +12,7 @@
 # Modrinth: https://modrinth.com/plugin/ndailyrewards
 
 data:
-  auto-save: 15
+  auto-save: 15 # Specified in minutes
   storage:
     type: SQLite
     username: none

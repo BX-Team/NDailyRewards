@@ -22,6 +22,6 @@ public class SaveTask {
             public void run() {
                 SaveTask.this.plugin.getUserManager().autosave();
             }
-        }.runTaskTimer(NDailyRewards.getInstance(), 0L, Config.data_save * 60L * 1000L).getTaskId();
+        }.runTaskTimer(NDailyRewards.getInstance(), 0L, Config.data_save * 1200L).getTaskId();
     }
 }
