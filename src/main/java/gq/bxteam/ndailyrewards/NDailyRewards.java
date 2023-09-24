@@ -34,6 +34,7 @@ public class NDailyRewards extends JavaPlugin {
     private HookManager hm;
     private DataManager data;
     private UserManager um;
+    private SaveTask st;
 
     public static NDailyRewards getInstance() {
         return NDailyRewards.instance;
@@ -57,6 +58,7 @@ public class NDailyRewards extends JavaPlugin {
         }
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderExpansions().register();
+            LogUtil.send("&eLoaded &6PlaceholderAPI &ehook!", LogType.INFO);
         }
     }
 
@@ -135,5 +137,9 @@ public class NDailyRewards extends JavaPlugin {
 
     public UserManager getUserManager() {
         return this.um;
+    }
+
+    public SaveTask getSaveTask() {
+        return this.st;
     }
 }

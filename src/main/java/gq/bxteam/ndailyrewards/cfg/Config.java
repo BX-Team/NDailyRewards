@@ -11,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 import gq.bxteam.ndailyrewards.NDailyRewards;
-import org.bukkit.ChatColor;
 import gq.bxteam.ndailyrewards.data.DataType;
 
 /**
