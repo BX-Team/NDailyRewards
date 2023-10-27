@@ -31,7 +31,7 @@ public class Config {
     public static boolean opt_auto_have;
     public static boolean opt_midnight;
     public static boolean opt_metrics;
-    public static int opt_cd;
+    public static long opt_cd;
     public static int opt_wm;
     public static int opt_grd;
     public static int opt_days_row;
@@ -66,7 +66,7 @@ public class Config {
         Config.opt_auto_have = cfg.getBoolean(path + "auto-open.only-when-have");
         Config.opt_midnight = cfg.getBoolean(path + "unlock-after-midnight");
         Config.opt_metrics = cfg.getBoolean(path + "enable-metrics");
-        Config.opt_cd = cfg.getInt(path + "rewards-cool-down", 86400);
+        Config.opt_cd = cfg.getLong(path + "rewards-cool-down", 86400);
         Config.opt_wm = cfg.getInt(path + "reward-login-delay", 0);
         Config.opt_grd = cfg.getInt(path + "gui-refresh-delay", 5);
         Config.opt_days_row = cfg.getInt(path + "days-row");
