@@ -56,7 +56,7 @@ public class UserManager extends AbstractListener<NDailyRewards> {
         this.save.clear();
         for (final DUser cu : this.getUsers()) {
             this.plugin.getData().save(cu);
-            this.users.put(cu.getUUID(), cu);
+            this.users.remove(cu.getUUID());
         }
     }
 
