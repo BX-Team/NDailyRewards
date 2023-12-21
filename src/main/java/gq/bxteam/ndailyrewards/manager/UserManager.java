@@ -56,7 +56,7 @@ public class UserManager extends AbstractListener<NDailyRewards> {
         this.save.clear();
         for (final DUser cu : this.getUsers()) {
             this.plugin.getData().save(cu);
-            this.users.put(cu.getUUID(), cu);
+            this.users.remove(cu.getUUID());
         }
     }
 
@@ -113,7 +113,7 @@ public class UserManager extends AbstractListener<NDailyRewards> {
         if (Config.opt_auto_is && (!Config.opt_auto_have || (Config.opt_auto_have && user.hasActiveReward()))) {
             new BukkitRunnable() {
                 public void run() {
-                    Config.rewards_gui.open(p);
+                    if (p.hasPermission("ndailyrewards.openonjoin")) Config.rewards_gui.open(p);
                 }
             }.runTaskLater(this.plugin, 10L);
         }

@@ -14,7 +14,7 @@ commands:
 permissions:
   ndailyrewards.user:
     description: Allows players to use non-admin commands.
-    default: true
+    default: op
   ndailyrewards.admin:
     description: Allows to use admin commands.
     default: op
