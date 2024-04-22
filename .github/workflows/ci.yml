@@ -27,7 +27,7 @@ jobs:
       with:
         arguments: build
     - name: Upload NDailyRewards
-      uses: actions/upload-artifact@v4.3.0
+      uses: actions/upload-artifact@v4.3.3
       with:
         name: NDailyRewards Dev Artifacts
         path: "build/libs/NDailyRewards-*.jar"
