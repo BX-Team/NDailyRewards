@@ -2,7 +2,6 @@ package space.bxteam.ndailyrewards.cmds;
 
 import java.util.Collections;
 
-import gq.bxteam.ndailyrewards.cmds.list.*;
 import space.bxteam.ndailyrewards.cmds.list.*;
 import space.bxteam.ndailyrewards.utils.ArchUtils;
 import java.util.ArrayList;
