@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'java'
+    id 'maven-publish'
 }
 
 repositories {
@@ -56,5 +57,26 @@ processResources {
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
         expand props
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "ndailyrewards"
+            url = "https://repo.bx-team.space/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId = "space.bxteam"
+            artifactId = "ndailyrewards"
+            version = project.version
+            from components.java
+        }
     }
 }

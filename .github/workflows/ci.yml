@@ -1,4 +1,4 @@
-# Builds the project with Gradle and uploads to Modrinth with alpha tag when a commit is pushed to master.
+# Builds the project with Gradle and uploads the artifact to the GitHub Actions Artifacts.
 name: Java CI with Gradle
 
 on:
@@ -20,12 +20,21 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
+
     - name: Make Gradlew executable
       run: chmod +x ./gradlew
+
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v3.3.2
       with:
         arguments: build
+
+    - name: Publish API
+      continue-on-error: true
+      uses: gradle/gradle-build-action@v3.3.2
+      with:
+        arguments: publish -PndailyrewardsUsername=${{ secrets.REPO_USERNAME }} -PndailyrewardsPassword=${{ secrets.REPO_SECRET }}
+
     - name: Upload NDailyRewards
       uses: actions/upload-artifact@v4.3.3
       with:
