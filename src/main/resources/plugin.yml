@@ -1,6 +1,6 @@
 name: NDailyRewards
 version: '${version}'
-main: gq.bxteam.ndailyrewards.NDailyRewards
+main: space.bxteam.ndailyrewards.NDailyRewards
 api-version: 1.16
 depend: [ NBTAPI ]
 softdepend: [ Citizens, PlaceholderAPI ]
