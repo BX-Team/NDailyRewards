@@ -1,0 +1,6 @@
+name: NDailyRewards
+version: '${version}'
+main: space.bxteam.ndailyrewards.NDailyRewards
+api-version: '1.21'
+authors: [NONPLAYT]
+description: Reward players for playing on your server

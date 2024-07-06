@@ -1,82 +1,50 @@
 plugins {
-    id 'java-library'
     id 'java'
-    id 'maven-publish'
 }
 
+group = project.group
+version = project.version
+description = "Reward players for playing on your server"
+
 repositories {
-    mavenLocal()
     mavenCentral()
     maven {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
     }
     maven {
-        name = "citizens-npc"
-        url = "https://repo.citizensnpcs.co/"
-    }
-    maven {
-        name = "minecraft"
-        url = "https://libraries.minecraft.net"
-    }
-    maven {
-        name = "codemc"
-        url = "https://repo.codemc.org/repository/maven-public/"
-    }
-    maven {
-        name = "placeholder-api"
-        url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
     }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.paper_api}") // Paper API
-
-    // Plugin dependencies
-    compileOnly("net.citizensnpcs:citizensapi:${project.citizensapi}")
-    compileOnly("com.mojang:authlib:${project.authlib}")
-    compileOnly("de.tr7zw:item-nbt-api-plugin:${project.nbt_api_plugin}")
-    compileOnly("org.xerial:sqlite-jdbc:${project.sqlite_jdbc}")
-    compileOnly("me.clip:placeholderapi:${project.placeholder_api}")
 }
 
-group = project.group
-version = project.version
-description = "Reward players for playing on your server"
-java.sourceCompatibility = JavaVersion.VERSION_17
-
+def targetJavaVersion = 21
 java {
-    withSourcesJar()
-    withJavadocJar()
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release.set(targetJavaVersion)
+    }
 }
 
 processResources {
     def props = [version: version]
     inputs.properties props
     filteringCharset 'UTF-8'
-    filesMatching('plugin.yml') {
+    filesMatching('paper-plugin.yml') {
         expand props
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "ndailyrewards"
-            url = "https://repo.bx-team.space/releases"
-            credentials(PasswordCredentials)
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
-    }
-    publications {
-        maven(MavenPublication) {
-            groupId = "space.bxteam"
-            artifactId = "ndailyrewards"
-            version = project.version
-            from components.java
-        }
     }
 }
