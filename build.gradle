@@ -4,7 +4,7 @@ plugins {
 
 group = project.group
 version = project.version
-description = "Reward players for playing on your server"
+description = project.description
 
 repositories {
     mavenCentral()
@@ -20,6 +20,9 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.paper_api}") // Paper API
+
+    // Dependencies
+    compileOnly("com.zaxxer:HikariCP:${project.hikari_cp}")
 }
 
 def targetJavaVersion = 21
