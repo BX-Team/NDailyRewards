@@ -7,3 +7,77 @@
 
 # Discord server: https://discord.gg/p7cxhw7E2M
 # Modrinth: https://modrinth.com/plugin/ndailyrewards
+
+# General settings
+language: en
+check-updates: true
+
+# Database configuration
+database:
+  # Select here the database you want to use
+  # The following databases are supported:
+  #  - sqlite - (default) stores all data in a local file
+  #  - mysql - allows using a remote database
+  type: sqlite
+
+  # SQLite configuration
+  sqlite:
+    file: "ndailyrewards.db"
+  # MySQL configuration
+  mysql:
+    jdbc: "jdbc:mysql://localhost:3306/ndailyrewards"
+    username: "root"
+    password: "password"
+
+# Rewards configuration
+rewards:
+  # When a player reaches the day limit, should it reset to the first day?
+  reset-when-all-claimed: true
+
+gui:
+  title: "&6Daily Rewards"
+  rows: 6
+  display:
+    available:
+      material: "BARRIER"
+      name: "&aDay <dayNum>"
+      lore:
+        - "&7Your Reward Awaits"
+        - "&7Click Me to claim your prize!"
+        - ""
+        - "<reward-lore>"
+    claimed:
+      material: "EMERALD_BLOCK"
+      name: "&aDay <dayNum>"
+      lore:
+        - "&7You have claimed this reward"
+        - ""
+        - "<reward-lore>"
+    unavailable:
+      material: "COAL_BLOCK"
+      name: "&aDay <dayNum>"
+      lore:
+        - "&7You have not reached this day yet"
+        - ""
+        - "<reward-lore>"
+
+  other:
+    filler:
+      material: "GRAY_STAINED_GLASS_PANE"
+      position: []
+      name: "&7"
+      lore: []
+    settings:
+      material: "LEVER"
+      position: []
+      name: "&cSettings"
+      lore:
+        - "&7Click to open the settings menu"
+
+sound:
+  claim:
+    enabled: true
+    type: "ENTITY_EXPERIENCE_ORB_PICKUP:1:1"
+  open:
+    enabled: true
+    type: "BLOCK_BARREL_OPEN:1:1"
