@@ -8,43 +8,43 @@ import org.jetbrains.annotations.Nullable;
 import space.bxteam.ndailyrewards.NDailyRewards;
 
 public class SoundUtil {
-    private static String[] getSound(String command) {
-        if (!NDailyRewards.getInstance().getConfig().getBoolean("sound." + command + ".enable")) return null;
+    private static String[] getSound(String action) {
+        if (!NDailyRewards.getInstance().getConfig().getBoolean("sound." + action + ".enabled")) return null;
 
-        String sound = NDailyRewards.getInstance().getConfig().getString("sound." + command + ".type");
+        String sound = NDailyRewards.getInstance().getConfig().getString("sound." + action + ".type");
 
         return sound.split(":");
     }
 
-    public static void playSound(@Nullable Player sender, @Nullable Player recipient, @NotNull String command) {
+    public static void playSound(@Nullable Player sender, @Nullable Player recipient, @NotNull String action) {
         if (recipient == null) return;
 
-        String[] params = getSound(command);
+        String[] params = getSound(action);
         if (params == null) return;
 
         try {
             recipient.playSound(recipient.getLocation(), Sound.valueOf(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2]));
         } catch (IllegalArgumentException exception) {
-            LogUtil.log("Incorrect sound " + params[0] + " for " + command + ".sound.type", LogUtil.LogLevel.ERROR);
+            LogUtil.log("Incorrect sound " + params[0] + " for sound." + action + ".type", LogUtil.LogLevel.ERROR);
             exception.printStackTrace();
         }
     }
 
-    public static void playSound(@Nullable Player sender, @Nullable Location location, @NotNull String command) {
+    public static void playSound(@Nullable Player sender, @Nullable Location location, @NotNull String action) {
         if (location == null || location.getWorld() == null) return;
 
-        String[] params = getSound(command);
+        String[] params = getSound(action);
         if (params == null) return;
 
         try {
             location.getWorld().playSound(location, Sound.valueOf(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2]));
         } catch (IllegalArgumentException exception) {
-            LogUtil.log("Incorrect sound " + params[0] + " for " + command + ".sound.type", LogUtil.LogLevel.ERROR);
+            LogUtil.log("Incorrect sound " + params[0] + " for sound." + action + ".type", LogUtil.LogLevel.ERROR);
             exception.printStackTrace();
         }
     }
 
-    public static void playSound(@Nullable Player player, @NotNull String command) {
-        playSound(player, player, command);
+    public static void playSound(@Nullable Player player, @NotNull String action) {
+        playSound(player, player, action);
     }
 }

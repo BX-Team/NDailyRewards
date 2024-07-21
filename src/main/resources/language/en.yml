@@ -1,9 +1,0 @@
-#  -------------------------------------
-# |    NDailyRewards Messages Config    |
-# |          en, by NONPLAYT            |
-#  -------------------------------------
-# If you'd like to use a different language, you can change it in the config.yml
-# You can change all messages in this file, but don't change the keys
-# NDailyRewards supports HEX colors, and you can combine it with default Minecraft colors codes
-
-prefix: "&6[&eNDailyRewards&6] &7"

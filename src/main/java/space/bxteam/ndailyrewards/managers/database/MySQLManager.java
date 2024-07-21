@@ -33,19 +33,19 @@ public class MySQLManager {
     }
 
     /**
-     * Get the database source
+     * Set up the database source
      */
     private void setupDatabaseSource() {
-        switch (NDailyRewards.getInstance().config().databaseType()) {
+        switch (Objects.requireNonNull(NDailyRewards.getInstance().getConfig().getString("database.type"))) {
             case "sqlite" -> {
                 hikariConfig.setDriverClassName("org.sqlite.JDBC");
-                hikariConfig.setJdbcUrl("jdbc:sqlite:" + NDailyRewards.getInstance().getDataFolder() + File.separator + NDailyRewards.getInstance().config().databaseSqliteFile());
+                hikariConfig.setJdbcUrl("jdbc:sqlite:" + NDailyRewards.getInstance().getDataFolder() + File.separator + NDailyRewards.getInstance().getConfig().getString("database.sqlite.file"));
             }
             case "mysql" -> {
                 hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
-                hikariConfig.setJdbcUrl(NDailyRewards.getInstance().config().databaseMysqlJdbc());
-                hikariConfig.setUsername(NDailyRewards.getInstance().config().databaseMysqlUsername());
-                hikariConfig.setPassword(NDailyRewards.getInstance().config().databaseMysqlPassword());
+                hikariConfig.setJdbcUrl(NDailyRewards.getInstance().getConfig().getString("database.mysql.jdbc"));
+                hikariConfig.setUsername(NDailyRewards.getInstance().getConfig().getString("database.mysql.username"));
+                hikariConfig.setPassword(NDailyRewards.getInstance().getConfig().getString("database.mysql.password"));
             }
             default -> {
                 LogUtil.log("Invalid database type! Please check your config.yml", LogUtil.LogLevel.ERROR);
@@ -66,9 +66,9 @@ public class MySQLManager {
     private void initTables() throws @NotNull SQLException, @NotNull IOException {
         final @NotNull HashMap<@NotNull String, @NotNull String> initFiles = new HashMap<>() {{
             put("sqlite", "databases/sqlite.sql");
-            //put("mysql", "databases/mysql.sql");
+            put("mysql", "databases/mysql.sql");
         }};
-        final @NotNull String dbType = NDailyRewards.getInstance().config().databaseType();
+        final @NotNull String dbType = Objects.requireNonNull(NDailyRewards.getInstance().getConfig().getString("database.type"));
         if (!initFiles.containsKey(dbType)) {
             LogUtil.log("Invalid database type! Please check your config.yml", LogUtil.LogLevel.ERROR);
             NDailyRewards.getInstance().getServer().getPluginManager().disablePlugin(NDailyRewards.getInstance());

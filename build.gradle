@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = project.group
@@ -16,13 +18,29 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven {
+        name = "extendedclip"
+        url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
+    }
+    maven {
+        name = "jitpack"
+        url = "https://jitpack.io"
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.paper_api}") // Paper API
 
     // Dependencies
-    compileOnly("com.zaxxer:HikariCP:${project.hikari_cp}")
+    implementation("com.zaxxer:HikariCP:${project.hikari_cp}")
+    compileOnly("me.clip:placeholderapi:${project.placeholder_api}")
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    dependencies {
+        include(dependency("com.zaxxer:HikariCP:${project.hikari_cp}"))
+    }
 }
 
 def targetJavaVersion = 21
@@ -47,7 +65,28 @@ processResources {
     def props = [version: version]
     inputs.properties props
     filteringCharset 'UTF-8'
-    filesMatching('paper-plugin.yml') {
+    filesMatching('plugin.yml') {
         expand props
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "ndailyrewards"
+            url = "https://repo.bx-team.space/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId = "space.bxteam"
+            artifactId = "ndailyrewards"
+            version = project.version
+            from components.java
+        }
     }
 }

@@ -1,10 +1,13 @@
 package space.bxteam.ndailyrewards.utils;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,6 +84,13 @@ public class TextUtils {
             res[i] = from + i * ((to - from) / (max - 1));
         }
         return res;
+    }
+
+    public static String applyPlaceholders(Player player, String text) {
+        if (player != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            return PlaceholderAPI.setPlaceholders(player, text);
+        }
+        return text;
     }
 
     public enum BeforeType {

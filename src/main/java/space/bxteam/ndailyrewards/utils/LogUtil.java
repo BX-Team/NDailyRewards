@@ -1,6 +1,7 @@
 package space.bxteam.ndailyrewards.utils;
 
 import org.bukkit.Bukkit;
+import space.bxteam.ndailyrewards.managers.enums.Language;
 
 public class LogUtil {
     public static void log(String message, LogLevel level) {
@@ -14,7 +15,7 @@ public class LogUtil {
             case DEBUG -> prefix = "&8[&b&lDEBUG&r&8]";
         }
 
-        Bukkit.getConsoleSender().sendMessage(TextUtils.applyColor("&7[&6Nexus&7] " + prefix + " &f" + message));
+        Bukkit.getConsoleSender().sendMessage(TextUtils.applyColor(Language.PREFIX.asColoredString() + prefix + " &f" + message));
     }
 
     public enum LogLevel { ERROR, WARNING, INFO, DEBUG }
