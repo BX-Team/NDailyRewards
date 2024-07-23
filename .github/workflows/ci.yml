@@ -35,8 +35,8 @@ jobs:
     #  with:
     #    arguments: publish -PndailyrewardsUsername=${{ secrets.REPO_USERNAME }} -PndailyrewardsPassword=${{ secrets.REPO_SECRET }}
 
-    #- name: Upload NDailyRewards
-    #  uses: actions/upload-artifact@v4.3.3
-    #  with:
-    #    name: NDailyRewards Dev Artifacts
-    #    path: "build/libs/NDailyRewards-*.jar"
+    - name: Upload NDailyRewards
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: NDailyRewards Dev Artifacts
+        path: "build/libs/NDailyRewards-*.jar"
