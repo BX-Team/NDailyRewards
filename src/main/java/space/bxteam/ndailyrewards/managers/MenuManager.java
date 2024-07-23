@@ -14,6 +14,7 @@ import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 import space.bxteam.ndailyrewards.utils.ItemBuilder;
 import space.bxteam.ndailyrewards.utils.TextUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,11 +76,13 @@ public class MenuManager {
                             String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.material");
                             String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.name").replace("<dayNum>", String.valueOf(day));
                             int customModelData = NDailyRewards.getInstance().getConfig().getInt("gui.reward.display.next.custom-model-data");
-                            String lore = daySection.getStringList("lore").stream()
+                            List<String> rewardLore = daySection.getStringList("lore").stream()
                                     .map(TextUtils::applyColor)
-                                    .collect(Collectors.joining("\n"));
+                                    .collect(Collectors.toList());
+                            String rewardLoreJoined = String.join("\n", rewardLore);
                             List<String> loreFormatted = NDailyRewards.getInstance().getConfig().getStringList("gui.reward.display.next.lore").stream()
-                                    .map(s -> s.replace("<reward-lore>", lore).replace("<time-left>", timeLeftFormatted))
+                                    .map(s -> s.replace("<reward-lore>", rewardLoreJoined).replace("<time-left>", timeLeftFormatted))
+                                    .flatMap(s -> Arrays.stream(s.split("\n")))
                                     .collect(Collectors.toList());
 
                             rewardItem = new ItemBuilder(new ItemStack(Material.valueOf(material)))
@@ -133,15 +136,11 @@ public class MenuManager {
         List<String> rewardLore = daySection.getStringList("lore").stream()
                 .map(TextUtils::applyColor)
                 .collect(Collectors.toList());
+        String rewardLoreJoined = String.join("\n", rewardLore);
 
         List<String> loreFormatted = NDailyRewards.getInstance().getConfig().getStringList("gui.reward.display." + type + ".lore").stream()
-                .map(s -> {
-                    StringBuilder replacedLore = new StringBuilder();
-                    for (String loreLine : rewardLore) {
-                        replacedLore.append(s.replace("<reward-lore>", loreLine)).append("\n");
-                    }
-                    return replacedLore.toString().trim();
-                })
+                .map(s -> s.replace("<reward-lore>", rewardLoreJoined))
+                .flatMap(s -> Arrays.stream(s.split("\n")))
                 .collect(Collectors.toList());
 
         return new ItemBuilder(new ItemStack(Material.valueOf(material)))
