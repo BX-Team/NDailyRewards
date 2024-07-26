@@ -5,7 +5,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import space.bxteam.ndailyrewards.NDailyRewards;
-import space.bxteam.ndailyrewards.managers.database.MySQLManager;
+import space.bxteam.ndailyrewards.managers.database.DatabaseManager;
 import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.utils.LogUtil;
 import space.bxteam.ndailyrewards.utils.TextUtils;
@@ -24,13 +24,13 @@ import java.util.UUID;
 
 public class RewardManager {
     private final NDailyRewards plugin;
-    private final MySQLManager dbManager;
+    private final DatabaseManager dbManager;
     private final Map<Integer, Reward> rewards = new HashMap<>();
     private final boolean resetWhenAllClaimed;
     private final int cooldown;
     private final boolean unlockAfterMidnight;
 
-    public RewardManager(NDailyRewards plugin, MySQLManager dbManager) {
+    public RewardManager(NDailyRewards plugin, DatabaseManager dbManager) {
         this.plugin = plugin;
         this.dbManager = dbManager;
         this.resetWhenAllClaimed = plugin.getConfig().getBoolean("rewards.reset-when-all-claimed", true);

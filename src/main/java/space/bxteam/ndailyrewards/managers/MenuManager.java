@@ -16,6 +16,7 @@ import space.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MenuManager {
@@ -76,6 +77,7 @@ public class MenuManager {
                             String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.material");
                             String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.name").replace("<dayNum>", String.valueOf(day));
                             int customModelData = NDailyRewards.getInstance().getConfig().getInt("gui.reward.display.next.custom-model-data");
+                            String playerHead = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.player-head-texture");
                             List<String> rewardLore = daySection.getStringList("lore").stream()
                                     .map(TextUtils::applyColor)
                                     .collect(Collectors.toList());
@@ -85,10 +87,11 @@ public class MenuManager {
                                     .flatMap(s -> Arrays.stream(s.split("\n")))
                                     .collect(Collectors.toList());
 
-                            rewardItem = new ItemBuilder(new ItemStack(Material.valueOf(material)))
+                            rewardItem = new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
                                     .setName(name)
                                     .setCustomModelData(customModelData)
                                     .setLore(loreFormatted)
+                                    .setHeadTexture(playerHead)
                                     .build();
                         } else {
                             rewardItem = createItemStack("unavailable", day, daySection);
@@ -104,10 +107,14 @@ public class MenuManager {
     }
 
     private ItemStack loadFillItem() {
-        ItemBuilder itemBuilder = new ItemBuilder(new ItemStack(Material.valueOf(NDailyRewards.getInstance().getConfig().getString("gui.reward.other.filler.material"))));
-        itemBuilder.setName(NDailyRewards.getInstance().getConfig().getString("gui.reward.other.filler.name"));
-        itemBuilder.setLore(NDailyRewards.getInstance().getConfig().getStringList("gui.reward.other.filler.lore"));
-        return itemBuilder.build();
+        String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.other.filler.material");
+        String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.other.filler.name");
+        List<String> lore = NDailyRewards.getInstance().getConfig().getStringList("gui.reward.other.filler.lore");
+
+        return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
+                .setName(name)
+                .setLore(lore)
+                .build();
     }
 
     private boolean checkIfClaimed(Player player, int day) {
@@ -132,6 +139,7 @@ public class MenuManager {
         String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.display." + type + ".material");
         String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.display." + type + ".name").replace("<dayNum>", String.valueOf(day));
         int customModelData = NDailyRewards.getInstance().getConfig().getInt("gui.reward.display." + type + ".custom-model-data");
+        String playerHead = NDailyRewards.getInstance().getConfig().getString("gui.reward.display." + type + ".player-head-texture");
 
         List<String> rewardLore = daySection.getStringList("lore").stream()
                 .map(TextUtils::applyColor)
@@ -143,10 +151,11 @@ public class MenuManager {
                 .flatMap(s -> Arrays.stream(s.split("\n")))
                 .collect(Collectors.toList());
 
-        return new ItemBuilder(new ItemStack(Material.valueOf(material)))
+        return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
                 .setName(name)
                 .setCustomModelData(customModelData)
                 .setLore(loreFormatted)
+                .setHeadTexture(playerHead)
                 .build();
     }
 

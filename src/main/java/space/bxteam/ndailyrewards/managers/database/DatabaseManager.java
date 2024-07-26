@@ -16,11 +16,11 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class MySQLManager {
+public class DatabaseManager {
     public final @NotNull HikariConfig hikariConfig = new HikariConfig();
     public HikariDataSource dbSource;
 
-    public MySQLManager(@NotNull JavaPlugin plugin) {
+    public DatabaseManager(@NotNull JavaPlugin plugin) {
         setupDatabaseSource();
         try {
             initTables();

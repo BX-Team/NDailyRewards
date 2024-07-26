@@ -5,13 +5,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import space.bxteam.ndailyrewards.commands.RewardCommand;
+import space.bxteam.ndailyrewards.hooks.HookManager;
 import space.bxteam.ndailyrewards.listeners.*;
 import space.bxteam.ndailyrewards.managers.MenuManager;
-import space.bxteam.ndailyrewards.managers.database.MySQLManager;
+import space.bxteam.ndailyrewards.managers.database.DatabaseManager;
 import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 import space.bxteam.ndailyrewards.utils.LogUtil;
 import space.bxteam.ndailyrewards.utils.UpdateCheckerUtil;
+import space.bxteam.ndailyrewards.utils.metrics.Metrics;
 
 import java.io.File;
 import java.time.Duration;
@@ -19,10 +21,9 @@ import java.time.Instant;
 
 public final class NDailyRewards extends JavaPlugin {
     private static NDailyRewards instance;
-    private Instant startTime;
     private File langFile;
     private FileConfiguration langConfig;
-    private MySQLManager database;
+    private DatabaseManager database;
     private RewardManager rewardManager;
     private MenuManager menuManager;
 
@@ -49,7 +50,7 @@ public final class NDailyRewards extends JavaPlugin {
      *
      * @return database manager
      */
-    public MySQLManager getDatabase() {
+    public DatabaseManager getDatabase() {
         return database;
     }
 
@@ -73,17 +74,19 @@ public final class NDailyRewards extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        startTime = Instant.now();
+        Instant startTime = Instant.now();
         NDailyRewards.instance = this;
         saveDefaultConfig();
         createLangFile();
         Language.init(this);
         registerCommands();
+        new Metrics(this, 13844);
 
         LogUtil.log("Loading plugin managers...", LogUtil.LogLevel.INFO);
-        database = new MySQLManager(this);
+        database = new DatabaseManager(this);
         rewardManager = new RewardManager(this, database);
         menuManager = new MenuManager();
+        new HookManager(this).registerHooks();
 
         LogUtil.log("Registering listeners...", LogUtil.LogLevel.INFO);
         final Listener[] events = new Listener[]{
@@ -109,6 +112,7 @@ public final class NDailyRewards extends JavaPlugin {
     @Override
     public void onDisable() {
         LogUtil.log("Disabling plugin...", LogUtil.LogLevel.INFO);
+        getServer().getScheduler().cancelTasks(this);
         database.dbSource.close();
     }
 
@@ -119,7 +123,7 @@ public final class NDailyRewards extends JavaPlugin {
         reloadConfig();
         createLangFile();
         Language.init(this);
-        database = new MySQLManager(this);
+        database = new DatabaseManager(this);
         rewardManager = new RewardManager(this, database);
     }
 

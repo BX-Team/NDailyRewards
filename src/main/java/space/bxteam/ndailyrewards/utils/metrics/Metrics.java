@@ -1,4 +1,4 @@
-package space.bxteam.ndailyrewards.utils;
+package space.bxteam.ndailyrewards.utils.metrics;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

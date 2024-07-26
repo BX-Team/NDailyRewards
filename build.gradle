@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'io.papermc.paperweight.userdev' version '1.7.1'
 }
 
 group = project.group
@@ -10,6 +11,7 @@ description = project.description
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
     maven {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
@@ -30,6 +32,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.paper_api}") // Paper API
+    paperweight.paperDevBundle("${project.paper_api}")
 
     // Dependencies
     implementation("com.zaxxer:HikariCP:${project.hikari_cp}")
@@ -38,6 +41,7 @@ dependencies {
 
 shadowJar {
     archiveClassifier.set('')
+    archiveFileName.set("${project.name}-${project.version}.jar")
     dependencies {
         include(dependency("com.zaxxer:HikariCP:${project.hikari_cp}"))
     }
@@ -51,6 +55,8 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
+    withSourcesJar()
+    withJavadocJar()
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -59,6 +65,10 @@ tasks.withType(JavaCompile).configureEach {
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         options.release.set(targetJavaVersion)
     }
+}
+
+tasks.assemble {
+    dependsOn(tasks.reobfJar)
 }
 
 processResources {

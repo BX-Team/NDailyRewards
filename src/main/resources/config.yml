@@ -43,7 +43,7 @@ rewards:
   # [actionbar] - shows the text in actionbar for the player
   # [title] - sends primary title with entered text
   # [subtitle] - sends secondary title with entered text
-  # [sound] - plays specified sound for the player
+  # [sound] - plays specified sound for the player (sound:volume:pitch)
   # You can also use PlaceholderAPI placeholders (requires PlaceholderAPI plugin)
   # Note: First slot in inventory is 0, not 1
   days:
@@ -117,7 +117,7 @@ gui:
     size: 27
     display:
       available:
-        material: "EMERALD_BLOCK"
+        material: "EMERALD_BLOCK:1"
         name: "&aDay <dayNum>"
         custom-model-data: 0
         lore:
@@ -126,7 +126,7 @@ gui:
           - ""
           - "<reward-lore>"
       claimed:
-        material: "COAL_BLOCK"
+        material: "COAL_BLOCK:1"
         name: "&aDay <dayNum>"
         custom-model-data: 0
         lore:
@@ -134,7 +134,7 @@ gui:
           - ""
           - "<reward-lore>"
       next:
-        material: "COAL_BLOCK"
+        material: "COAL_BLOCK:1"
         name: "&aDay <dayNum>"
         custom-model-data: 0
         lore:
@@ -143,7 +143,7 @@ gui:
           - ""
           - "<reward-lore>"
       unavailable:
-        material: "BARRIER"
+        material: "BARRIER:1"
         name: "&aDay <dayNum>"
         custom-model-data: 0
         lore:
@@ -154,7 +154,7 @@ gui:
     other:
       filler:
         enable: true
-        material: "GRAY_STAINED_GLASS_PANE"
+        material: "GRAY_STAINED_GLASS_PANE:1"
         name: "&7"
         lore: []
 

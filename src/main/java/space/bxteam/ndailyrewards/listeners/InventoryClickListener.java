@@ -11,8 +11,6 @@ import space.bxteam.ndailyrewards.managers.MenuManager;
 import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 
-import java.util.UUID;
-
 public class InventoryClickListener implements Listener {
     @EventHandler
     public void mainMenuClickListener(InventoryClickEvent event) {
