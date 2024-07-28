@@ -12,8 +12,14 @@ public enum Language {
     PREFIX("prefix"),
     NO_PERMISSION("no-permission"),
     NOT_PLAYER("not-player"),
-    HELP("help"),
-    RELOAD("reload"),
+    PLAYER_NOT_FOUND("player-not-found"),
+    INVALID_SYNTAX("invalid-syntax"),
+
+    COMMANDS_HELP("commands.help"),
+    COMMANDS_RELOAD("commands.reload"),
+    COMMANDS_SETDAY("commands.setday"),
+
+    EVENTS_NOTIFY_WHEN_AVAILABLE("events.notify-when-available"),
 
     CLAIM_ALREADY_CLAIMED("claim.already-claimed"),
     CLAIM_AVAILABLE_SOON("claim.available-soon"),

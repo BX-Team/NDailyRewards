@@ -28,6 +28,15 @@ database:
     username: "root"
     password: "password"
 
+# Player events
+events:
+  # Whether a reward should automatically claim when a player joins (if available)
+  auto-claim-reward: false
+  # When player joins the server, should plugin open the reward GUI?
+  open-gui-when-available: false
+  # When player joins the server, should plugin notify player about available rewards?
+  notify-when-available: true
+
 # Rewards configuration
 rewards:
   # When a player reaches the day limit, should it reset to the first day?

@@ -35,7 +35,7 @@ public class HelpCommand implements SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        for (String message : Language.HELP.asColoredStringList()) {
+        for (String message : Language.COMMANDS_HELP.asColoredStringList()) {
             sender.sendMessage(message);
         }
     }

@@ -19,6 +19,7 @@ public class RewardCommand extends MainCommand {
         subCommands.add(new ClaimCommand());
         subCommands.add(new HelpCommand());
         subCommands.add(new ReloadCommand());
+        subCommands.add(new SetDayCommand());
         subCommands.add(new VersionCommand());
     }
 

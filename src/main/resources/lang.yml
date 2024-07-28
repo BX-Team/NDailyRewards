@@ -7,14 +7,23 @@
 prefix: "&6[&eNDailyRewards&6] &7"
 no-permission: "&cYou don't have permission to do that!"
 not-player: "&cYou must be a player to do that!"
-help:
-  - "&6List of available commands:"
-  - "&f/reward &7- Opens rewards menu"
-  - "&f/reward claim &7- Claim latest reward without opening the menu"
-  - "&f/reward help &7- Show this message"
-  - "&f/reward reload &7- Reloads plugin"
-  - "&f/reward version &7- Show plugin version"
-reload: "&aPlugin reloaded!"
+player-not-found: "&cPlayer not found!"
+invalid-syntax: "&cInvalid syntax! Use &f/reward help &cto see available commands"
+
+commands:
+  help:
+    - "&6List of available commands:"
+    - "&f/reward &7- Opens rewards menu"
+    - "&f/reward claim &7- Claim latest reward without opening the menu"
+    - "&f/reward help &7- Show this message"
+    - "&f/reward reload &7- Reloads plugin"
+    - "&f/reward setday <player> <day> &7- Set player's day"
+    - "&f/reward version &7- Show plugin version"
+  reload: "&aPlugin reloaded!"
+  setday: "&aSet &e<player> &6current day to &e<day>"
+
+events:
+  notify-when-available: "&6You have available rewards! Use &f/reward &6to open the menu"
 
 claim:
   already-claimed: "&cYou have already claimed this reward"

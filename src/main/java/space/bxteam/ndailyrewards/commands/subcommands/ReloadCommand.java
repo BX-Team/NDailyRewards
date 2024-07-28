@@ -38,7 +38,7 @@ public class ReloadCommand implements SubCommand {
     public void perform(CommandSender sender, String[] args) {
         try {
             NDailyRewards.getInstance().reload();
-            sender.sendMessage(Language.PREFIX.asColoredString() + Language.RELOAD.asColoredString());
+            sender.sendMessage(Language.PREFIX.asColoredString() + Language.COMMANDS_RELOAD.asColoredString());
         } catch (Exception e) {
             e.printStackTrace();
         }

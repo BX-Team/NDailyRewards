@@ -5,6 +5,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import space.bxteam.ndailyrewards.NDailyRewards;
+import space.bxteam.ndailyrewards.api.event.PlayerClaimRewardEvent;
 import space.bxteam.ndailyrewards.managers.database.DatabaseManager;
 import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.utils.LogUtil;
@@ -75,6 +76,9 @@ public class RewardManager {
             if (resetWhenAllClaimed && day >= rewards.size()) {
                 resetPlayerRewardData(uuid);
             }
+
+            PlayerClaimRewardEvent event = new PlayerClaimRewardEvent(player, day);
+            Bukkit.getPluginManager().callEvent(event);
         }
     }
 
@@ -203,6 +207,21 @@ public class RewardManager {
     public boolean isRewardNext(Player player, int day) {
         PlayerRewardData playerRewardData = getPlayerRewardData(player.getUniqueId());
         return playerRewardData.getCurrentDay() + 1 == day && System.currentTimeMillis() / 1000L < playerRewardData.getNext();
+    }
+
+    public void setDay(Player player, int day) {
+        UUID uuid = player.getUniqueId();
+        try (Connection conn = dbManager.dbSource.getConnection()) {
+            String query = "UPDATE `data` SET next_day = ? WHERE uuid = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, day);
+                stmt.setString(2, uuid.toString());
+                stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            LogUtil.log("Could not set player day: " + e.getMessage(), LogUtil.LogLevel.ERROR);
+            e.printStackTrace();
+        }
     }
 
     public static class Reward {
