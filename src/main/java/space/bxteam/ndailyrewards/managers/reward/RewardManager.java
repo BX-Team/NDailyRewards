@@ -98,7 +98,7 @@ public class RewardManager {
         } else if (action.startsWith("[actionbar]")) {
             String message = coloredLine.substring(12);
             player.sendActionBar(message);
-        } else if (action.startsWith("[title]")) {
+        } else if (action.startsWith("[title]")) { // TODO: fix the problem when using title and subtitle, but only one is shown
             String message = coloredLine.substring(8);
             player.sendTitle(message, "", 10, 70, 20);
         } else if (action.startsWith("[subtitle]")) {

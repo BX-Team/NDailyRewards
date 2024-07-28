@@ -8,12 +8,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import space.bxteam.ndailyrewards.NDailyRewards;
 import space.bxteam.ndailyrewards.api.event.AutoClaimEvent;
 import space.bxteam.ndailyrewards.api.event.PlayerReceiveReminderEvent;
+import space.bxteam.ndailyrewards.managers.MenuManager;
 import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.managers.reward.RewardManager;
-import space.bxteam.ndailyrewards.utils.LogUtil;
-import space.bxteam.ndailyrewards.utils.Permissions;
-import space.bxteam.ndailyrewards.utils.TextUtils;
-import space.bxteam.ndailyrewards.utils.UpdateCheckerUtil;
+import space.bxteam.ndailyrewards.utils.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,6 +24,7 @@ import java.util.UUID;
 
 public class PlayerJoinListener implements Listener {
     private RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
+    private MenuManager menuManager = NDailyRewards.getInstance().getMenuManager();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -62,25 +61,6 @@ public class PlayerJoinListener implements Listener {
                 player.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aDownload here: &ehttps://modrinth.com/plugin/ndailyrewards/version/" + latestVersion));
             });
         }
-
-        /* // TODO: fix this
-        if (NDailyRewards.getInstance().getConfig().getBoolean("events.auto-claim-reward") && rewardManager.isRewardAvailable(player, rewardManager.getPlayerRewardData(uuid).getCurrentDay() + 1)) {
-            int day = rewardManager.getPlayerRewardData(uuid).getCurrentDay() + 1;
-            rewardManager.giveReward(player, day);
-            AutoClaimEvent autoClaimEvent = new AutoClaimEvent(player, day);
-            Bukkit.getPluginManager().callEvent(autoClaimEvent);
-        }
-
-        if (NDailyRewards.getInstance().getConfig().getBoolean("events.open-gui-when-available") && rewardManager.isRewardAvailable(player, rewardManager.getPlayerRewardData(uuid).getCurrentDay() + 1)) {
-            NDailyRewards.getInstance().getMenuManager().openRewardsMenu(player);
-        }
-
-        if (NDailyRewards.getInstance().getConfig().getBoolean("events.notify-when-available") && rewardManager.isRewardAvailable(player, rewardManager.getPlayerRewardData(uuid).getCurrentDay() + 1)) {
-            player.sendMessage(Language.PREFIX.asColoredString() + Language.EVENTS_NOTIFY_WHEN_AVAILABLE.asColoredString());
-            PlayerReceiveReminderEvent reminderEvent = new PlayerReceiveReminderEvent(player, rewardManager.getPlayerRewardData(uuid).getCurrentDay() + 1);
-            Bukkit.getPluginManager().callEvent(reminderEvent);
-        }
-         */
     }
 
     private long getUnixTimeForNextDay() {
@@ -89,6 +69,40 @@ public class PlayerJoinListener implements Listener {
             return tomorrow.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
         } else {
             return Instant.now().plusSeconds(NDailyRewards.getInstance().getConfig().getInt("rewards.cooldown") * 3600L).getEpochSecond();
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoinEvents(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+
+        if (NDailyRewards.getInstance().getConfig().getBoolean("events.auto-claim-reward")) {
+            int currentDay = rewardManager.getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
+            if (rewardManager.isRewardAvailable(player, currentDay)) {
+                rewardManager.giveReward(player, currentDay);
+                AutoClaimEvent autoClaimEvent = new AutoClaimEvent(player, currentDay);
+                Bukkit.getPluginManager().callEvent(autoClaimEvent);
+            }
+        }
+
+        if (NDailyRewards.getInstance().getConfig().getBoolean("events.open-gui-when-available")) {
+            int currentDay = rewardManager.getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
+            if (rewardManager.isRewardAvailable(player, currentDay)) {
+                menuManager.openRewardsMenu(player);
+                if (NDailyRewards.getInstance().getConfig().getBoolean("sound.open.enabled")) {
+                    SoundUtil.playSound(player, "open");
+                }
+            }
+        }
+
+        if (NDailyRewards.getInstance().getConfig().getBoolean("events.notify-when-available")) {
+            int currentDay = rewardManager.getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
+            if (rewardManager.isRewardAvailable(player, currentDay)) {
+                player.sendMessage(Language.PREFIX.asColoredString() + Language.EVENTS_NOTIFY_WHEN_AVAILABLE.asColoredString());
+                PlayerReceiveReminderEvent reminderEvent = new PlayerReceiveReminderEvent(player, rewardManager.getPlayerRewardData(uuid).getCurrentDay() + 1);
+                Bukkit.getPluginManager().callEvent(reminderEvent);
+            }
         }
     }
 }
