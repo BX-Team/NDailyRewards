@@ -68,9 +68,22 @@ public class RewardManager {
 
         Reward reward = rewards.get(day);
         if (reward != null) {
+            String[] titleText = new String[]{"", ""};
+
             for (String action : reward.getActions()) {
-                executeAction(player, action);
+                if (action.startsWith("[title]")) {
+                    titleText[0] = TextUtils.applyColor(TextUtils.applyPlaceholders(player, action.substring(8)));
+                } else if (action.startsWith("[subtitle]")) {
+                    titleText[1] = TextUtils.applyColor(TextUtils.applyPlaceholders(player, action.substring(11)));
+                } else {
+                    executeAction(player, action);
+                }
             }
+
+            if (!titleText[0].isEmpty() || !titleText[1].isEmpty()) {
+                player.sendTitle(titleText[0], titleText[1], 10, 70, 20);
+            }
+
             updatePlayerRewardData(uuid, day);
 
             if (resetWhenAllClaimed && day >= rewards.size()) {
@@ -98,12 +111,6 @@ public class RewardManager {
         } else if (action.startsWith("[actionbar]")) {
             String message = coloredLine.substring(12);
             player.sendActionBar(message);
-        } else if (action.startsWith("[title]")) { // TODO: fix the problem when using title and subtitle, but only one is shown
-            String message = coloredLine.substring(8);
-            player.sendTitle(message, "", 10, 70, 20);
-        } else if (action.startsWith("[subtitle]")) {
-            String message = coloredLine.substring(11);
-            player.sendTitle("", message, 10, 70, 20);
         } else if (action.startsWith("[sound]")) {
             String[] parts = coloredLine.substring(8).split(":");
             if (parts.length == 3) {
