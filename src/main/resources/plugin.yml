@@ -17,5 +17,7 @@ permissions:
     default: true
   ndailyrewards.reload:
     default: op
+  ndailyrewards.setday:
+    default: op
   ndailyrewards.version:
     default: op
