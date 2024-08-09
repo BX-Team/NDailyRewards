@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>NDailyRewards</h1>
+![readme-banner.png](/assets/readme-banner.png)
 
 [![Available on Modrinth](https://raw.githubusercontent.com/vLuckyyy/badges/main/avaiable-on-modrinth.svg)](https://modrinth.com/plugin/ndailyrewards)
 
@@ -29,7 +29,7 @@ NDailyRewards is a simple and lightweight plugin that allows you to reward your 
 - ...and more!
 
 ## 🛠️ Development Builds
-Get the latest development builds from our [GitHub Actions](https://github.com/BX-Team/NDailyRewards/actions/workflows/ci.yml?query=branch%3Amaster).
+Get the latest development builds from our [GitHub Actions](https://github.com/BX-Team/NDailyRewards/actions/workflows/gradle.yml?query=branch%3Amaster).
 
 ## 👷 Developer API
 To use NDailyRewards API, you first need to add NDailyRewards to your project. To do that follow these steps:
@@ -70,7 +70,7 @@ For Maven projects use:
 </dependency>
 ```
 
-You can check the latest version number [here](github.com/BX-Team/NDailyRewards/releases/latest).
+You can check the latest version number [here](https://github.com/BX-Team/NDailyRewards/releases/latest).
 
 ## 🏗️ Building
 To build NDailyRewards, follow these steps (Make sure you have **JDK 17 or higher**):
