@@ -3,14 +3,20 @@ package space.bxteam.ndailyrewards.utils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ItemBuilder {
     private final ItemStack itemStack;
     private final ItemMeta meta;
+
+    private static final Pattern customModelPattern = Pattern.compile("CustomModel\\[(\\w+):(\\d+)]\\{(\\d+)}");
+    private static final Pattern customSkullPattern = Pattern.compile("CustomSkull\\[(\\w+)]\\{(UUID|URL|BASE64):(\\S+)}");
+    private static final Pattern defaultPattern = Pattern.compile("(\\w+):(\\d+)");
 
     public ItemBuilder(ItemStack itemStack) {
         this.itemStack = itemStack;
@@ -18,16 +24,46 @@ public class ItemBuilder {
     }
 
     /**
-     * Parse an item stack from a string
+     * Parse an item stack from a custom string format
      *
-     * @param materialString The string to parse (MATERIAL:QUANTITY)
+     * @param input The input string (e.g. "DIAMOND:1", "CustomModel[DIAMOND:1]{1}", "CustomSkull[PLAYER_HEAD]{UUID:1234-5678-9012-3456}")
      * @return The parsed item stack
      */
-    public static ItemStack parseItemStack(String materialString) {
-        String[] parts = materialString.split(":");
-        Material material = Material.valueOf(parts[0]);
-        int quantity = parts.length > 1 ? Integer.parseInt(parts[1]) : 1;
-        return new ItemStack(material, quantity);
+    public static ItemStack parseItemStack(String input) {
+        Matcher customModelMatcher = customModelPattern.matcher(input);
+        Matcher customSkullMatcher = customSkullPattern.matcher(input);
+        Matcher defaultMatcher = defaultPattern.matcher(input);
+
+        if (customModelMatcher.matches()) {
+            Material material = Material.valueOf(customModelMatcher.group(1));
+            int quantity = Integer.parseInt(customModelMatcher.group(2));
+            int customModelData = Integer.parseInt(customModelMatcher.group(3));
+            return new ItemBuilder(new ItemStack(material, quantity))
+                    .setCustomModelData(customModelData)
+                    .build();
+        } else if (customSkullMatcher.matches()) {
+            Material material = Material.valueOf(customSkullMatcher.group(1));
+            String type = customSkullMatcher.group(2);
+            String value = customSkullMatcher.group(3);
+
+            ItemStack skullItem = new ItemStack(material, 1);
+            if (material == Material.PLAYER_HEAD) {
+                skullItem = switch (type) {
+                    case "UUID" -> HeadUtil.itemFromUuid(UUID.fromString(value));
+                    case "URL" -> HeadUtil.itemFromUrl(value);
+                    case "BASE64" -> HeadUtil.itemFromBase64(value);
+                    default -> skullItem;
+                };
+            }
+
+            return skullItem;
+        } else if (defaultMatcher.matches()) {
+            Material material = Material.valueOf(defaultMatcher.group(1));
+            int quantity = Integer.parseInt(defaultMatcher.group(2));
+            return new ItemStack(material, quantity);
+        }
+
+        throw new IllegalArgumentException("Invalid item string: " + input);
     }
 
     /**
@@ -64,24 +100,6 @@ public class ItemBuilder {
      */
     public ItemBuilder setCustomModelData(final int customModelData) {
         this.meta.setCustomModelData(customModelData);
-        return this;
-    }
-
-    /**
-     * Set the head texture of the item
-     *
-     * @param texture The head texture of the item
-     * @return The ItemBuilder instance
-     */
-    public ItemBuilder setHeadTexture(final String texture) {
-        if (texture != null && this.meta instanceof SkullMeta) {
-            SkullMeta skullMeta = (SkullMeta) this.meta;
-            SkullMeta headMeta = (SkullMeta) HeadUtil.itemFromUrl("https://textures.minecraft.net/texture/" + texture).getItemMeta();
-
-            if (headMeta != null) {
-                skullMeta.setOwnerProfile(headMeta.getOwnerProfile());
-            }
-        }
         return this;
     }
 

@@ -13,7 +13,7 @@
 NDailyRewards is a simple and lightweight plugin that allows you to reward your players for playing on your server every day.
 
 ## ℹ️ Information
-- NDailyRewards fully supports Minecraft from `1.17` through `1.21`.
+- NDailyRewards fully supports Minecraft from `1.16` through `1.21`.
 - Requires **Java 17 or later** to work properly. For older versions of Java, this may affect the functionality of the plugin.
 
 ## ✨ Features

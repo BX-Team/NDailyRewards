@@ -118,7 +118,7 @@ public class RewardManager {
                     Sound sound = Sound.valueOf(parts[0]);
                     float volume = Float.parseFloat(parts[1]);
                     float pitch = Float.parseFloat(parts[2]);
-                    player.playSound(player, sound, volume, pitch);
+                    player.playSound(player.getLocation(), sound, volume, pitch);
                 } catch (IllegalArgumentException e) {
                     LogUtil.log("Invalid sound action: " + action, LogUtil.LogLevel.WARNING);
                 }

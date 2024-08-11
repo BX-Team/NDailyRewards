@@ -1,7 +1,6 @@
 package space.bxteam.ndailyrewards.managers;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -76,8 +75,6 @@ public class MenuManager {
                             String timeLeftFormatted = formatTime(timeLeft);
                             String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.material");
                             String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.name").replace("<dayNum>", String.valueOf(day));
-                            int customModelData = NDailyRewards.getInstance().getConfig().getInt("gui.reward.display.next.custom-model-data");
-                            String playerHead = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.player-head-texture");
                             List<String> rewardLore = daySection.getStringList("lore").stream()
                                     .map(TextUtils::applyColor)
                                     .collect(Collectors.toList());
@@ -89,9 +86,7 @@ public class MenuManager {
 
                             rewardItem = new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
                                     .setName(name)
-                                    .setCustomModelData(customModelData)
                                     .setLore(loreFormatted)
-                                    .setHeadTexture(playerHead)
                                     .build();
                         } else {
                             rewardItem = createItemStack("unavailable", day, daySection);
@@ -138,8 +133,6 @@ public class MenuManager {
     private ItemStack createItemStack(String type, int day, ConfigurationSection daySection) {
         String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.display." + type + ".material");
         String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.display." + type + ".name").replace("<dayNum>", String.valueOf(day));
-        int customModelData = NDailyRewards.getInstance().getConfig().getInt("gui.reward.display." + type + ".custom-model-data");
-        String playerHead = NDailyRewards.getInstance().getConfig().getString("gui.reward.display." + type + ".player-head-texture");
 
         List<String> rewardLore = daySection.getStringList("lore").stream()
                 .map(TextUtils::applyColor)
@@ -153,9 +146,7 @@ public class MenuManager {
 
         return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
                 .setName(name)
-                .setCustomModelData(customModelData)
                 .setLore(loreFormatted)
-                .setHeadTexture(playerHead)
                 .build();
     }
 

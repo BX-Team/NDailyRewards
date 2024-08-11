@@ -38,7 +38,7 @@ public class VersionCommand implements SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aCurrent installed version: " + NDailyRewards.getInstance().getPluginMeta().getVersion()));
+        sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aCurrent installed version: " + NDailyRewards.getInstance().getDescription().getVersion()));
         UpdateCheckerUtil.checkForUpdates().ifPresent(latestVersion -> {
             sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aA new update is available: " + latestVersion));
             sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aDownload here: &ehttps://modrinth.com/plugin/ndailyrewards/version/" + latestVersion));
