@@ -52,7 +52,7 @@ public class RewardManager {
                 ConfigurationSection daySection = daysSection.getConfigurationSection(dayKey);
                 if (daySection != null) {
                     List<String> lore = daySection.getStringList("lore");
-                    List<String> rewardsList = daySection.getStringList("rewards");
+                    List<String> rewardsList = daySection.getStringList("actions");
                     rewards.put(day, new Reward(lore, rewardsList));
                 }
             }

@@ -61,7 +61,7 @@ rewards:
       lore:
         - "&7&lRewards:"
         - "&6- &e1x &6Diamond"
-      rewards:
+      actions:
         - "[console] give <player> diamond 1"
         - "[message] &6You have claimed your reward!"
         - "[sound] ENTITY_EXPERIENCE_ORB_PICKUP:1:1"
@@ -70,7 +70,7 @@ rewards:
       lore:
         - "&7&lRewards:"
         - "&6- &e2x &6Diamond"
-      rewards:
+      actions:
         - "[console] give <player> diamond 2"
         - "[message] &6You have claimed your reward!"
         - "[sound] ENTITY_EXPERIENCE_ORB_PICKUP:1:1"
@@ -79,7 +79,7 @@ rewards:
       lore:
         - "&7&lRewards:"
         - "&6- &e3x &6Diamond"
-      rewards:
+      actions:
         - "[console] give <player> diamond 3"
         - "[message] &6You have claimed your reward!"
         - "[sound] ENTITY_EXPERIENCE_ORB_PICKUP:1:1"
@@ -88,7 +88,7 @@ rewards:
       lore:
         - "&7&lRewards:"
         - "&6- &e4x &6Diamond"
-      rewards:
+      actions:
         - "[console] give <player> diamond 4"
         - "[message] &6You have claimed your reward!"
         - "[sound] ENTITY_EXPERIENCE_ORB_PICKUP:1:1"
@@ -97,7 +97,7 @@ rewards:
       lore:
         - "&7&lRewards:"
         - "&6- &e5x &6Diamond"
-      rewards:
+      actions:
         - "[console] give <player> diamond 5"
         - "[message] &6You have claimed your reward!"
         - "[sound] ENTITY_EXPERIENCE_ORB_PICKUP:1:1"
@@ -106,7 +106,7 @@ rewards:
       lore:
         - "&7&lRewards:"
         - "&6- &e6x &6Diamond"
-      rewards:
+      actions:
         - "[console] give <player> diamond 6"
         - "[message] &6You have claimed your reward!"
         - "[sound] ENTITY_EXPERIENCE_ORB_PICKUP:1:1"
@@ -115,7 +115,7 @@ rewards:
       lore:
         - "&7&lRewards:"
         - "&6- &e7x &6Diamond"
-      rewards:
+      actions:
         - "[console] give <player> diamond 7"
         - "[message] &6You have claimed your reward!"
         - "[sound] ENTITY_EXPERIENCE_ORB_PICKUP:1:1"
