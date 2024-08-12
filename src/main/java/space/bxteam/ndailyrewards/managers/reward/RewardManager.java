@@ -1,7 +1,6 @@
 package space.bxteam.ndailyrewards.managers.reward;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import space.bxteam.ndailyrewards.NDailyRewards;
@@ -9,7 +8,6 @@ import space.bxteam.ndailyrewards.api.event.PlayerClaimRewardEvent;
 import space.bxteam.ndailyrewards.managers.database.DatabaseManager;
 import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.utils.LogUtil;
-import space.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -68,21 +66,8 @@ public class RewardManager {
 
         Reward reward = rewards.get(day);
         if (reward != null) {
-            String[] titleText = new String[]{"", ""};
-
-            for (String action : reward.getActions()) {
-                if (action.startsWith("[title]")) {
-                    titleText[0] = TextUtils.applyColor(TextUtils.applyPlaceholders(player, action.substring(8)));
-                } else if (action.startsWith("[subtitle]")) {
-                    titleText[1] = TextUtils.applyColor(TextUtils.applyPlaceholders(player, action.substring(11)));
-                } else {
-                    executeAction(player, action);
-                }
-            }
-
-            if (!titleText[0].isEmpty() || !titleText[1].isEmpty()) {
-                player.sendTitle(titleText[0], titleText[1], 10, 70, 20);
-            }
+            ActionsExecutor executor = new ActionsExecutor(player, reward);
+            executor.execute();
 
             updatePlayerRewardData(uuid, day);
 
@@ -92,37 +77,6 @@ public class RewardManager {
 
             PlayerClaimRewardEvent event = new PlayerClaimRewardEvent(player, day);
             Bukkit.getPluginManager().callEvent(event);
-        }
-    }
-
-    private void executeAction(Player player, String action) {
-        String placeholders = TextUtils.applyPlaceholders(player, action);
-        String coloredLine = TextUtils.applyColor(placeholders);
-
-        if (action.startsWith("[console]")) {
-            String command = coloredLine.substring(9).replace("<player>", player.getName());
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-        } else if (action.startsWith("[player]")) {
-            String command = coloredLine.substring(8);
-            player.performCommand(command);
-        } else if (action.startsWith("[message]")) {
-            String message = coloredLine.substring(9);
-            player.sendMessage(message);
-        } else if (action.startsWith("[actionbar]")) {
-            String message = coloredLine.substring(12);
-            player.sendActionBar(message);
-        } else if (action.startsWith("[sound]")) {
-            String[] parts = coloredLine.substring(8).split(":");
-            if (parts.length == 3) {
-                try {
-                    Sound sound = Sound.valueOf(parts[0]);
-                    float volume = Float.parseFloat(parts[1]);
-                    float pitch = Float.parseFloat(parts[2]);
-                    player.playSound(player.getLocation(), sound, volume, pitch);
-                } catch (IllegalArgumentException e) {
-                    LogUtil.log("Invalid sound action: " + action, LogUtil.LogLevel.WARNING);
-                }
-            }
         }
     }
 
@@ -228,42 +182,6 @@ public class RewardManager {
         } catch (SQLException e) {
             LogUtil.log("Could not set player day: " + e.getMessage(), LogUtil.LogLevel.ERROR);
             e.printStackTrace();
-        }
-    }
-
-    public static class Reward {
-        private final List<String> lore;
-        private final List<String> actions;
-
-        public Reward(List<String> lore, List<String> actions) {
-            this.lore = lore;
-            this.actions = actions;
-        }
-
-        public List<String> getLore() {
-            return lore;
-        }
-
-        public List<String> getActions() {
-            return actions;
-        }
-    }
-
-    public static class PlayerRewardData {
-        private final long next;
-        private final int currentDay;
-
-        public PlayerRewardData(long next, int currentDay) {
-            this.next = next;
-            this.currentDay = currentDay;
-        }
-
-        public long getNext() {
-            return next;
-        }
-
-        public int getCurrentDay() {
-            return currentDay;
         }
     }
 }

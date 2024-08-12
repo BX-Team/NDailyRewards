@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import space.bxteam.ndailyrewards.api.github.*;
 import space.bxteam.ndailyrewards.commands.RewardCommand;
 import space.bxteam.ndailyrewards.hooks.HookManager;
 import space.bxteam.ndailyrewards.listeners.*;
@@ -12,7 +13,6 @@ import space.bxteam.ndailyrewards.managers.database.DatabaseManager;
 import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 import space.bxteam.ndailyrewards.utils.LogUtil;
-import space.bxteam.ndailyrewards.utils.UpdateCheckerUtil;
 import space.bxteam.ndailyrewards.utils.metrics.Metrics;
 
 import java.io.File;
@@ -100,13 +100,7 @@ public final class NDailyRewards extends JavaPlugin {
         Duration timeTaken = Duration.between(startTime, Instant.now());
         LogUtil.log("Successfully enabled (took " + timeTaken.toMillis() + "ms)", LogUtil.LogLevel.INFO);
 
-        if (getConfig().getBoolean("check-updates")) {
-            UpdateCheckerUtil.checkForUpdates().ifPresent(latestVersion -> {
-                LogUtil.log("&aA new update is available: " + latestVersion, LogUtil.LogLevel.INFO);
-                LogUtil.log("&aPlease update to the latest version to get bug fixes, security patches and new features!", LogUtil.LogLevel.INFO);
-                LogUtil.log("&aDownload here: https://modrinth.com/plugin/ndailyrewards/version/" + latestVersion, LogUtil.LogLevel.INFO);
-            });
-        }
+        if (getConfig().getBoolean("check-updates")) checkForUpdates();
     }
 
     @Override
@@ -138,5 +132,19 @@ public final class NDailyRewards extends JavaPlugin {
 
     private void registerCommands() {
         new RewardCommand().registerMainCommand(this, "reward");
+    }
+
+    private void checkForUpdates() {
+        GitCheck gitCheck = new GitCheck();
+        GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
+
+        GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of("v" + getDescription().getVersion()));
+        if (!result.isUpToDate()) {
+            GitRelease release = result.getLatestRelease();
+            GitTag tag = release.getTag();
+
+            LogUtil.log("&aA new update is available: &e" + tag.getTag(), LogUtil.LogLevel.INFO);
+            LogUtil.log("&aDownload here: &e" + release.getPageUrl(), LogUtil.LogLevel.INFO);
+        }
     }
 }

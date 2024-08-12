@@ -4,6 +4,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import space.bxteam.ndailyrewards.NDailyRewards;
+import space.bxteam.ndailyrewards.managers.reward.PlayerRewardData;
 import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 
 public class PlaceholderAPIHook extends PlaceholderExpansion {
@@ -36,14 +37,14 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         if (params.equalsIgnoreCase("reward_day")) {
             RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-            RewardManager.PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+            PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
 
             return String.valueOf(playerRewardData.getCurrentDay() + 1);
         }
 
         if (params.equalsIgnoreCase("remaining_time")) {
             RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-            RewardManager.PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+            PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
 
             long timeLeft = playerRewardData.getNext() - System.currentTimeMillis() / 1000L;
             if (timeLeft < 0) {

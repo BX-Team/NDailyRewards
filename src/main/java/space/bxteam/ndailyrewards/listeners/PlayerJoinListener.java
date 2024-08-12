@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import space.bxteam.ndailyrewards.NDailyRewards;
 import space.bxteam.ndailyrewards.api.event.AutoClaimEvent;
 import space.bxteam.ndailyrewards.api.event.PlayerReceiveReminderEvent;
+import space.bxteam.ndailyrewards.api.github.*;
 import space.bxteam.ndailyrewards.managers.MenuManager;
 import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.managers.reward.RewardManager;
@@ -56,10 +57,17 @@ public class PlayerJoinListener implements Listener {
         }
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("check-updates") && player.hasPermission(Permissions.UPDATE_NOTIFY)) {
-            UpdateCheckerUtil.checkForUpdates().ifPresent(latestVersion -> {
-                player.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aA new update is available: " + latestVersion));
-                player.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aDownload here: &ehttps://modrinth.com/plugin/ndailyrewards/version/" + latestVersion));
-            });
+            GitCheck gitCheck = new GitCheck();
+            GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
+
+            GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of("v" + NDailyRewards.getInstance().getDescription().getVersion()));
+            if (!result.isUpToDate()) {
+                GitRelease release = result.getLatestRelease();
+                GitTag tag = release.getTag();
+
+                LogUtil.log("&aA new update is available: &e" + tag.getTag(), LogUtil.LogLevel.INFO);
+                LogUtil.log("&aDownload here: &e" + release.getPageUrl(), LogUtil.LogLevel.INFO);
+            }
         }
     }
 

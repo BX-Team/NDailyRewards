@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import space.bxteam.ndailyrewards.NDailyRewards;
 import space.bxteam.ndailyrewards.managers.command.SubCommand;
 import space.bxteam.ndailyrewards.managers.enums.Language;
+import space.bxteam.ndailyrewards.managers.reward.PlayerRewardData;
 import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 import space.bxteam.ndailyrewards.utils.Permissions;
 
@@ -45,7 +46,7 @@ public class ClaimCommand implements SubCommand {
 
         Player player = (Player) sender;
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-        RewardManager.PlayerRewardData rewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+        PlayerRewardData rewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
         int nextDay = rewardData.getCurrentDay() + 1;
 
         if (rewardManager.isRewardAvailable(player, nextDay)) {

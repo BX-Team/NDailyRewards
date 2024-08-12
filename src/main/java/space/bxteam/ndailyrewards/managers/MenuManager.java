@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import space.bxteam.ndailyrewards.NDailyRewards;
+import space.bxteam.ndailyrewards.managers.reward.PlayerRewardData;
 import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 import space.bxteam.ndailyrewards.utils.ItemBuilder;
 import space.bxteam.ndailyrewards.utils.TextUtils;
@@ -57,7 +58,7 @@ public class MenuManager {
             ConfigurationSection daysSection = NDailyRewards.getInstance().getConfig().getConfigurationSection("rewards.days");
             if (daysSection != null) {
                 RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-                RewardManager.PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+                PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
 
                 for (String dayKey : daysSection.getKeys(false)) {
                     int day = Integer.parseInt(dayKey);
@@ -114,19 +115,19 @@ public class MenuManager {
 
     private boolean checkIfClaimed(Player player, int day) {
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-        RewardManager.PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+        PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
         return playerRewardData.getCurrentDay() >= day;
     }
 
     private boolean checkIfAvailable(Player player, int day) {
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-        RewardManager.PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+        PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
         return playerRewardData.getCurrentDay() + 1 == day && System.currentTimeMillis() / 1000L >= playerRewardData.getNext() && rewardManager.getReward(day) != null;
     }
 
     private boolean checkIfNext(Player player, int day) {
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-        RewardManager.PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+        PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
         return playerRewardData.getCurrentDay() + 1 == day && System.currentTimeMillis() / 1000L < playerRewardData.getNext();
     }
 
