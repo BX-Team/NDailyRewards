@@ -6,6 +6,11 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * This event is called when the player claimed the daily reward automatically.
+ *
+ * @since 3.0.0
+ */
 public class AutoClaimEvent extends Event implements Cancellable {
     private static final HandlerList HANDLER_LIST = new HandlerList();
     private final Player player;
