@@ -9,9 +9,7 @@ import space.bxteam.ndailyrewards.NDailyRewards;
 import space.bxteam.ndailyrewards.api.event.AutoClaimEvent;
 import space.bxteam.ndailyrewards.api.event.PlayerReceiveReminderEvent;
 import space.bxteam.ndailyrewards.api.github.*;
-import space.bxteam.ndailyrewards.managers.MenuManager;
 import space.bxteam.ndailyrewards.managers.enums.Language;
-import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 import space.bxteam.ndailyrewards.utils.*;
 
 import java.sql.Connection;
@@ -24,9 +22,6 @@ import java.time.ZoneId;
 import java.util.UUID;
 
 public class PlayerJoinListener implements Listener {
-    private RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-    private MenuManager menuManager = NDailyRewards.getInstance().getMenuManager();
-
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -55,20 +50,6 @@ public class PlayerJoinListener implements Listener {
             LogUtil.log("Could not create initial player data: " + e.getMessage(), LogUtil.LogLevel.ERROR);
             e.printStackTrace();
         }
-
-        if (NDailyRewards.getInstance().getConfig().getBoolean("check-updates") && player.hasPermission(Permissions.UPDATE_NOTIFY)) {
-            GitCheck gitCheck = new GitCheck();
-            GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
-
-            GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of("v" + NDailyRewards.getInstance().getDescription().getVersion()));
-            if (!result.isUpToDate()) {
-                GitRelease release = result.getLatestRelease();
-                GitTag tag = release.getTag();
-
-                LogUtil.log("&aA new update is available: &e" + tag.getTag(), LogUtil.LogLevel.INFO);
-                LogUtil.log("&aDownload here: &e" + release.getPageUrl(), LogUtil.LogLevel.INFO);
-            }
-        }
     }
 
     private long getUnixTimeForNextDay() {
@@ -86,18 +67,18 @@ public class PlayerJoinListener implements Listener {
         UUID uuid = player.getUniqueId();
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.auto-claim-reward")) {
-            int currentDay = rewardManager.getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
-            if (rewardManager.isRewardAvailable(player, currentDay)) {
-                rewardManager.giveReward(player, currentDay);
+            int currentDay = NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
+            if (NDailyRewards.getInstance().getRewardManager().isRewardAvailable(player, currentDay)) {
+                NDailyRewards.getInstance().getRewardManager().giveReward(player, currentDay);
                 AutoClaimEvent autoClaimEvent = new AutoClaimEvent(player, currentDay);
                 Bukkit.getPluginManager().callEvent(autoClaimEvent);
             }
         }
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.open-gui-when-available")) {
-            int currentDay = rewardManager.getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
-            if (rewardManager.isRewardAvailable(player, currentDay)) {
-                menuManager.openRewardsMenu(player);
+            int currentDay = NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
+            if (NDailyRewards.getInstance().getRewardManager().isRewardAvailable(player, currentDay)) {
+                NDailyRewards.getInstance().getMenuManager().openRewardsMenu(player);
                 if (NDailyRewards.getInstance().getConfig().getBoolean("sound.open.enabled")) {
                     SoundUtil.playSound(player, "open");
                 }
@@ -105,11 +86,30 @@ public class PlayerJoinListener implements Listener {
         }
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.notify-when-available")) {
-            int currentDay = rewardManager.getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
-            if (rewardManager.isRewardAvailable(player, currentDay)) {
+            int currentDay = NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
+            if (NDailyRewards.getInstance().getRewardManager().isRewardAvailable(player, currentDay)) {
                 player.sendMessage(Language.PREFIX.asColoredString() + Language.EVENTS_NOTIFY_WHEN_AVAILABLE.asColoredString());
-                PlayerReceiveReminderEvent reminderEvent = new PlayerReceiveReminderEvent(player, rewardManager.getPlayerRewardData(uuid).getCurrentDay() + 1);
+                PlayerReceiveReminderEvent reminderEvent = new PlayerReceiveReminderEvent(player, NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(uuid).getCurrentDay() + 1);
                 Bukkit.getPluginManager().callEvent(reminderEvent);
+            }
+        }
+    }
+
+    @EventHandler
+    public void updateChecker(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+
+        if (NDailyRewards.getInstance().getConfig().getBoolean("check-updates") && player.hasPermission(Permissions.UPDATE_NOTIFY)) {
+            GitCheck gitCheck = new GitCheck();
+            GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
+
+            GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of(NDailyRewards.getInstance().getDescription().getVersion()));
+            if (!result.isUpToDate()) {
+                GitRelease release = result.getLatestRelease();
+                GitTag tag = release.getTag();
+
+                player.sendMessage(TextUtils.applyColor(Language.PREFIX.asString() + "&aA new update is available: &e" + tag.getTag()));
+                player.sendMessage(TextUtils.applyColor(Language.PREFIX.asString() + "&aDownload here: &e" + release.getPageUrl()));
             }
         }
     }

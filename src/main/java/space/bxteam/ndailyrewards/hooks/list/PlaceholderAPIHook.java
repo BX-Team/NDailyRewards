@@ -15,12 +15,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return NDailyRewards.getInstance().getPluginMeta().getAuthors().toString();
+        return NDailyRewards.getInstance().getDescription().getAuthors().toString();
     }
 
     @Override
     public @NotNull String getVersion() {
-        return NDailyRewards.getInstance().getPluginMeta().getVersion();
+        return NDailyRewards.getInstance().getDescription().getVersion();
     }
 
     @Override

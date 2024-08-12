@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class DatabaseManager {
-    public final @NotNull HikariConfig hikariConfig = new HikariConfig();
+    public HikariConfig hikariConfig = new HikariConfig();
     public HikariDataSource dbSource;
 
     public DatabaseManager(@NotNull JavaPlugin plugin) {

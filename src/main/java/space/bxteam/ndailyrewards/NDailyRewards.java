@@ -111,14 +111,14 @@ public final class NDailyRewards extends JavaPlugin {
     }
 
     public void reload() {
-        database.dbSource.close();
-        rewardManager.unload();
+        this.database.dbSource.close();
+        this.rewardManager.unload();
 
         reloadConfig();
         createLangFile();
         Language.init(this);
-        database = new DatabaseManager(this);
-        rewardManager = new RewardManager(this, database);
+        this.database = new DatabaseManager(this);
+        this.rewardManager = new RewardManager(this, this.database);
     }
 
     private void createLangFile() {
@@ -138,7 +138,7 @@ public final class NDailyRewards extends JavaPlugin {
         GitCheck gitCheck = new GitCheck();
         GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
 
-        GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of("v" + getDescription().getVersion()));
+        GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of(getDescription().getVersion()));
         if (!result.isUpToDate()) {
             GitRelease release = result.getLatestRelease();
             GitTag tag = release.getTag();
