@@ -81,7 +81,11 @@ publishing {
     repositories {
         maven {
             name = "ndailyrewards"
-            url = "https://repo.bx-team.space/releases"
+            if (project.version.endsWith("-SNAPSHOT")) {
+                url = "https://repo.bx-team.space/snapshots"
+            } else {
+                url = "https://repo.bx-team.space/releases"
+            }
             credentials(PasswordCredentials)
             authentication {
                 basic(BasicAuthentication)

@@ -89,5 +89,6 @@ For NDailyRewards to work properly, we use the following dependencies:
 - [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)
 - [Paper API](https://docs.papermc.io/paper/dev/api)
 - [bStats](https://bstats.org)
+- [mc-publish](https://github.com/Kir-Antipov/mc-publish)
 
 NDailyRewards is licensed under the [GPL-3.0 License](https://github.com/BX-Team/NDailyRewards/blob/master/LICENSE).
