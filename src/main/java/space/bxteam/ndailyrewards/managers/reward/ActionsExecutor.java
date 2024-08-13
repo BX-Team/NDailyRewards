@@ -18,7 +18,7 @@ public class ActionsExecutor {
     }
 
     public void execute() {
-        reward.getActions().forEach(action -> {
+        reward.actions().forEach(action -> {
             ActionType actionType = ActionType.fromAction(action);
             if (actionType == null) return;
 

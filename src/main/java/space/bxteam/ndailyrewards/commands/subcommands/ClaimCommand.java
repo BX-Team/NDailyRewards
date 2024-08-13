@@ -47,7 +47,7 @@ public class ClaimCommand implements SubCommand {
         Player player = (Player) sender;
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
         PlayerRewardData rewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
-        int nextDay = rewardData.getCurrentDay() + 1;
+        int nextDay = rewardData.currentDay() + 1;
 
         if (rewardManager.isRewardAvailable(player, nextDay)) {
             rewardManager.giveReward(player, nextDay);

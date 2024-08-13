@@ -43,63 +43,65 @@ public class MenuManager {
     }
 
     private void updateRewardsMenu(Player player) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(NDailyRewards.getInstance(), () -> {
-            final Inventory inventory = Bukkit.createInventory(
+        Inventory inventory = player.getOpenInventory().getTopInventory();
+
+        if (!(inventory.getHolder() instanceof MainMenuHolder)) {
+            inventory = Bukkit.createInventory(
                     MAIN_MENU_HOLDER,
                     NDailyRewards.getInstance().getConfig().getInt("gui.reward.size"),
-                    TextUtils.applyColor(NDailyRewards.getInstance().getConfig().getString("gui.reward.title")));
-
-            if (NDailyRewards.getInstance().getConfig().getBoolean("gui.reward.other.filler.enable")) {
-                for (int i = 0; i < NDailyRewards.getInstance().getConfig().getInt("gui.reward.size"); i++) {
-                    inventory.setItem(i, fillItem);
-                }
-            }
-
-            ConfigurationSection daysSection = NDailyRewards.getInstance().getConfig().getConfigurationSection("rewards.days");
-            if (daysSection != null) {
-                RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-                PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
-
-                for (String dayKey : daysSection.getKeys(false)) {
-                    int day = Integer.parseInt(dayKey);
-                    ConfigurationSection daySection = daysSection.getConfigurationSection(dayKey);
-                    if (daySection != null) {
-                        int position = daySection.getInt("position");
-
-                        ItemStack rewardItem;
-                        if (checkIfClaimed(player, day)) {
-                            rewardItem = createItemStack("claimed", day, daySection);
-                        } else if (checkIfAvailable(player, day)) {
-                            rewardItem = createItemStack("available", day, daySection);
-                        } else if (checkIfNext(player, day)) {
-                            long timeLeft = playerRewardData.getNext() - System.currentTimeMillis() / 1000L;
-                            String timeLeftFormatted = formatTime(timeLeft);
-                            String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.material");
-                            String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.name").replace("<dayNum>", String.valueOf(day));
-                            List<String> rewardLore = daySection.getStringList("lore").stream()
-                                    .map(TextUtils::applyColor)
-                                    .collect(Collectors.toList());
-                            String rewardLoreJoined = String.join("\n", rewardLore);
-                            List<String> loreFormatted = NDailyRewards.getInstance().getConfig().getStringList("gui.reward.display.next.lore").stream()
-                                    .map(s -> s.replace("<reward-lore>", rewardLoreJoined).replace("<time-left>", timeLeftFormatted))
-                                    .flatMap(s -> Arrays.stream(s.split("\n")))
-                                    .collect(Collectors.toList());
-
-                            rewardItem = new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
-                                    .setName(name)
-                                    .setLore(loreFormatted)
-                                    .build();
-                        } else {
-                            rewardItem = createItemStack("unavailable", day, daySection);
-                        }
-
-                        inventory.setItem(position, rewardItem);
-                    }
-                }
-            }
-
+                    TextUtils.applyColor(NDailyRewards.getInstance().getConfig().getString("gui.reward.title"))
+            );
             player.openInventory(inventory);
-        });
+        }
+
+        if (NDailyRewards.getInstance().getConfig().getBoolean("gui.reward.other.filler.enable")) {
+            for (int i = 0; i < NDailyRewards.getInstance().getConfig().getInt("gui.reward.size"); i++) {
+                inventory.setItem(i, fillItem);
+            }
+        }
+
+        ConfigurationSection daysSection = NDailyRewards.getInstance().getConfig().getConfigurationSection("rewards.days");
+        if (daysSection != null) {
+            RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
+            PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+
+            for (String dayKey : daysSection.getKeys(false)) {
+                int day = Integer.parseInt(dayKey);
+                ConfigurationSection daySection = daysSection.getConfigurationSection(dayKey);
+                if (daySection != null) {
+                    int position = daySection.getInt("position");
+
+                    ItemStack rewardItem;
+                    if (checkIfClaimed(player, day)) {
+                        rewardItem = createItemStack("claimed", day, daySection);
+                    } else if (checkIfAvailable(player, day)) {
+                        rewardItem = createItemStack("available", day, daySection);
+                    } else if (checkIfNext(player, day)) {
+                        long timeLeft = playerRewardData.next() - System.currentTimeMillis() / 1000L;
+                        String timeLeftFormatted = formatTime(timeLeft);
+                        String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.material");
+                        String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.next.name").replace("<dayNum>", String.valueOf(day));
+                        List<String> rewardLore = daySection.getStringList("lore").stream()
+                                .map(TextUtils::applyColor)
+                                .collect(Collectors.toList());
+                        String rewardLoreJoined = String.join("\n", rewardLore);
+                        List<String> loreFormatted = NDailyRewards.getInstance().getConfig().getStringList("gui.reward.display.next.lore").stream()
+                                .map(s -> s.replace("<reward-lore>", rewardLoreJoined).replace("<time-left>", timeLeftFormatted))
+                                .flatMap(s -> Arrays.stream(s.split("\n")))
+                                .collect(Collectors.toList());
+
+                        rewardItem = new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
+                                .setName(name)
+                                .setLore(loreFormatted)
+                                .build();
+                    } else {
+                        rewardItem = createItemStack("unavailable", day, daySection);
+                    }
+
+                    inventory.setItem(position, rewardItem);
+                }
+            }
+        }
     }
 
     private ItemStack loadFillItem() {
@@ -116,19 +118,19 @@ public class MenuManager {
     private boolean checkIfClaimed(Player player, int day) {
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
         PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
-        return playerRewardData.getCurrentDay() >= day;
+        return playerRewardData.currentDay() >= day;
     }
 
     private boolean checkIfAvailable(Player player, int day) {
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
         PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
-        return playerRewardData.getCurrentDay() + 1 == day && System.currentTimeMillis() / 1000L >= playerRewardData.getNext() && rewardManager.getReward(day) != null;
+        return playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L >= playerRewardData.next() && rewardManager.getReward(day) != null;
     }
 
     private boolean checkIfNext(Player player, int day) {
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
         PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
-        return playerRewardData.getCurrentDay() + 1 == day && System.currentTimeMillis() / 1000L < playerRewardData.getNext();
+        return playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L < playerRewardData.next();
     }
 
     private ItemStack createItemStack(String type, int day, ConfigurationSection daySection) {

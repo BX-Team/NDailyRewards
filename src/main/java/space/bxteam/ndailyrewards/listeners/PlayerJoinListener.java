@@ -67,7 +67,7 @@ public class PlayerJoinListener implements Listener {
         UUID uuid = player.getUniqueId();
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.auto-claim-reward")) {
-            int currentDay = NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
+            int currentDay = NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(player.getUniqueId()).currentDay() + 1;
             if (NDailyRewards.getInstance().getRewardManager().isRewardAvailable(player, currentDay)) {
                 NDailyRewards.getInstance().getRewardManager().giveReward(player, currentDay);
                 AutoClaimEvent autoClaimEvent = new AutoClaimEvent(player, currentDay);
@@ -76,7 +76,7 @@ public class PlayerJoinListener implements Listener {
         }
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.open-gui-when-available")) {
-            int currentDay = NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
+            int currentDay = NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(player.getUniqueId()).currentDay() + 1;
             if (NDailyRewards.getInstance().getRewardManager().isRewardAvailable(player, currentDay)) {
                 NDailyRewards.getInstance().getMenuManager().openRewardsMenu(player);
                 if (NDailyRewards.getInstance().getConfig().getBoolean("sound.open.enabled")) {
@@ -86,10 +86,10 @@ public class PlayerJoinListener implements Listener {
         }
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.notify-when-available")) {
-            int currentDay = NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(player.getUniqueId()).getCurrentDay() + 1;
+            int currentDay = NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(player.getUniqueId()).currentDay() + 1;
             if (NDailyRewards.getInstance().getRewardManager().isRewardAvailable(player, currentDay)) {
                 player.sendMessage(Language.PREFIX.asColoredString() + Language.EVENTS_NOTIFY_WHEN_AVAILABLE.asColoredString());
-                PlayerReceiveReminderEvent reminderEvent = new PlayerReceiveReminderEvent(player, NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(uuid).getCurrentDay() + 1);
+                PlayerReceiveReminderEvent reminderEvent = new PlayerReceiveReminderEvent(player, NDailyRewards.getInstance().getRewardManager().getPlayerRewardData(uuid).currentDay() + 1);
                 Bukkit.getPluginManager().callEvent(reminderEvent);
             }
         }

@@ -135,7 +135,7 @@ public class RewardManager {
     public boolean canClaimReward(UUID uuid) {
         PlayerRewardData data = getPlayerRewardData(uuid);
         long currentTime = System.currentTimeMillis() / 1000L;
-        return currentTime >= data.getNext() && data.getCurrentDay() < rewards.size();
+        return currentTime >= data.next() && data.currentDay() < rewards.size();
     }
 
     private long getUnixTimeForNextDay() {
@@ -157,17 +157,17 @@ public class RewardManager {
 
     public boolean isRewardClaimed(Player player, int day) {
         PlayerRewardData playerRewardData = getPlayerRewardData(player.getUniqueId());
-        return playerRewardData.getCurrentDay() >= day;
+        return playerRewardData.currentDay() >= day;
     }
 
     public boolean isRewardAvailable(Player player, int day) {
         PlayerRewardData playerRewardData = getPlayerRewardData(player.getUniqueId());
-        return playerRewardData.getCurrentDay() + 1 == day && System.currentTimeMillis() / 1000L >= playerRewardData.getNext();
+        return playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L >= playerRewardData.next();
     }
 
     public boolean isRewardNext(Player player, int day) {
         PlayerRewardData playerRewardData = getPlayerRewardData(player.getUniqueId());
-        return playerRewardData.getCurrentDay() + 1 == day && System.currentTimeMillis() / 1000L < playerRewardData.getNext();
+        return playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L < playerRewardData.next();
     }
 
     public void setDay(Player player, int day) {

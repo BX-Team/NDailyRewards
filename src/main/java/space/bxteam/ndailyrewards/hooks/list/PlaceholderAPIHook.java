@@ -39,14 +39,14 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
             PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
 
-            return String.valueOf(playerRewardData.getCurrentDay() + 1);
+            return String.valueOf(playerRewardData.currentDay() + 1);
         }
 
         if (params.equalsIgnoreCase("remaining_time")) {
             RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
             PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
 
-            long timeLeft = playerRewardData.getNext() - System.currentTimeMillis() / 1000L;
+            long timeLeft = playerRewardData.next() - System.currentTimeMillis() / 1000L;
             if (timeLeft < 0) {
                 return "00:00:00";
             } else {
