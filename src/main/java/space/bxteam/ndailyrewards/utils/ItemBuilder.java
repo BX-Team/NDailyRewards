@@ -15,7 +15,7 @@ public class ItemBuilder {
     private final ItemMeta meta;
 
     private static final Pattern customModelPattern = Pattern.compile("CustomModel\\[(\\w+):(\\d+)]\\{(\\d+)}");
-    private static final Pattern customSkullPattern = Pattern.compile("CustomSkull\\[(\\w+)]\\{(UUID|URL|BASE64):(\\S+)}");
+    private static final Pattern customSkullPattern = Pattern.compile("CustomSkull\\[(\\w+):(\\d+)]\\{(UUID|URL|BASE64):(\\S+)}");
     private static final Pattern defaultPattern = Pattern.compile("(\\w+):(\\d+)");
 
     public ItemBuilder(ItemStack itemStack) {
@@ -26,7 +26,7 @@ public class ItemBuilder {
     /**
      * Parse an item stack from a custom string format
      *
-     * @param input The input string (e.g. "DIAMOND:1", "CustomModel[DIAMOND:1]{1}", "CustomSkull[PLAYER_HEAD]{UUID:1234-5678-9012-3456}")
+     * @param input The input string (e.g. "DIAMOND:1", "CustomModel[DIAMOND:1]{1}", "CustomSkull[PLAYER_HEAD:1]{UUID:1234-5678-9012-3456}")
      * @return The parsed item stack
      */
     public static ItemStack parseItemStack(String input) {
@@ -43,10 +43,11 @@ public class ItemBuilder {
                     .build();
         } else if (customSkullMatcher.matches()) {
             Material material = Material.valueOf(customSkullMatcher.group(1));
-            String type = customSkullMatcher.group(2);
-            String value = customSkullMatcher.group(3);
+            int quantity = Integer.parseInt(customSkullMatcher.group(2));
+            String type = customSkullMatcher.group(3);
+            String value = customSkullMatcher.group(4);
 
-            ItemStack skullItem = new ItemStack(material, 1);
+            ItemStack skullItem = new ItemStack(material, quantity);
             if (material == Material.PLAYER_HEAD) {
                 skullItem = switch (type) {
                     case "UUID" -> HeadUtil.itemFromUuid(UUID.fromString(value));
@@ -54,6 +55,7 @@ public class ItemBuilder {
                     case "BASE64" -> HeadUtil.itemFromBase64(value);
                     default -> skullItem;
                 };
+                skullItem.setAmount(quantity);
             }
 
             return skullItem;
