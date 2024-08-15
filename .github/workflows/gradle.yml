@@ -29,7 +29,7 @@ jobs:
         arguments: 'shadowJar'
 
     - name: Upload NDailyRewards
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v4.3.6
       with:
         name: NDailyRewards
         path: "build/libs/NDailyRewards-*.jar"
