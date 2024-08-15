@@ -83,7 +83,7 @@ public final class NDailyRewards extends JavaPlugin {
         new Metrics(this, 13844);
 
         LogUtil.log("Loading plugin managers...", LogUtil.LogLevel.INFO);
-        database = new DatabaseManager(this);
+        database = new DatabaseManager();
         rewardManager = new RewardManager(this, database);
         menuManager = new MenuManager();
         new HookManager(this).registerHooks();
@@ -117,7 +117,7 @@ public final class NDailyRewards extends JavaPlugin {
         reloadConfig();
         createLangFile();
         Language.init(this);
-        this.database = new DatabaseManager(this);
+        this.database = new DatabaseManager();
         this.rewardManager = new RewardManager(this, this.database);
     }
 

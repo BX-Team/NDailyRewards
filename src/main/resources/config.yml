@@ -16,17 +16,30 @@ database:
   # Select here the database you want to use
   # The following databases are supported:
   #  - sqlite - (default) stores all data in a local file
-  #  - mysql - allows using a remote database
+  #  - mariadb - allows using a remote database
   type: sqlite
 
   # SQLite configuration
   sqlite:
     file: "ndailyrewards.db"
   # MySQL configuration
-  mysql:
-    jdbc: "jdbc:mysql://localhost:3306/ndailyrewards"
+  mariadb:
+    jdbc: "jdbc:mariadb://localhost:3306/ndailyrewards"
     username: "root"
     password: "password"
+
+  # Advanced configuration for Database (do not touch unless you know what you are doing)
+  # Comment out any data source property to disable setting it.
+  cachePrepStmts: true
+  prepStmtCacheSize: 250
+  prepStmtCacheSqlLimit: 2048
+  useServerPrepStmts: true
+  useLocalSessionState: true
+  rewriteBatchedStatements: true
+  cacheResultSetMetadata: true
+  cacheServerConfiguration: true
+  elideSetAutoCommits: true
+  maintainTimeStats: false
 
 # Player events
 events:

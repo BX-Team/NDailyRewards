@@ -20,7 +20,7 @@ commands:
     - "&f/reward setday <player> <day> &7- Set player's day"
     - "&f/reward version &7- Show plugin version"
   reload: "&aPlugin reloaded!"
-  setday: "&aSet &e<player> &6current day to &e<day>"
+  setday: "&aSet &e<player> &acurrent day to &e<day>"
 
 events:
   notify-when-available: "&6You have available rewards! Use &f/reward &6to open the menu"

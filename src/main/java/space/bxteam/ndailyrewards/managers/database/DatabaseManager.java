@@ -2,7 +2,6 @@ package space.bxteam.ndailyrewards.managers.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import space.bxteam.ndailyrewards.NDailyRewards;
 import space.bxteam.ndailyrewards.utils.LogUtil;
@@ -20,7 +19,7 @@ public class DatabaseManager {
     public HikariConfig hikariConfig = new HikariConfig();
     public HikariDataSource dbSource;
 
-    public DatabaseManager(@NotNull JavaPlugin plugin) {
+    public DatabaseManager() {
         setupDatabaseSource();
         try {
             initTables();
@@ -41,11 +40,11 @@ public class DatabaseManager {
                 hikariConfig.setDriverClassName("org.sqlite.JDBC");
                 hikariConfig.setJdbcUrl("jdbc:sqlite:" + NDailyRewards.getInstance().getDataFolder() + File.separator + NDailyRewards.getInstance().getConfig().getString("database.sqlite.file"));
             }
-            case "mysql" -> {
-                hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
-                hikariConfig.setJdbcUrl(NDailyRewards.getInstance().getConfig().getString("database.mysql.jdbc"));
-                hikariConfig.setUsername(NDailyRewards.getInstance().getConfig().getString("database.mysql.username"));
-                hikariConfig.setPassword(NDailyRewards.getInstance().getConfig().getString("database.mysql.password"));
+            case "mariadb" -> {
+                hikariConfig.setDriverClassName(org.mariadb.jdbc.Driver.class.getName());
+                hikariConfig.setJdbcUrl(NDailyRewards.getInstance().getConfig().getString("database.mariadb.jdbc"));
+                hikariConfig.setUsername(NDailyRewards.getInstance().getConfig().getString("database.mariadb.username"));
+                hikariConfig.setPassword(NDailyRewards.getInstance().getConfig().getString("database.mariadb.password"));
             }
             default -> {
                 LogUtil.log("Invalid database type! Please check your config.yml", LogUtil.LogLevel.ERROR);
@@ -53,6 +52,17 @@ public class DatabaseManager {
                 return;
             }
         }
+
+        hikariConfig.addDataSourceProperty("cachePrepStmts", NDailyRewards.getInstance().getConfig().getBoolean("database.cachePrepStmts"));
+        hikariConfig.addDataSourceProperty("prepStmtCacheSize", NDailyRewards.getInstance().getConfig().getInt("database.prepStmtCacheSize"));
+        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", NDailyRewards.getInstance().getConfig().getInt("database.prepStmtCacheSqlLimit"));
+        hikariConfig.addDataSourceProperty("useServerPrepStmts", NDailyRewards.getInstance().getConfig().getBoolean("database.useServerPrepStmts"));
+        hikariConfig.addDataSourceProperty("useLocalSessionState", NDailyRewards.getInstance().getConfig().getBoolean("database.useLocalSessionState"));
+        hikariConfig.addDataSourceProperty("rewriteBatchedStatements", NDailyRewards.getInstance().getConfig().getBoolean("database.rewriteBatchedStatements"));
+        hikariConfig.addDataSourceProperty("cacheResultSetMetadata", NDailyRewards.getInstance().getConfig().getBoolean("database.cacheResultSetMetadata"));
+        hikariConfig.addDataSourceProperty("cacheServerConfiguration", NDailyRewards.getInstance().getConfig().getBoolean("database.cacheServerConfiguration"));
+        hikariConfig.addDataSourceProperty("elideSetAutoCommits", NDailyRewards.getInstance().getConfig().getBoolean("database.elideSetAutoCommits"));
+        hikariConfig.addDataSourceProperty("maintainTimeStats", NDailyRewards.getInstance().getConfig().getBoolean("database.maintainTimeStats"));
 
         dbSource = new HikariDataSource(hikariConfig);
     }
@@ -66,7 +76,7 @@ public class DatabaseManager {
     private void initTables() throws @NotNull SQLException, @NotNull IOException {
         final @NotNull HashMap<@NotNull String, @NotNull String> initFiles = new HashMap<>() {{
             put("sqlite", "databases/sqlite.sql");
-            put("mysql", "databases/mysql.sql");
+            put("mariadb", "databases/mariadb.sql");
         }};
         final @NotNull String dbType = Objects.requireNonNull(NDailyRewards.getInstance().getConfig().getString("database.type"));
         if (!initFiles.containsKey(dbType)) {

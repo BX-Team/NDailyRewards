@@ -36,6 +36,7 @@ dependencies {
 
     // Dependencies
     implementation("com.zaxxer:HikariCP:${project.hikari_cp}")
+    implementation("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}")
     compileOnly("me.clip:placeholderapi:${project.placeholder_api}")
 }
 
@@ -44,6 +45,7 @@ shadowJar {
     archiveFileName.set("${project.name}-${project.version}.jar")
     dependencies {
         include(dependency("com.zaxxer:HikariCP:${project.hikari_cp}"))
+        include(dependency("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}"))
     }
 }
 

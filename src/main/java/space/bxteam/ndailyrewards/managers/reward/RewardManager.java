@@ -114,7 +114,7 @@ public class RewardManager {
 
     public PlayerRewardData getPlayerRewardData(UUID uuid) {
         try (Connection conn = dbManager.dbSource.getConnection()) {
-            String query = "SELECT * FROM `data` WHERE uuid = ?";
+            String query = "SELECT `next_time`, `next_day` FROM `data` WHERE `uuid` = ?";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setString(1, uuid.toString());
                 try (ResultSet rs = stmt.executeQuery()) {
