@@ -73,6 +73,6 @@ jobs:
 
     - name: Publish API
       continue-on-error: true
-      uses: gradle/gradle-build-action@v3.4.2
+      uses: gradle/gradle-build-action@v3.5.0
       with:
         arguments: publish -PndailyrewardsUsername=${{ secrets.REPO_USERNAME }} -PndailyrewardsPassword=${{ secrets.REPO_SECRET }}
