@@ -1,54 +1,73 @@
 plugins {
-    id 'java-library'
     id 'java'
     id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'io.papermc.paperweight.userdev' version '1.7.1'
 }
 
+group = project.group
+version = project.version
+description = project.description
+
 repositories {
-    mavenLocal()
     mavenCentral()
+    gradlePluginPortal()
     maven {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
     }
     maven {
-        name = "citizens-npc"
-        url = "https://repo.citizensnpcs.co/"
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
     }
     maven {
-        name = "minecraft"
-        url = "https://libraries.minecraft.net"
-    }
-    maven {
-        name = "codemc"
-        url = "https://repo.codemc.org/repository/maven-public/"
-    }
-    maven {
-        name = "placeholder-api"
+        name = "extendedclip"
         url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
+    }
+    maven {
+        name = "jitpack"
+        url = "https://jitpack.io"
     }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.paper_api}") // Paper API
+    paperweight.paperDevBundle("${project.paper_api}")
 
-    // Plugin dependencies
-    compileOnly("net.citizensnpcs:citizensapi:${project.citizensapi}")
-    compileOnly("com.mojang:authlib:${project.authlib}")
-    compileOnly("de.tr7zw:item-nbt-api-plugin:${project.nbt_api_plugin}")
-    compileOnly("org.xerial:sqlite-jdbc:${project.sqlite_jdbc}")
+    // Dependencies
+    implementation("com.zaxxer:HikariCP:${project.hikari_cp}")
+    implementation("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}")
     compileOnly("me.clip:placeholderapi:${project.placeholder_api}")
 }
 
-group = project.group
-version = project.version
-description = "Reward players for playing on your server"
-java.sourceCompatibility = JavaVersion.VERSION_17
+shadowJar {
+    archiveClassifier.set('')
+    archiveFileName.set("${project.name}-${project.version}.jar")
+    dependencies {
+        include(dependency("com.zaxxer:HikariCP:${project.hikari_cp}"))
+        include(dependency("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}"))
+    }
+}
 
+def targetJavaVersion = 17
 java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
     withSourcesJar()
     withJavadocJar()
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(targetJavaVersion)
+}
+
+tasks.assemble {
+    dependsOn(tasks.reobfJar)
 }
 
 processResources {
@@ -64,7 +83,11 @@ publishing {
     repositories {
         maven {
             name = "ndailyrewards"
-            url = "https://repo.bx-team.space/releases"
+            if (project.version.endsWith("-SNAPSHOT")) {
+                url = "https://repo.bx-team.space/snapshots"
+            } else {
+                url = "https://repo.bx-team.space/releases"
+            }
             credentials(PasswordCredentials)
             authentication {
                 basic(BasicAuthentication)

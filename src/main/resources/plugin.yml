@@ -1,20 +1,23 @@
 name: NDailyRewards
 version: '${version}'
 main: space.bxteam.ndailyrewards.NDailyRewards
-api-version: 1.16
-depend: [ NBTAPI ]
-softdepend: [ Citizens, PlaceholderAPI ]
-authors: [ NONPLAY, Xenolit ]
-description: Reward players for playing on your server!
-website: https://modrinth.com/plugin/ndailyrewards
+api-version: '1.16'
+authors: [NONPLAYT]
+website: https://github.com/BX-Team/NDailyRewards
+description: Reward players for playing on your server
+softdepend:
+  - PlaceholderAPI
 commands:
-  ndailyrewards:
-    aliases: [rewards, ndailyreward, dailybonus, ndr]
-    description: Main command
+  reward:
+    aliases: [rw]
 permissions:
-  ndailyrewards.user:
-    description: Allows players to use non-admin commands.
+  ndailyrewards.claim:
+    default: true
+  ndailyrewards.help:
+    default: true
+  ndailyrewards.reload:
     default: op
-  ndailyrewards.admin:
-    description: Allows to use admin commands.
+  ndailyrewards.setday:
+    default: op
+  ndailyrewards.version:
     default: op

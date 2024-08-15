@@ -1,145 +1,150 @@
 package space.bxteam.ndailyrewards;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import space.bxteam.ndailyrewards.cfg.Config;
-import space.bxteam.ndailyrewards.cfg.ConfigManager;
-import space.bxteam.ndailyrewards.cmds.CommandManager;
-import space.bxteam.ndailyrewards.manager.UserManager;
-import space.bxteam.ndailyrewards.hooks.external.PlaceholderExpansions;
-import space.bxteam.ndailyrewards.tasks.SaveTask;
-import space.bxteam.ndailyrewards.utils.logs.LogType;
-import space.bxteam.ndailyrewards.utils.logs.LogUtil;
-import space.bxteam.ndailyrewards.utils.metrics.Metrics;
-import space.bxteam.ndailyrewards.data.DataManager;
-import space.bxteam.ndailyrewards.hooks.HookManager;
-import space.bxteam.ndailyrewards.data.IDataV2;
-
-import org.bukkit.Bukkit;
-import org.bukkit.event.HandlerList;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.PluginManager;
+import space.bxteam.ndailyrewards.api.github.*;
+import space.bxteam.ndailyrewards.commands.RewardCommand;
+import space.bxteam.ndailyrewards.hooks.HookManager;
+import space.bxteam.ndailyrewards.listeners.*;
+import space.bxteam.ndailyrewards.managers.MenuManager;
+import space.bxteam.ndailyrewards.managers.database.DatabaseManager;
+import space.bxteam.ndailyrewards.managers.enums.Language;
+import space.bxteam.ndailyrewards.managers.reward.RewardManager;
+import space.bxteam.ndailyrewards.utils.LogUtil;
+import space.bxteam.ndailyrewards.utils.metrics.Metrics;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Optional;
+import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 
-public class NDailyRewards extends JavaPlugin {
-    public static NDailyRewards instance;
-    private CommandManager cmd;
-    private ConfigManager cm;
-    private PluginManager pm;
-    private HookManager hm;
-    private DataManager data;
-    private UserManager um;
-    private SaveTask st;
+public final class NDailyRewards extends JavaPlugin {
+    private static NDailyRewards instance;
+    private File langFile;
+    private FileConfiguration langConfig;
+    private DatabaseManager database;
+    private RewardManager rewardManager;
+    private MenuManager menuManager;
 
+    /**
+     * Get instance of plugin
+     *
+     * @return NDR instance
+     */
     public static NDailyRewards getInstance() {
         return NDailyRewards.instance;
     }
 
+    /**
+     * Get plugin language manager
+     *
+     * @return language config
+     */
+    public FileConfiguration getLangConfig() {
+        return langConfig;
+    }
+
+    /**
+     * Get plugin database manager
+     *
+     * @return database manager
+     */
+    public DatabaseManager getDatabase() {
+        return database;
+    }
+
+    /**
+     * Get plugin reward manager
+     *
+     * @return reward manager
+     */
+    public RewardManager getRewardManager() {
+        return rewardManager;
+    }
+
+    /**
+     * Get plugin menu manager
+     *
+     * @return menu manager
+     */
+    public MenuManager getMenuManager() {
+        return menuManager;
+    }
+
     @Override
     public void onEnable() {
+        Instant startTime = Instant.now();
         NDailyRewards.instance = this;
+        saveDefaultConfig();
+        createLangFile();
+        Language.init(this);
+        registerCommands();
+        new Metrics(this, 13844);
 
-        onEnableLoad();
-        load();
-        checkForUpdates().ifPresent(latestVersion -> {
-            LogUtil.send("&aAn update is available: " + latestVersion, LogType.INFO);
-            LogUtil.send("&aPlease update to the latest version to get bug fixes, security patches and new features!", LogType.INFO);
-            LogUtil.send("&aDownload here: https://modrinth.com/plugin/ndailyrewards/version/" + latestVersion, LogType.INFO);
-        });
+        LogUtil.log("Loading plugin managers...", LogUtil.LogLevel.INFO);
+        database = new DatabaseManager();
+        rewardManager = new RewardManager(this, database);
+        menuManager = new MenuManager();
+        new HookManager(this).registerHooks();
 
-        if (Config.opt_metrics) {
-            int pluginId = 13844;
-            new Metrics(this, pluginId);
+        LogUtil.log("Registering listeners...", LogUtil.LogLevel.INFO);
+        final Listener[] events = new Listener[]{
+                new InventoryClickListener(),
+                new PlayerJoinListener()
+        };
+        for (final Listener event : events) {
+            getServer().getPluginManager().registerEvents(event, this);
         }
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderExpansions().register();
-            LogUtil.send("&eLoaded &6PlaceholderAPI &ehook!", LogType.INFO);
-        }
+
+        Duration timeTaken = Duration.between(startTime, Instant.now());
+        LogUtil.log("Successfully enabled (took " + timeTaken.toMillis() + "ms)", LogUtil.LogLevel.INFO);
+
+        if (getConfig().getBoolean("check-updates")) checkForUpdates();
     }
 
+    @Override
     public void onDisable() {
-        this.unload();
-    }
-
-    public void onEnableLoad() {
-        (this.cmd = new CommandManager(this)).setup();
-        this.getCommand("ndailyrewards").setExecutor(this.cmd);
-        this.pm = this.getServer().getPluginManager();
-        (this.hm = new HookManager(this)).setup();
-
-        new SaveTask(this).start();
-    }
-
-    public void load() {
-        (this.cm = new ConfigManager(this)).setup();
-        (this.data = new DataManager(this)).setup();
-        (this.um = new UserManager(this)).setup();
-    }
-
-    public void unload() {
-        try {
-            this.getServer().getScheduler().cancelTasks(this);
-            HandlerList.unregisterAll(this);
-            this.um.shutdown();
-            this.data.shutdown();
-        } catch (Exception ex) {
-            LogUtil.send("&cError while saving plugin data: " + ex.getMessage(), LogType.ERROR);
-        }
+        LogUtil.log("Disabling plugin...", LogUtil.LogLevel.INFO);
+        getServer().getScheduler().cancelTasks(this);
+        database.dbSource.close();
     }
 
     public void reload() {
-        this.unload();
-        this.load();
+        this.database.dbSource.close();
+        this.rewardManager.unload();
+
+        reloadConfig();
+        createLangFile();
+        Language.init(this);
+        this.database = new DatabaseManager();
+        this.rewardManager = new RewardManager(this, this.database);
     }
 
-    @SuppressWarnings("deprecation")
-    public static Optional<String> checkForUpdates() {
-        final String mcVersion = NDailyRewards.getInstance().getServer().getMinecraftVersion();
-        final String pluginName = NDailyRewards.getInstance().getDescription().getName();
-        final String pluginVersion = NDailyRewards.getInstance().getDescription().getVersion();
-        try {
-            final HttpClient client = HttpClient.newHttpClient();
-            final HttpRequest req = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.modrinth.com/v2/project/ZiFzQAnz/version?featured=true&game_versions=[%22" + mcVersion + "%22]"))
-                    .header("User-Agent",
-                            pluginName + "/" + pluginVersion
-                    )
-                    .GET()
-                    .build();
-            final HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
-            if (res.statusCode() < 400 && res.statusCode() >= 200 && res.body() != null) {
-                final JsonObject json = JsonParser.parseString(res.body()).getAsJsonArray().get(0).getAsJsonObject();
-                if (json.has("version_number")) {
-                    final String latestVersion = json.get("version_number").getAsString();
-                    if (!latestVersion.equals(pluginVersion))
-                        return Optional.of(latestVersion);
-                }
-            }
+    private void createLangFile() {
+        langFile = new File(getDataFolder(), "lang.yml");
+        if (!langFile.exists()) {
+            langFile.getParentFile().mkdirs();
+            saveResource("lang.yml", false);
         }
-        catch (final Exception e) {
-            LogUtil.send("Failed to check for updates: " + e, LogType.ERROR);
+        langConfig = YamlConfiguration.loadConfiguration(langFile);
+    }
+
+    private void registerCommands() {
+        new RewardCommand().registerMainCommand(this, "reward");
+    }
+
+    private void checkForUpdates() {
+        GitCheck gitCheck = new GitCheck();
+        GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
+
+        GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of(getDescription().getVersion()));
+        if (!result.isUpToDate()) {
+            GitRelease release = result.getLatestRelease();
+            GitTag tag = release.getTag();
+
+            LogUtil.log("&aA new update is available: &e" + tag.getTag(), LogUtil.LogLevel.INFO);
+            LogUtil.log("&aDownload here: &e" + release.getPageUrl(), LogUtil.LogLevel.INFO);
         }
-        return Optional.empty();
-    }
-
-    public PluginManager getPluginManager() {
-        return this.pm;
-    }
-
-    public IDataV2 getData() {
-        return this.data.getData();
-    }
-
-    public UserManager getUserManager() {
-        return this.um;
-    }
-
-    public SaveTask getSaveTask() {
-        return this.st;
     }
 }

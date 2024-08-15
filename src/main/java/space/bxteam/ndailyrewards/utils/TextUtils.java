@@ -1,10 +1,13 @@
 package space.bxteam.ndailyrewards.utils;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +17,6 @@ public class TextUtils {
     private static final Pattern LEGACY_GRADIENT_PATTERN = Pattern.compile("<(&[A-Za-z0-9])>(.*?)</(&[A-Za-z0-9])>");
     private static final Pattern RGB_PATTERN = Pattern.compile("<(#......)>");
 
-    @SuppressWarnings("deprecation")
     public static String applyColor(String text) {
         if (text == null) {
             return "Not found";
@@ -58,7 +60,6 @@ public class TextUtils {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
-    @SuppressWarnings("deprecation")
     private static String rgbGradient(String str, Color from, Color to, BeforeType[] types) {
         final double[] red = linear(from.getRed(), to.getRed(), str.length());
         final double[] green = linear(from.getGreen(), to.getGreen(), str.length());
@@ -77,12 +78,19 @@ public class TextUtils {
         return builder.toString();
     }
 
-    private static double [] linear(double from, double to, int max) {
+    private static double[] linear(double from, double to, int max) {
         final double[] res = new double[max];
         for (int i = 0; i < max; i++) {
             res[i] = from + i * ((to - from) / (max - 1));
         }
         return res;
+    }
+
+    public static String applyPlaceholders(Player player, String text) {
+        if (player != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            return PlaceholderAPI.setPlaceholders(player, text);
+        }
+        return text;
     }
 
     public enum BeforeType {

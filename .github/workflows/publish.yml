@@ -1,0 +1,78 @@
+name: Publish NDailyRewards
+on:
+  release:
+    branches: [ master ]
+    types: [ published ]
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'gradle'
+
+    - name: Make Gradlew executable
+      run: chmod +x ./gradlew
+
+    - name: Build with Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        arguments: 'shadowJar'
+
+    - name: Upload to Modrinth
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        modrinth-id: ZiFzQAnz
+        modrinth-featured: false
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+        files: |
+          build/libs/NDailyRewards-${{ github.event.release.tag_name }}.jar
+
+        name: NDailyRewards ${{ github.event.release.tag_name }}
+        version: ${{ github.event.release.tag_name }}
+        version-type: release
+        changelog: ${{ github.event.release.body }}
+
+        loaders: |
+          spigot
+          paper
+          purpur
+        game-versions: |
+          1.16.5
+          1.17.1
+          1.18
+          1.18.1
+          1.18.2
+          1.19
+          1.19.1
+          1.19.2
+          1.19.3
+          1.19.4
+          1.20
+          1.20.1
+          1.20.2
+          1.20.3
+          1.20.4
+          1.20.5
+          1.20.6
+          1.21
+          1.21.1
+        java: 17
+
+    - name: Publish API
+      continue-on-error: true
+      uses: gradle/gradle-build-action@v3.4.2
+      with:
+        arguments: publish -PndailyrewardsUsername=${{ secrets.REPO_USERNAME }} -PndailyrewardsPassword=${{ secrets.REPO_SECRET }}
