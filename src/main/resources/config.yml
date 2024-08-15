@@ -22,7 +22,7 @@ database:
   # SQLite configuration
   sqlite:
     file: "ndailyrewards.db"
-  # MySQL configuration
+  # MariaDB configuration
   mariadb:
     jdbc: "jdbc:mariadb://localhost:3306/ndailyrewards"
     username: "root"

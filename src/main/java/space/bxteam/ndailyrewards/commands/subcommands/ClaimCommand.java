@@ -39,17 +39,16 @@ public class ClaimCommand implements SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(Language.PREFIX.asColoredString() + Language.NOT_PLAYER.asColoredString());
             return;
         }
 
-        Player player = (Player) sender;
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
         PlayerRewardData rewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
         int nextDay = rewardData.currentDay() + 1;
 
-        if (rewardManager.isRewardAvailable(player, nextDay)) {
+        if (rewardManager.isRewardAvailable(rewardData, nextDay)) {
             rewardManager.giveReward(player, nextDay);
         } else {
             player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_NOT_AVAILABLE.asColoredString());

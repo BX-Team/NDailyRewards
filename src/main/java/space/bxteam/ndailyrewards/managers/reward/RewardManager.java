@@ -151,23 +151,31 @@ public class RewardManager {
         return resetWhenAllClaimed;
     }
 
-    public Reward getReward(int day) {
-        return rewards.get(day);
-    }
-
-    public boolean isRewardClaimed(Player player, int day) {
-        PlayerRewardData playerRewardData = getPlayerRewardData(player.getUniqueId());
+    public boolean isRewardClaimed(PlayerRewardData playerRewardData, int day) {
         return playerRewardData.currentDay() >= day;
     }
 
-    public boolean isRewardAvailable(Player player, int day) {
-        PlayerRewardData playerRewardData = getPlayerRewardData(player.getUniqueId());
+    public boolean isRewardAvailable(PlayerRewardData playerRewardData, int day) {
         return playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L >= playerRewardData.next();
     }
 
-    public boolean isRewardNext(Player player, int day) {
-        PlayerRewardData playerRewardData = getPlayerRewardData(player.getUniqueId());
+    public boolean isRewardNext(PlayerRewardData playerRewardData, int day) {
         return playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L < playerRewardData.next();
+    }
+
+    public void handleReward(Player player, int day) {
+        PlayerRewardData playerRewardData = getPlayerRewardData(player.getUniqueId());
+
+        if (isRewardClaimed(playerRewardData, day)) {
+            player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_ALREADY_CLAIMED.asColoredString());
+        } else if (isRewardAvailable(playerRewardData, day)) {
+            giveReward(player, day);
+            NDailyRewards.getInstance().getMenuManager().openRewardsMenu(player);
+        } else if (isRewardNext(playerRewardData, day)) {
+            player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_AVAILABLE_SOON.asColoredString());
+        } else {
+            player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_NOT_AVAILABLE.asColoredString());
+        }
     }
 
     public void setDay(Player player, int day) {
