@@ -1,7 +1,6 @@
 name: Publish NDailyRewards
 on:
   release:
-    branches: [ master ]
     types: [ published ]
 
 permissions:
@@ -42,9 +41,9 @@ jobs:
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
         files: |
-          build/libs/NDailyRewards-${{ github.event.release.tag_name }}.jar
+          build/libs/NDailyRewards-*.jar
 
-        name: NDailyRewards ${{ github.event.release.tag_name }}
+        name: ${{ github.event.release.name }}
         version: ${{ github.event.release.tag_name }}
         version-type: release
         changelog: ${{ github.event.release.body }}
