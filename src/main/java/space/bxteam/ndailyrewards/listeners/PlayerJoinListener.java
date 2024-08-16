@@ -96,7 +96,7 @@ public class PlayerJoinListener implements Listener {
             GitCheck gitCheck = new GitCheck();
             GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
 
-            GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of(NDailyRewards.getInstance().getDescription().getVersion()));
+            GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of("v" + NDailyRewards.getInstance().getDescription().getVersion()));
             if (!result.isUpToDate()) {
                 GitRelease release = result.getLatestRelease();
                 GitTag tag = release.getTag();
