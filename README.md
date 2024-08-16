@@ -17,7 +17,7 @@ NDailyRewards is a simple and lightweight plugin that allows you to reward your 
 - Requires **Java 17 or later** to work properly. For older versions of Java, this may affect the functionality of the plugin.
 
 ## ✨ Features
-- 📇 MySQL and SQLite support
+- 📇 MariaDB and SQLite support
 - ⚙️ High adjustable and simple configuration
 - 🌈 HEX Colors with gradient support
 - ⌨️ Various action types for rewards
@@ -86,6 +86,7 @@ If you want to contribute to NDailyRewards, see [CONTRIBUTING.md](https://github
 ## 📑 Dependencies & License
 For NDailyRewards to work properly, we use the following dependencies:
 - [HikariCP](https://github.com/brettwooldridge/HikariCP)
+- [MariaDB](https://github.com/mariadb-corporation/mariadb-connector-j)
 - [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)
 - [Paper API](https://docs.papermc.io/paper/dev/api)
 - [bStats](https://bstats.org)
