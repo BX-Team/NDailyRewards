@@ -1,5 +1,6 @@
 package space.bxteam.ndailyrewards.listeners;
 
+import io.papermc.paper.configuration.WorldConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -69,11 +70,16 @@ public class PlayerJoinListener implements Listener {
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
         PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
         int currentDay = playerRewardData.currentDay() + 1;
+        long DelayTime = NDailyRewards.getInstance().getConfig().getLong("events.auto-claim-delay");
+
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.auto-claim-reward") && rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
-            rewardManager.giveReward(player, currentDay);
-            Bukkit.getPluginManager().callEvent(new AutoClaimEvent(player, currentDay));
+            new DelayedTask(() -> {
+                rewardManager.giveReward(player, currentDay);
+                Bukkit.getPluginManager().callEvent(new AutoClaimEvent(player, currentDay));
+            }, DelayTime*20);
         }
+
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.open-gui-when-available") && rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
             NDailyRewards.getInstance().getMenuManager().openRewardsMenu(player);

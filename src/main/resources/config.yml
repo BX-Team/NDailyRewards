@@ -45,6 +45,8 @@ database:
 events:
   # Whether a reward should automatically claim when a player joins (if available)
   auto-claim-reward: false
+  # Delay in seconds between a player joining and the reward being triggered. (Only if auto-claim-reward: true)
+  auto-claim-delay: 10
   # When player joins the server, should plugin open the reward GUI?
   open-gui-when-available: false
   # When player joins the server, should plugin notify player about available rewards?

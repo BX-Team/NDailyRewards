@@ -14,6 +14,7 @@ import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 import space.bxteam.ndailyrewards.utils.LogUtil;
 import space.bxteam.ndailyrewards.utils.metrics.Metrics;
+import space.bxteam.ndailyrewards.utils.DelayedTask;
 
 import java.io.File;
 import java.time.Duration;
@@ -87,6 +88,7 @@ public final class NDailyRewards extends JavaPlugin {
         rewardManager = new RewardManager(this, database);
         menuManager = new MenuManager();
         new HookManager(this).registerHooks();
+        new DelayedTask(this);
 
         LogUtil.log("Registering listeners...", LogUtil.LogLevel.INFO);
         final Listener[] events = new Listener[]{
