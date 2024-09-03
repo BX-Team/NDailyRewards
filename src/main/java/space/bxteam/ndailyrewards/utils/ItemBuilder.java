@@ -35,14 +35,14 @@ public class ItemBuilder {
         Matcher defaultMatcher = defaultPattern.matcher(input);
 
         if (customModelMatcher.matches()) {
-            Material material = Material.valueOf(customModelMatcher.group(1));
+            Material material = Material.valueOf(customModelMatcher.group(1).toUpperCase());
             int quantity = Integer.parseInt(customModelMatcher.group(2));
             int customModelData = Integer.parseInt(customModelMatcher.group(3));
             return new ItemBuilder(new ItemStack(material, quantity))
                     .setCustomModelData(customModelData)
                     .build();
         } else if (customSkullMatcher.matches()) {
-            Material material = Material.valueOf(customSkullMatcher.group(1));
+            Material material = Material.valueOf(customSkullMatcher.group(1).toUpperCase());
             int quantity = Integer.parseInt(customSkullMatcher.group(2));
             String type = customSkullMatcher.group(3);
             String value = customSkullMatcher.group(4);
@@ -60,7 +60,7 @@ public class ItemBuilder {
 
             return skullItem;
         } else if (defaultMatcher.matches()) {
-            Material material = Material.valueOf(defaultMatcher.group(1));
+            Material material = Material.valueOf(defaultMatcher.group(1).toUpperCase());
             int quantity = Integer.parseInt(defaultMatcher.group(2));
             return new ItemStack(material, quantity);
         }
