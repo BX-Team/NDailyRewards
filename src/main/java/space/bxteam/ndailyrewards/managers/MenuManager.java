@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class MenuManager {
     private final InventoryHolder MAIN_MENU_HOLDER = new MainMenuHolder();
 
+
     public void openRewardsMenu(Player player) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(NDailyRewards.getInstance(), () -> {
             final Inventory inventory = Bukkit.createInventory(
@@ -30,7 +31,7 @@ public class MenuManager {
                     NDailyRewards.getInstance().getConfig().getInt("gui.reward.size"),
                     TextUtils.applyColor(NDailyRewards.getInstance().getConfig().getString("gui.reward.title")));
 
-            if (NDailyRewards.getInstance().getConfig().getBoolean("gui.reward.other.filler.enable")) {
+            if (NDailyRewards.getInstance().getConfig().getBoolean("gui.reward.display.filler.enable")) {
                 for (int i = 0; i < NDailyRewards.getInstance().getConfig().getInt("gui.reward.size"); i++) {
                     inventory.setItem(i, loadFillItem());
                 }
@@ -84,6 +85,18 @@ public class MenuManager {
                             inventory.setItem(position, rewardItem);
                         }
                     }
+
+                    ConfigurationSection customSection = NDailyRewards.getInstance().getConfig().getConfigurationSection("gui.reward.custom");
+                    if (customSection != null) {
+                        for (String customKey : customSection.getKeys(false)) {
+                            int position = customSection.getInt(customKey + ".position");
+                            ItemStack customItem = new ItemBuilder(ItemBuilder.parseItemStack(customSection.getString(customKey + ".material")))
+                                    .setName(customSection.getString(customKey + ".name"))
+                                    .setLore(customSection.getStringList(customKey + ".lore"))
+                                    .build();
+                            inventory.setItem(position, customItem);
+                        }
+                    }
                 }, 0L, 20L));
             }
 
@@ -92,9 +105,9 @@ public class MenuManager {
     }
 
     private ItemStack loadFillItem() {
-        String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.other.filler.material");
-        String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.other.filler.name");
-        List<String> lore = NDailyRewards.getInstance().getConfig().getStringList("gui.reward.other.filler.lore");
+        String material = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.filler.material");
+        String name = NDailyRewards.getInstance().getConfig().getString("gui.reward.display.filler.name");
+        List<String> lore = NDailyRewards.getInstance().getConfig().getStringList("gui.reward.display.filler.lore");
 
         return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
                 .setName(name)

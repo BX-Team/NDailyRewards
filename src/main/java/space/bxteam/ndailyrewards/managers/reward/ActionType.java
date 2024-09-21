@@ -7,7 +7,8 @@ public enum ActionType {
     ACTIONBAR("[actionbar]"),
     SOUND("[sound]"),
     TITLE("[title]"),
-    SUBTITLE("[subtitle]");
+    SUBTITLE("[subtitle]"),
+    CLOSE("[close]");
 
     private final String prefix;
 

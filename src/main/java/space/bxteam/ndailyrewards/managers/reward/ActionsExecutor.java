@@ -60,6 +60,9 @@ public class ActionsExecutor {
                 case SUBTITLE:
                     titleText[1] = coloredLine;
                     break;
+                case CLOSE:
+                    player.closeInventory();
+                    break;
             }
         });
 

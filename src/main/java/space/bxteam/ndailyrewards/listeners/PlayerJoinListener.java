@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import space.bxteam.ndailyrewards.NDailyRewards;
 import space.bxteam.ndailyrewards.api.event.AutoClaimEvent;
 import space.bxteam.ndailyrewards.api.event.PlayerReceiveReminderEvent;
@@ -28,13 +29,16 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
+        boolean isFirstJoin = false;
 
         try (Connection conn = NDailyRewards.getInstance().getDatabase().dbSource.getConnection()) {
             String checkQuery = "SELECT COUNT(*) FROM `data` WHERE uuid = ?";
             try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
                 checkStmt.setString(1, uuid.toString());
                 try (ResultSet rs = checkStmt.executeQuery()) {
-                    if (rs.next() && rs.getInt(1) > 0) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        isFirstJoin = true;
+                    } else {
                         return;
                     }
                 }
@@ -42,7 +46,7 @@ public class PlayerJoinListener implements Listener {
 
             String insertQuery = "INSERT INTO `data` (uuid, next_time, next_day) VALUES (?, ?, ?)";
             try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
-                long nextTime = getUnixTimeForNextDay();
+                long nextTime = getUnixTimeForNextDay(isFirstJoin);
                 insertStmt.setString(1, uuid.toString());
                 insertStmt.setLong(2, nextTime);
                 insertStmt.setInt(3, 0);
@@ -54,7 +58,11 @@ public class PlayerJoinListener implements Listener {
         }
     }
 
-    private long getUnixTimeForNextDay() {
+    private long getUnixTimeForNextDay(boolean isFirstJoin) {
+        if (isFirstJoin && NDailyRewards.getInstance().getConfig().getBoolean("rewards.first-join-reward")) {
+            return Instant.now().getEpochSecond();
+        }
+
         if (NDailyRewards.getInstance().getConfig().getBoolean("rewards.unlock-after-midnight")) {
             LocalDate tomorrow = LocalDate.now().plusDays(1);
             return tomorrow.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
@@ -69,10 +77,16 @@ public class PlayerJoinListener implements Listener {
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
         PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
         int currentDay = playerRewardData.currentDay() + 1;
+        long delayTime = NDailyRewards.getInstance().getConfig().getLong("events.auto-claim-delay");
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.auto-claim-reward") && rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
-            rewardManager.giveReward(player, currentDay);
-            Bukkit.getPluginManager().callEvent(new AutoClaimEvent(player, currentDay));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    rewardManager.giveReward(player, currentDay);
+                    Bukkit.getPluginManager().callEvent(new AutoClaimEvent(player, currentDay));
+                }
+            }.runTaskLater(NDailyRewards.getInstance(), delayTime * 20L);
         }
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.open-gui-when-available") && rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
