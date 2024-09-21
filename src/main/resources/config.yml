@@ -57,7 +57,7 @@ rewards:
   # When a player reaches the day limit, should it reset to the first day?
   reset-when-all-claimed: true
   # When player joins server for the first time, should the reward be available?
-  first-join-reward: true
+  first-join-reward: false
   # Specify how many days the player has to wait to claim the reward again (in hours)
   cooldown: 24
   # Should next day unlock after midnight?
@@ -70,6 +70,9 @@ rewards:
   # [title] - sends primary title with entered text
   # [subtitle] - sends secondary title with entered text
   # [sound] - plays specified sound for the player (sound:volume:pitch)
+  # [permission] {ndailyrewards.permission} - checks if player has permission
+  # [luck] {0-100} - executes the statement with a specified chance (0-100)
+  # [permluck] {ndailyrewards.permission:0-100} - executes the statement with a specified chance (0-100) if player has permission
   # [close] - closes the inventory for the player
   # You can also use PlaceholderAPI placeholders (requires PlaceholderAPI plugin)
   # Note: First slot in inventory is 0, not 1
@@ -186,3 +189,6 @@ sound:
   open:
     enabled: true
     type: "BLOCK_BARREL_OPEN:1:1"
+
+# DO NOT TOUCH
+version: 3.1.0

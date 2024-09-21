@@ -7,10 +7,13 @@ import org.bukkit.entity.Player;
 import space.bxteam.ndailyrewards.utils.LogUtil;
 import space.bxteam.ndailyrewards.utils.TextUtils;
 
+import java.util.Random;
+
 public class ActionsExecutor {
     private final Player player;
     private final Reward reward;
     private final String[] titleText = new String[]{"", ""};
+    private final Random random = new Random();
 
     public ActionsExecutor(Player player, Reward reward) {
         this.player = player;
@@ -59,6 +62,46 @@ public class ActionsExecutor {
                     break;
                 case SUBTITLE:
                     titleText[1] = coloredLine;
+                    break;
+                case PERMISSION:
+                    String[] permParts = coloredLine.split(" ", 2);
+                    if (permParts.length == 2 && player.hasPermission(permParts[0])) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), permParts[1].replace("<player>", player.getName()));
+                    }
+                    break;
+                case LUCK:
+                    if (coloredLine.startsWith("{") && coloredLine.contains("}")) {
+                        int endIndex = coloredLine.indexOf("}");
+                        String chanceString = coloredLine.substring(1, endIndex);
+                        try {
+                            int chance = Integer.parseInt(chanceString);
+                            String luckCommand = coloredLine.substring(endIndex + 1).trim();
+                            if (random.nextInt(100) < chance) {
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), luckCommand.replace("<player>", player.getName()));
+                            }
+                        } catch (NumberFormatException e) {
+                            LogUtil.log("Invalid luck action: " + action, LogUtil.LogLevel.WARNING);
+                        }
+                    }
+                    break;
+                case PERMLUCK:
+                    if (coloredLine.startsWith("{") && coloredLine.contains("}")) {
+                        int endIndex = coloredLine.indexOf("}");
+                        String permLuckString = coloredLine.substring(1, endIndex);
+                        String[] permLuckParts = permLuckString.split(":");
+                        if (permLuckParts.length == 2) {
+                            try {
+                                String permission = permLuckParts[0];
+                                int chance = Integer.parseInt(permLuckParts[1]);
+                                String permluckCommand = coloredLine.substring(endIndex + 1).trim();
+                                if (player.hasPermission(permission) && random.nextInt(100) < chance) {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), permluckCommand.replace("<player>", player.getName()));
+                                }
+                            } catch (NumberFormatException e) {
+                                LogUtil.log("Invalid permluck action: " + action, LogUtil.LogLevel.WARNING);
+                            }
+                        }
+                    }
                     break;
                 case CLOSE:
                     player.closeInventory();

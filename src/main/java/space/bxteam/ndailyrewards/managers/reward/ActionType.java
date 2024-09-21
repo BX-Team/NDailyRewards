@@ -8,6 +8,9 @@ public enum ActionType {
     SOUND("[sound]"),
     TITLE("[title]"),
     SUBTITLE("[subtitle]"),
+    PERMISSION("[permission]"),
+    LUCK("[luck]"),
+    PERMLUCK("[permluck]"),
     CLOSE("[close]");
 
     private final String prefix;
