@@ -65,8 +65,12 @@ public class ActionsExecutor {
                     break;
                 case PERMISSION:
                     String[] permParts = coloredLine.split(" ", 2);
-                    if (permParts.length == 2 && player.hasPermission(permParts[0])) {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), permParts[1].replace("<player>", player.getName()));
+                    if (permParts.length == 2) {
+                        String permission = permParts[0].replace("{", "").replace("}", "");
+
+                        if (player.hasPermission(permission)) {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), permParts[1].replace("<player>", player.getName()));
+                        }
                     }
                     break;
                 case LUCK:
