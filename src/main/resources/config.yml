@@ -72,7 +72,6 @@ rewards:
   # [sound] - plays specified sound for the player (sound:volume:pitch)
   # [permission] {ndailyrewards.permission} - checks if player has permission
   # [luck] {0-100} - executes the statement with a specified chance (0-100)
-  # [permluck] {ndailyrewards.permission:0-100} - executes the statement with a specified chance (0-100) if player has permission
   # [close] - closes the inventory for the player
   # You can also use PlaceholderAPI placeholders (requires PlaceholderAPI plugin)
   # Note: First slot in inventory is 0, not 1

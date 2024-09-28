@@ -84,25 +84,6 @@ public class ActionsExecutor {
                         }
                     }
                     break;
-                case PERMLUCK:
-                    if (coloredLine.startsWith("{") && coloredLine.contains("}")) {
-                        int endIndex = coloredLine.indexOf("}");
-                        String permLuckString = coloredLine.substring(1, endIndex);
-                        String[] permLuckParts = permLuckString.split(":");
-                        if (permLuckParts.length == 2) {
-                            try {
-                                String permission = permLuckParts[0];
-                                int chance = Integer.parseInt(permLuckParts[1]);
-                                String permluckCommand = coloredLine.substring(endIndex + 1).trim();
-                                if (player.hasPermission(permission) && random.nextInt(100) < chance) {
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), permluckCommand.replace("<player>", player.getName()));
-                                }
-                            } catch (NumberFormatException e) {
-                                LogUtil.log("Invalid permluck action: " + action, LogUtil.LogLevel.WARNING);
-                            }
-                        }
-                    }
-                    break;
                 case CLOSE:
                     player.closeInventory();
                     break;

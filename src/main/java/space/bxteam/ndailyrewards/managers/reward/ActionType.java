@@ -10,7 +10,6 @@ public enum ActionType {
     SUBTITLE("[subtitle]"),
     PERMISSION("[permission]"),
     LUCK("[luck]"),
-    PERMLUCK("[permluck]"),
     CLOSE("[close]");
 
     private final String prefix;
