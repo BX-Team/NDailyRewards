@@ -1,12 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": ["h2"],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "/h2/"
+      ]
     }
   ]
 }
