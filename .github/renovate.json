@@ -3,12 +3,20 @@
   "extends": [
     "config:recommended"
   ],
+  "groupName": "all dependencies",
+  "groupSlug": "all",
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "labels": ["renovate"],
   "packageRules": [
     {
-      "enabled": false,
+      "groupName": "all dependencies",
+      "groupSlug": "all",
       "matchPackageNames": [
-        "/h2/"
+        "*"
       ]
     }
-  ]
+  ],
+  "separateMajorMinor": false
 }
