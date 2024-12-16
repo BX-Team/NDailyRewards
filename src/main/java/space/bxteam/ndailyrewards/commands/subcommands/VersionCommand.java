@@ -1,8 +1,8 @@
 package space.bxteam.ndailyrewards.commands.subcommands;
 
 import org.bukkit.command.CommandSender;
+import space.bxteam.commons.github.*;
 import space.bxteam.ndailyrewards.NDailyRewards;
-import space.bxteam.ndailyrewards.api.github.*;
 import space.bxteam.ndailyrewards.managers.command.SubCommand;
 import space.bxteam.ndailyrewards.managers.enums.Language;
 import space.bxteam.ndailyrewards.utils.Permissions;

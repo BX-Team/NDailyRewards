@@ -28,6 +28,10 @@ repositories {
         name = "jitpack"
         url = "https://jitpack.io"
     }
+    maven {
+        name "bxTeamReleases"
+        url "https://repo.bx-team.space/releases"
+    }
 }
 
 dependencies {
@@ -37,45 +41,55 @@ dependencies {
     // Dependencies
     implementation("com.zaxxer:HikariCP:${project.hikari_cp}")
     implementation("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}")
+    implementation("space.bxteam:commons-bukkit:${project.commons}")
     compileOnly("me.clip:placeholderapi:${project.placeholder_api}")
 }
 
-shadowJar {
-    archiveClassifier.set('')
-    archiveFileName.set("${project.name}-${project.version}.jar")
-    dependencies {
-        include(dependency("com.zaxxer:HikariCP:${project.hikari_cp}"))
-        include(dependency("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}"))
+tasks {
+    compileJava {
+        options.encoding = 'UTF-8'
+        options.release.set(17)
     }
-}
-
-def targetJavaVersion = 17
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    java {
+        withSourcesJar()
+        withJavadocJar()
     }
-    withSourcesJar()
-    withJavadocJar()
-}
+    javadoc {
+        options.encoding = 'UTF-8'
+    }
+    jar {
+        enabled = false
+    }
+    build {
+        dependsOn('shadowJar')
+    }
+    processResources {
+        def props = [version: version]
+        inputs.properties props
+        filteringCharset 'UTF-8'
+        filesMatching('plugin.yml') {
+            expand props
+        }
+    }
+    assemble {
+        dependsOn(tasks.reobfJar)
+    }
+    shadowJar {
+        archiveClassifier.set('')
+        archiveFileName.set("${project.name}-${project.version}.jar")
+        from(file("LICENSE"))
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-    options.release.set(targetJavaVersion)
-}
+        dependencies {
+            include(dependency("com.zaxxer:HikariCP:${project.hikari_cp}"))
+            include(dependency("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}"))
+            include(dependency("space.bxteam:commons-bukkit:${project.commons}"))
+            include(dependency("space.bxteam:commons-shared:${project.commons}"))
 
-tasks.assemble {
-    dependsOn(tasks.reobfJar)
-}
-
-processResources {
-    def props = [version: version]
-    inputs.properties props
-    filteringCharset 'UTF-8'
-    filesMatching('plugin.yml') {
-        expand props
+            exclude("META-INF/NOTICE")
+            exclude("META-INF/maven/**")
+            exclude("META-INF/versions/**")
+            exclude("META-INF/**.kotlin_module")
+        }
     }
 }
 

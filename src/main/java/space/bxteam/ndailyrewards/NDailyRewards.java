@@ -4,7 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import space.bxteam.ndailyrewards.api.github.*;
+import space.bxteam.commons.github.*;
 import space.bxteam.ndailyrewards.commands.RewardCommand;
 import space.bxteam.ndailyrewards.hooks.HookManager;
 import space.bxteam.ndailyrewards.listeners.*;
