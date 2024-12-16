@@ -30,67 +30,71 @@ public class ActionsExecutor {
             String placeholders = TextUtils.applyPlaceholders(player, command);
             String coloredLine = TextUtils.applyColor(placeholders);
 
-            switch (actionType) {
-                case CONSOLE:
-                    String consoleCommand = StringUtils.replace(coloredLine, "<player>", player.getName());
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consoleCommand);
-                    break;
-                case PLAYER:
-                    player.performCommand(coloredLine);
-                    break;
-                case MESSAGE:
-                    player.sendMessage(coloredLine);
-                    break;
-                case ACTIONBAR:
-                    player.sendActionBar(coloredLine);
-                    break;
-                case SOUND:
-                    String[] parts = coloredLine.split(":");
-                    if (parts.length == 3) {
-                        try {
-                            Sound sound = Sound.valueOf(parts[0]);
-                            float volume = Float.parseFloat(parts[1]);
-                            float pitch = Float.parseFloat(parts[2]);
-                            player.playSound(player.getLocation(), sound, volume, pitch);
-                        } catch (IllegalArgumentException e) {
-                            LogUtil.log("Invalid sound action: " + action, LogUtil.LogLevel.WARNING);
-                        }
-                    }
-                    break;
-                case TITLE:
-                    titleText[0] = coloredLine;
-                    break;
-                case SUBTITLE:
-                    titleText[1] = coloredLine;
-                    break;
-                case PERMISSION:
-                    String[] permParts = coloredLine.split(" ", 2);
-                    if (permParts.length == 2) {
-                        String permission = permParts[0].replace("{", "").replace("}", "");
-
-                        if (player.hasPermission(permission)) {
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), permParts[1].replace("<player>", player.getName()));
-                        }
-                    }
-                    break;
-                case LUCK:
-                    if (coloredLine.startsWith("{") && coloredLine.contains("}")) {
-                        int endIndex = coloredLine.indexOf("}");
-                        String chanceString = coloredLine.substring(1, endIndex);
-                        try {
-                            int chance = Integer.parseInt(chanceString);
-                            String luckCommand = coloredLine.substring(endIndex + 1).trim();
-                            if (random.nextInt(100) < chance) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), luckCommand.replace("<player>", player.getName()));
+            try {
+                switch (actionType) {
+                    case CONSOLE:
+                        String consoleCommand = StringUtils.replace(coloredLine, "<player>", player.getName());
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consoleCommand);
+                        break;
+                    case PLAYER:
+                        player.performCommand(coloredLine);
+                        break;
+                    case MESSAGE:
+                        player.sendMessage(coloredLine);
+                        break;
+                    case ACTIONBAR:
+                        player.sendActionBar(coloredLine);
+                        break;
+                    case SOUND:
+                        String[] parts = coloredLine.split(":");
+                        if (parts.length == 3) {
+                            try {
+                                Sound sound = Sound.valueOf(parts[0]);
+                                float volume = Float.parseFloat(parts[1]);
+                                float pitch = Float.parseFloat(parts[2]);
+                                player.playSound(player.getLocation(), sound, volume, pitch);
+                            } catch (IllegalArgumentException e) {
+                                LogUtil.log("Invalid sound action: " + action, LogUtil.LogLevel.WARNING);
                             }
-                        } catch (NumberFormatException e) {
-                            LogUtil.log("Invalid luck action: " + action, LogUtil.LogLevel.WARNING);
                         }
-                    }
-                    break;
-                case CLOSE:
-                    player.closeInventory();
-                    break;
+                        break;
+                    case TITLE:
+                        titleText[0] = coloredLine;
+                        break;
+                    case SUBTITLE:
+                        titleText[1] = coloredLine;
+                        break;
+                    case PERMISSION:
+                        String[] permParts = coloredLine.split(" ", 2);
+                        if (permParts.length == 2) {
+                            String permission = permParts[0].replace("{", "").replace("}", "");
+
+                            if (player.hasPermission(permission)) {
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), permParts[1].replace("<player>", player.getName()));
+                            }
+                        }
+                        break;
+                    case LUCK:
+                        if (coloredLine.startsWith("{") && coloredLine.contains("}")) {
+                            int endIndex = coloredLine.indexOf("}");
+                            String chanceString = coloredLine.substring(1, endIndex);
+                            try {
+                                int chance = Integer.parseInt(chanceString);
+                                String luckCommand = coloredLine.substring(endIndex + 1).trim();
+                                if (random.nextInt(100) < chance) {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), luckCommand.replace("<player>", player.getName()));
+                                }
+                            } catch (NumberFormatException e) {
+                                LogUtil.log("Invalid luck action: " + action, LogUtil.LogLevel.WARNING);
+                            }
+                        }
+                        break;
+                    case CLOSE:
+                        player.closeInventory();
+                        break;
+                }
+            } catch (Exception e) {
+                LogUtil.log("Error executing action: " + e.getMessage(), LogUtil.LogLevel.ERROR);
             }
         });
 
