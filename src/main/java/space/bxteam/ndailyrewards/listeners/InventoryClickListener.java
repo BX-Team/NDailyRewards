@@ -14,8 +14,52 @@ import space.bxteam.ndailyrewards.managers.reward.RewardManager;
 import space.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Optimized InventoryClickListener:
+ * - Utilizes a precomputed slot-to-day map for faster lookups.
+ * - Reduces configuration access by caching actions per custom button.
+ */
 public class InventoryClickListener implements Listener {
+    // Precomputed map of slot positions to day numbers
+    private final Map<Integer, Integer> slotToDayMap = new ConcurrentHashMap<>();
+
+    // Precomputed map of custom button slots to their actions
+    private final Map<Integer, List<String>> customButtonActions = new ConcurrentHashMap<>();
+
+    public InventoryClickListener() {
+        initializeMappings();
+    }
+
+    /**
+     * Initializes slot-to-day and custom button action mappings.
+     */
+    private void initializeMappings() {
+        final NDailyRewards instance = NDailyRewards.getInstance();
+        ConfigurationSection daysSection = instance.getConfig().getConfigurationSection("rewards.days");
+        if (daysSection != null) {
+            for (String dayKey : daysSection.getKeys(false)) {
+                int day = Integer.parseInt(dayKey);
+                ConfigurationSection daySection = daysSection.getConfigurationSection(dayKey);
+                if (daySection != null) {
+                    int position = daySection.getInt("position");
+                    slotToDayMap.put(position, day);
+                }
+            }
+        }
+
+        ConfigurationSection customSection = instance.getConfig().getConfigurationSection("gui.reward.custom");
+        if (customSection != null) {
+            for (String customKey : customSection.getKeys(false)) {
+                int position = customSection.getInt(customKey + ".position");
+                List<String> actions = customSection.getStringList(customKey + ".actions");
+                customButtonActions.put(position, actions);
+            }
+        }
+    }
+
     @EventHandler
     public void mainMenuClickListener(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof MenuManager.MainMenuHolder)) return;
@@ -25,29 +69,26 @@ public class InventoryClickListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getSlot();
         RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-        int day = getDayFromSlot(slot);
 
-        if (day > 0) {
+        // Check if the clicked slot corresponds to a day
+        Integer day = slotToDayMap.get(slot);
+        if (day != null && day > 0) {
             rewardManager.handleReward(player, day);
-        } else {
-            handleCustomButtonClick(player, slot);
+            return;
+        }
+
+        // Handle custom button clicks
+        List<String> actions = customButtonActions.get(slot);
+        if (actions != null && !actions.isEmpty()) {
+            executeActions(player, actions);
         }
     }
 
-    private void handleCustomButtonClick(Player player, int slot) {
-        ConfigurationSection customSection = NDailyRewards.getInstance().getConfig().getConfigurationSection("gui.reward.custom");
-        if (customSection != null) {
-            for (String customKey : customSection.getKeys(false)) {
-                int position = customSection.getInt(customKey + ".position");
-                if (position == slot) {
-                    List<String> actions = customSection.getStringList(customKey + ".actions");
-                    executeActions(player, actions);
-                    break;
-                }
-            }
-        }
-    }
-
+    /**
+     * Executes a list of actions defined in the configuration.
+     * @param player The player to execute actions for.
+     * @param actions The list of action strings.
+     */
     private void executeActions(Player player, List<String> actions) {
         for (String action : actions) {
             if (action.startsWith("[console]")) {
@@ -65,31 +106,19 @@ public class InventoryClickListener implements Listener {
             } else if (action.startsWith("[sound]")) {
                 String[] soundParams = action.substring("[sound]".length()).trim().split(":");
                 if (soundParams.length >= 1) {
-                    Sound sound = Sound.valueOf(soundParams[0].toUpperCase());
-                    float volume = soundParams.length > 1 ? Float.parseFloat(soundParams[1]) : 1.0f;
-                    float pitch = soundParams.length > 2 ? Float.parseFloat(soundParams[2]) : 1.0f;
-                    player.playSound(player.getLocation(), sound, volume, pitch);
+                    try {
+                        Sound sound = Sound.valueOf(soundParams[0].toUpperCase());
+                        float volume = soundParams.length > 1 ? Float.parseFloat(soundParams[1]) : 1.0f;
+                        float pitch = soundParams.length > 2 ? Float.parseFloat(soundParams[2]) : 1.0f;
+                        player.playSound(player.getLocation(), sound, volume, pitch);
+                    } catch (IllegalArgumentException e) {
+                        // Invalid sound, ignore or log as needed
+                        player.sendMessage(TextUtils.applyColor("&cInvalid sound specified: " + soundParams[0]));
+                    }
                 }
             } else if (action.startsWith("[close]")) {
                 player.closeInventory();
             }
         }
-    }
-
-    private int getDayFromSlot(int slot) {
-        ConfigurationSection daysSection = NDailyRewards.getInstance().getConfig().getConfigurationSection("rewards.days");
-        if (daysSection != null) {
-            for (String dayKey : daysSection.getKeys(false)) {
-                int day = Integer.parseInt(dayKey);
-                ConfigurationSection daySection = daysSection.getConfigurationSection(dayKey);
-                if (daySection != null) {
-                    int position = daySection.getInt("position");
-                    if (position == slot) {
-                        return day;
-                    }
-                }
-            }
-        }
-        return -1;
     }
 }
