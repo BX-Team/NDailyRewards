@@ -180,11 +180,13 @@ public class RewardManager {
 
     public void setDay(Player player, int day) {
         UUID uuid = player.getUniqueId();
+        long currentTime = System.currentTimeMillis() / 1000L;
         try (Connection conn = dbManager.dbSource.getConnection()) {
-            String query = "UPDATE `data` SET next_day = ? WHERE uuid = ?";
+            String query = "UPDATE `data` SET next_day = ?, next_time = ? WHERE uuid = ?";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setInt(1, day);
-                stmt.setString(2, uuid.toString());
+                stmt.setLong(2, currentTime);
+                stmt.setString(3, uuid.toString());
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
