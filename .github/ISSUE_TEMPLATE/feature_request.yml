@@ -1,6 +1,6 @@
 name: Feature request
 description: Suggest an idea for NDailyRewards
-labels: 'enhancement'
+labels: '🔧 feature'
 
 body:
   - type: markdown

@@ -1,5 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "dependencyDashboard": true,
   "extends": [
     "config:recommended"
   ],
@@ -8,15 +9,53 @@
   "lockFileMaintenance": {
     "enabled": false
   },
-  "labels": ["renovate"],
+  "separateMajorMinor": true,
+  "pruneStaleBranches": true,
+  "commitMessagePrefix": "dependency:",
+  "labels": [
+    "\uD83D\uDD04 dependencies"
+  ],
   "packageRules": [
     {
-      "groupName": "all dependencies",
-      "groupSlug": "all",
+      "groupName": "patch",
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "automerge": true,
       "matchPackageNames": [
-        "*"
+        "*",
+        "!/io.papermc.paper*/"
+      ]
+    },
+    {
+      "groupName": "minor",
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "automerge": true,
+      "matchPackageNames": [
+        "*",
+        "!/io.papermc.paper*/"
+      ]
+    },
+    {
+      "groupName": "all-major",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false,
+      "matchPackageNames": [
+        "*",
+        "!/io.papermc.paper*/"
+      ]
+    },
+    {
+      "groupName": "paper",
+      "allowedVersions": "/^\\d+\\.\\d+(\\.\\d+)?-R\\d+\\.\\d+-SNAPSHOT$/",
+      "automerge": false,
+      "matchPackageNames": [
+        "/io.papermc.paper*/"
       ]
     }
-  ],
-  "separateMajorMinor": false
+  ]
 }
