@@ -30,7 +30,7 @@ repositories {
     }
     maven {
         name "bxTeamReleases"
-        url "https://repo.bx-team.space/releases"
+        url "https://repo.bxteam.org/releases"
     }
 }
 
@@ -41,7 +41,7 @@ dependencies {
     // Dependencies
     implementation("com.zaxxer:HikariCP:${project.hikari_cp}")
     implementation("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}")
-    implementation("space.bxteam:commons-bukkit:${project.commons}")
+    implementation("org.bxteam:commons-bukkit:${project.commons}")
     compileOnly("me.clip:placeholderapi:${project.placeholder_api}")
 }
 
@@ -82,8 +82,8 @@ tasks {
         dependencies {
             include(dependency("com.zaxxer:HikariCP:${project.hikari_cp}"))
             include(dependency("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}"))
-            include(dependency("space.bxteam:commons-bukkit:${project.commons}"))
-            include(dependency("space.bxteam:commons-shared:${project.commons}"))
+            include(dependency("org.bxteam:commons-bukkit:${project.commons}"))
+            include(dependency("org.bxteam:commons-shared:${project.commons}"))
 
             exclude("META-INF/NOTICE")
             exclude("META-INF/maven/**")
@@ -98,9 +98,9 @@ publishing {
         maven {
             name = "ndailyrewards"
             if (project.version.endsWith("-SNAPSHOT")) {
-                url = "https://repo.bx-team.space/snapshots"
+                url = "https://repo.bxteam.org/snapshots"
             } else {
-                url = "https://repo.bx-team.space/releases"
+                url = "https://repo.bxteam.org/releases"
             }
             credentials(PasswordCredentials)
             authentication {
@@ -110,7 +110,7 @@ publishing {
     }
     publications {
         maven(MavenPublication) {
-            groupId = "space.bxteam"
+            groupId = "org.bxteam"
             artifactId = "ndailyrewards"
             version = project.version
             from components.java

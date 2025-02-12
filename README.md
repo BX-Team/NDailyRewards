@@ -7,7 +7,7 @@ Simple and lightweight plugin that allows you to reward your players for playing
 [![Available on Modrinth](https://raw.githubusercontent.com/vLuckyyy/badges/main/avaiable-on-modrinth.svg)](https://modrinth.com/plugin/ndailyrewards)
 
 [![Chat on Discord](https://raw.githubusercontent.com/vLuckyyy/badges/main//chat-with-us-on-discord.svg)](https://discord.gg/p7cxhw7E2M)
-[![Read the Docs](https://raw.githubusercontent.com/vLuckyyy/badges/main/read-the-documentation.svg)](https://docs.bx-team.space/documentation/ndailyrewards/about)
+[![Read the Docs](https://raw.githubusercontent.com/vLuckyyy/badges/main/read-the-documentation.svg)](https://docs.bxteam.org/documentation/ndailyrewards/about)
 [![Available on BStats](https://raw.githubusercontent.com/vLuckyyy/badges/main/available-on-bstats.svg)](https://bstats.org/plugin/bukkit/NDailyRewards/13844)
 </div>
 
@@ -41,7 +41,7 @@ To use NDailyRewards API, you first need to add NDailyRewards to your project. T
 For Gradle projects use:
 ```groovy
 repositories {
-    maven("https://repo.bx-team.space/releases")
+    maven("https://repo.bxteam.org/releases")
 }
 ```
 
@@ -49,7 +49,7 @@ For Maven projects use:
 ```xml
 <repository>
     <id>bx-team-releases</id>
-    <url>https://repo.bx-team.space/releases</url>
+    <url>https://repo.bxteam.org/releases</url>
 </repository>
 ```
 
@@ -58,14 +58,14 @@ For Maven projects use:
 For Gradle projects use:
 ```groovy
 dependencies {
-    compileOnly("space.bxteam.ndailyrewards:VERSION")
+    compileOnly("org.bxteam.ndailyrewards:VERSION")
 }
 ```
 
 For Maven projects use:
 ```xml
 <dependency>
-    <groupId>space.bxteam</groupId>
+    <groupId>org.bxteam</groupId>
     <artifactId>ndailyrewards</artifactId>
     <version>VERSION</version>
     <scope>provided</scope>

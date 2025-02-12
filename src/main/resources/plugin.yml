@@ -1,6 +1,6 @@
 name: NDailyRewards
 version: '${version}'
-main: space.bxteam.ndailyrewards.NDailyRewards
+main: org.bxteam.ndailyrewards.NDailyRewards
 api-version: '1.16'
 authors: [NONPLAYT]
 website: https://github.com/BX-Team/NDailyRewards
