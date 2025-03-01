@@ -23,7 +23,8 @@ public enum Language {
 
     CLAIM_ALREADY_CLAIMED("claim.already-claimed"),
     CLAIM_AVAILABLE_SOON("claim.available-soon"),
-    CLAIM_NOT_AVAILABLE("claim.not-available");
+    CLAIM_NOT_AVAILABLE("claim.not-available"),
+    CLAIM_REWARD_RESET("claim.reward-reset");
 
     private final String path;
     private static FileConfiguration langConfig;

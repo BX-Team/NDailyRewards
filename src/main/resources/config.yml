@@ -60,6 +60,8 @@ rewards:
   first-join-reward: false
   # Specify how many days the player has to wait to claim the reward again (in hours)
   cooldown: 24
+  # Specify the time for which the rewards will be reset if the player has not collected the reward (in hours)
+  reset-time: 24
   # Should next day unlock after midnight?
   unlock-after-midnight: false
   # Available actions:

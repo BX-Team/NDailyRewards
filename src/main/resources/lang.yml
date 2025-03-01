@@ -29,3 +29,4 @@ claim:
   already-claimed: "&cYou have already claimed this reward"
   available-soon: "&cThis reward will be available soon"
   not-available: "&cYou can't claim this reward yet"
+  reward-reset: "&cYour rewards have been reset because you haven't claimed them for a long time"

@@ -26,6 +26,7 @@ public class RewardManager {
     private final Map<Integer, Reward> rewards = new HashMap<>();
     private final boolean resetWhenAllClaimed;
     private final int cooldown;
+    private final int resetTime;
     private final boolean unlockAfterMidnight;
 
     public RewardManager(NDailyRewards plugin, DatabaseManager dbManager) {
@@ -33,6 +34,7 @@ public class RewardManager {
         this.dbManager = dbManager;
         this.resetWhenAllClaimed = plugin.getConfig().getBoolean("rewards.reset-when-all-claimed", true);
         this.cooldown = plugin.getConfig().getInt("rewards.cooldown", 24);
+        this.resetTime = plugin.getConfig().getInt("rewards.reset-time", 24);
         this.unlockAfterMidnight = plugin.getConfig().getBoolean("rewards.unlock-after-midnight", false);
         loadRewards();
     }
@@ -60,6 +62,12 @@ public class RewardManager {
         UUID uuid = player.getUniqueId();
         if (!canClaimReward(uuid)) {
             player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_NOT_AVAILABLE.asColoredString());
+            return;
+        }
+
+        boolean wasReset = checkResetForPlayer(player.getUniqueId());
+        if (wasReset) {
+            player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString());
             return;
         }
 
@@ -160,6 +168,16 @@ public class RewardManager {
 
     public boolean isRewardNext(PlayerRewardData playerRewardData, int day) {
         return playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L < playerRewardData.next();
+    }
+
+    public boolean checkResetForPlayer(UUID uuid) {
+        PlayerRewardData data = getPlayerRewardData(uuid);
+        long currentTime = System.currentTimeMillis() / 1000L;
+        if (currentTime >= data.next() + resetTime * 3600L) {
+            resetPlayerRewardData(uuid);
+            return true;
+        }
+        return false;
     }
 
     public void handleReward(Player player, int day) {

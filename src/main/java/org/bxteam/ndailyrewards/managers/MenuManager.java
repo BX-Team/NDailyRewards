@@ -7,6 +7,7 @@ import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bxteam.ndailyrewards.managers.enums.Language;
 import org.jetbrains.annotations.NotNull;
 import org.bxteam.ndailyrewards.NDailyRewards;
 import org.bxteam.ndailyrewards.managers.reward.PlayerRewardData;
@@ -18,13 +19,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-/**
- * Optimized MenuManager:
- * - Implements a singleton pattern to ensure a single instance.
- * - Uses a global scheduled task to update all open inventories, reducing the number of concurrent tasks.
- * - Caches slot-to-day mappings for faster lookup.
- * - Minimizes cloning of ItemStacks by reusing cached items.
- */
 public class MenuManager {
     private static MenuManager instance;
 
@@ -126,6 +120,12 @@ public class MenuManager {
         final NDailyRewards instance = NDailyRewards.getInstance();
         final ConfigurationSection config = instance.getConfig();
 
+        RewardManager rewardManager = instance.getRewardManager();
+        boolean wasReset = rewardManager.checkResetForPlayer(player.getUniqueId());
+        if (wasReset) {
+            player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString());
+        }
+
         int size = config.getInt("gui.reward.size");
         String title = TextUtils.applyColor(config.getString("gui.reward.title"));
         boolean useFiller = config.getBoolean("gui.reward.display.filler.enable");
@@ -147,7 +147,6 @@ public class MenuManager {
         // Initialize day items
         ConfigurationSection daysSection = config.getConfigurationSection("rewards.days");
         if (daysSection != null) {
-            RewardManager rewardManager = instance.getRewardManager();
             PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
 
             // Initial population of day items

@@ -95,6 +95,12 @@ public class PlayerJoinListener implements Listener {
         }
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.open-gui-when-available") && rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
+            boolean wasReset = rewardManager.checkResetForPlayer(player.getUniqueId());
+            if (wasReset) {
+                player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString());
+                return;
+            }
+
             NDailyRewards.getInstance().getMenuManager().openRewardsMenu(player);
             if (NDailyRewards.getInstance().getConfig().getBoolean("sound.open.enabled")) {
                 SoundUtil.playSound(player, "open");
@@ -102,6 +108,12 @@ public class PlayerJoinListener implements Listener {
         }
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("events.notify-when-available") && rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
+            boolean wasReset = rewardManager.checkResetForPlayer(player.getUniqueId());
+            if (wasReset) {
+                player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString());
+                return;
+            }
+
             player.sendMessage(Language.PREFIX.asColoredString() + Language.EVENTS_NOTIFY_WHEN_AVAILABLE.asColoredString());
             Bukkit.getPluginManager().callEvent(new PlayerReceiveReminderEvent(player, currentDay));
         }
