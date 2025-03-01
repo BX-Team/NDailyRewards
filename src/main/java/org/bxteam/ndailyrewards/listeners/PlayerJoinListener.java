@@ -1,16 +1,15 @@
 package org.bxteam.ndailyrewards.listeners;
 
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bxteam.ndailyrewards.utils.LogUtil;
 import org.bxteam.ndailyrewards.utils.Permissions;
 import org.bxteam.ndailyrewards.utils.SoundUtil;
 import org.bxteam.ndailyrewards.utils.TextUtils;
-import org.bxteam.commons.github.*;
 import org.bxteam.ndailyrewards.NDailyRewards;
 import org.bxteam.ndailyrewards.api.event.AutoClaimEvent;
 import org.bxteam.ndailyrewards.api.event.PlayerReceiveReminderEvent;
@@ -25,7 +24,10 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Objects;
 import java.util.UUID;
+
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public class PlayerJoinListener implements Listener {
     @EventHandler
@@ -56,7 +58,7 @@ public class PlayerJoinListener implements Listener {
                 insertStmt.executeUpdate();
             }
         } catch (SQLException e) {
-            LogUtil.log("Could not create initial player data: " + e.getMessage(), LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("Could not create initial player data: %s".formatted(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -110,17 +112,16 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
 
         if (NDailyRewards.getInstance().getConfig().getBoolean("check-updates") && player.hasPermission(Permissions.UPDATE_NOTIFY)) {
-            GitCheck gitCheck = new GitCheck();
-            GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
+            final var current = new ComparableVersion(NDailyRewards.getInstance().getDescription().getVersion());
 
-            GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of("v" + NDailyRewards.getInstance().getDescription().getVersion()));
-            if (!result.isUpToDate()) {
-                GitRelease release = result.getLatestRelease();
-                GitTag tag = release.getTag();
+            supplyAsync(NDailyRewards.getInstance().getVersionFetcher()::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
+                if (error != null || newest.compareTo(current) <= 0) {
+                    return;
+                }
 
-                player.sendMessage(TextUtils.applyColor(Language.PREFIX.asString() + "&aA new update is available: &e" + tag.getTag()));
-                player.sendMessage(TextUtils.applyColor(Language.PREFIX.asString() + "&aDownload here: &e" + release.getPageUrl()));
-            }
+                player.sendMessage(TextUtils.applyColor(Language.PREFIX.asString() + "&aA new update is available: &e" + newest));
+                player.sendMessage(TextUtils.applyColor(Language.PREFIX.asString() + "&aDownload here: &e" + NDailyRewards.getInstance().getVersionFetcher().getDownloadUrl()));
+            });
         }
     }
 }

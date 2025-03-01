@@ -25,7 +25,7 @@ public class SoundUtil {
         try {
             recipient.playSound(recipient.getLocation(), Sound.valueOf(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2]));
         } catch (IllegalArgumentException exception) {
-            LogUtil.log("Incorrect sound " + params[0] + " for sound." + action + ".type", LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("Incorrect sound %s for sound.%s.type".formatted(params[0], action));
             exception.printStackTrace();
         }
     }
@@ -39,7 +39,7 @@ public class SoundUtil {
         try {
             location.getWorld().playSound(location, Sound.valueOf(params[0]), Float.parseFloat(params[1]), Float.parseFloat(params[2]));
         } catch (IllegalArgumentException exception) {
-            LogUtil.log("Incorrect sound " + params[0] + " for sound." + action + ".type", LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("Incorrect sound %s for sound.%s.type".formatted(params[0], action));
             exception.printStackTrace();
         }
     }

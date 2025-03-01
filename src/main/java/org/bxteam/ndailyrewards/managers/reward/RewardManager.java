@@ -7,7 +7,6 @@ import org.bxteam.ndailyrewards.NDailyRewards;
 import org.bxteam.ndailyrewards.api.event.PlayerClaimRewardEvent;
 import org.bxteam.ndailyrewards.managers.database.DatabaseManager;
 import org.bxteam.ndailyrewards.managers.enums.Language;
-import org.bxteam.ndailyrewards.utils.LogUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -91,7 +90,7 @@ public class RewardManager {
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
-            LogUtil.log("Could not update player reward data: " + e.getMessage(), LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("Could not update player reward data: %s".formatted(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -107,7 +106,7 @@ public class RewardManager {
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
-            LogUtil.log("Could not reset player reward data: " + e.getMessage(), LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("Could not reset player reward data: %s".formatted(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -126,7 +125,7 @@ public class RewardManager {
                 }
             }
         } catch (SQLException e) {
-            LogUtil.log("Could not retrieve player reward data: " + e.getMessage(), LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("Could not retrieve player reward data: %s".formatted(e.getMessage()));
             e.printStackTrace();
         }
         return new PlayerRewardData(System.currentTimeMillis(), 0);
@@ -190,7 +189,7 @@ public class RewardManager {
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
-            LogUtil.log("Could not set player day: " + e.getMessage(), LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("Could not set player day: %s".formatted(e.getMessage()));
             e.printStackTrace();
         }
     }

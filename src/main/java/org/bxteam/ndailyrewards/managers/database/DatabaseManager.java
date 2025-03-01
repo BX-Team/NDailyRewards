@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;
 import org.bxteam.ndailyrewards.NDailyRewards;
-import org.bxteam.ndailyrewards.utils.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +24,7 @@ public class DatabaseManager {
             initTables();
         }
         catch (@NotNull SQLException | @NotNull IOException e) {
-            LogUtil.log("An error occurred while initializing the database!", LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("An error occurred while initializing the database!");
             e.printStackTrace();
             NDailyRewards.getInstance().getServer().getPluginManager().disablePlugin(NDailyRewards.getInstance());
         }
@@ -47,7 +46,7 @@ public class DatabaseManager {
                 hikariConfig.setPassword(NDailyRewards.getInstance().getConfig().getString("database.mariadb.password"));
             }
             default -> {
-                LogUtil.log("Invalid database type! Please check your config.yml", LogUtil.LogLevel.ERROR);
+                NDailyRewards.getInstance().getExtendedLogger().error("Invalid database type! Please check your config.yml");
                 NDailyRewards.getInstance().getServer().getPluginManager().disablePlugin(NDailyRewards.getInstance());
                 return;
             }
@@ -80,7 +79,7 @@ public class DatabaseManager {
         }};
         final @NotNull String dbType = Objects.requireNonNull(NDailyRewards.getInstance().getConfig().getString("database.type"));
         if (!initFiles.containsKey(dbType)) {
-            LogUtil.log("Invalid database type! Please check your config.yml", LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("Invalid database type! Please check your config.yml");
             NDailyRewards.getInstance().getServer().getPluginManager().disablePlugin(NDailyRewards.getInstance());
             return;
         }
@@ -89,7 +88,7 @@ public class DatabaseManager {
         try (@NotNull InputStream stream = Objects.requireNonNull(NDailyRewards.getInstance().getResource(setupFile))) {
             query = new @NotNull String(stream.readAllBytes());
         } catch (@NotNull IOException e) {
-            LogUtil.log("An error occurred while reading the database setup file!", LogUtil.LogLevel.ERROR);
+            NDailyRewards.getInstance().getExtendedLogger().error("An error occurred while reading the database setup file!");
             throw e;
         }
         final @NotNull String[] queries = query.split(";");
@@ -101,6 +100,6 @@ public class DatabaseManager {
                 stmt.execute();
             }
         }
-        LogUtil.log("Database initialized", LogUtil.LogLevel.INFO);
+        NDailyRewards.getInstance().getExtendedLogger().info("Database initialized");
     }
 }

@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bxteam.ndailyrewards.utils.LogUtil;
+import org.bxteam.ndailyrewards.NDailyRewards;
 import org.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.util.Random;
@@ -54,7 +54,7 @@ public class ActionsExecutor {
                                 float pitch = Float.parseFloat(parts[2]);
                                 player.playSound(player.getLocation(), sound, volume, pitch);
                             } catch (IllegalArgumentException e) {
-                                LogUtil.log("Invalid sound action: " + action, LogUtil.LogLevel.WARNING);
+                                NDailyRewards.getInstance().getExtendedLogger().warn("Invalid sound action: " + action);
                             }
                         }
                         break;
@@ -85,7 +85,7 @@ public class ActionsExecutor {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), luckCommand.replace("<player>", player.getName()));
                                 }
                             } catch (NumberFormatException e) {
-                                LogUtil.log("Invalid luck action: " + action, LogUtil.LogLevel.WARNING);
+                                NDailyRewards.getInstance().getExtendedLogger().warn("Invalid luck action: " + action);
                             }
                         }
                         break;
@@ -94,7 +94,7 @@ public class ActionsExecutor {
                         break;
                 }
             } catch (Exception e) {
-                LogUtil.log("Error executing action: " + e.getMessage(), LogUtil.LogLevel.ERROR);
+                NDailyRewards.getInstance().getExtendedLogger().error("Error executing action: " + e.getMessage());
             }
         });
 

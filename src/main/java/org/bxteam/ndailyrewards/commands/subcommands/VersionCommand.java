@@ -1,7 +1,7 @@
 package org.bxteam.ndailyrewards.commands.subcommands;
 
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.command.CommandSender;
-import org.bxteam.commons.github.*;
 import org.bxteam.ndailyrewards.NDailyRewards;
 import org.bxteam.ndailyrewards.managers.command.SubCommand;
 import org.bxteam.ndailyrewards.managers.enums.Language;
@@ -9,6 +9,9 @@ import org.bxteam.ndailyrewards.utils.Permissions;
 import org.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.util.List;
+import java.util.Objects;
+
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public class VersionCommand implements SubCommand {
     @Override
@@ -38,17 +41,17 @@ public class VersionCommand implements SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aCurrent installed version: &e" + NDailyRewards.getInstance().getDescription().getVersion()));
-        GitCheck gitCheck = new GitCheck();
-        GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
+        final var current = new ComparableVersion(NDailyRewards.getInstance().getDescription().getVersion());
 
-        GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of("v" + NDailyRewards.getInstance().getDescription().getVersion()));
-        if (!result.isUpToDate()) {
-            GitRelease release = result.getLatestRelease();
-            GitTag tag = release.getTag();
+        sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aCurrent installed version: &e" + current));
 
-            sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aA new update is available: &e" + tag.getTag()));
-            sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aDownload here: &e" + release.getPageUrl()));
-        }
+        supplyAsync(NDailyRewards.getInstance().getVersionFetcher()::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
+            if (error != null || newest.compareTo(current) <= 0) {
+                return;
+            }
+
+            sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aA new update is available: &e" + newest));
+            sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aDownload here: &e" + NDailyRewards.getInstance().getVersionFetcher().getDownloadUrl()));
+        });
     }
 }

@@ -1,26 +1,42 @@
 package org.bxteam.ndailyrewards;
 
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bxteam.commons.logger.ExtendedLogger;
+import org.bxteam.commons.logger.LogLevel;
+import org.bxteam.commons.logger.appender.Appender;
+import org.bxteam.commons.logger.appender.ConsoleAppender;
+import org.bxteam.commons.logger.appender.JsonAppender;
+import org.bxteam.commons.updater.MasterVersionFetcher;
+import org.bxteam.commons.updater.VersionFetcher;
 import org.bxteam.ndailyrewards.listeners.InventoryClickListener;
 import org.bxteam.ndailyrewards.listeners.PlayerJoinListener;
-import org.bxteam.commons.github.*;
 import org.bxteam.ndailyrewards.commands.RewardCommand;
 import org.bxteam.ndailyrewards.hooks.HookManager;
 import org.bxteam.ndailyrewards.managers.MenuManager;
 import org.bxteam.ndailyrewards.managers.database.DatabaseManager;
 import org.bxteam.ndailyrewards.managers.enums.Language;
 import org.bxteam.ndailyrewards.managers.reward.RewardManager;
-import org.bxteam.ndailyrewards.utils.LogUtil;
 import org.bxteam.ndailyrewards.utils.metrics.Metrics;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public final class NDailyRewards extends JavaPlugin {
+    private final VersionFetcher versionFetcher = new MasterVersionFetcher("NDailyRewards");
+    private final ExtendedLogger logger;
+
     private static NDailyRewards instance;
     private File langFile;
     private FileConfiguration langConfig;
@@ -28,49 +44,48 @@ public final class NDailyRewards extends JavaPlugin {
     private RewardManager rewardManager;
     private MenuManager menuManager;
 
-    /**
-     * Get instance of plugin
-     *
-     * @return NDR instance
-     */
+    public NDailyRewards() {
+        Appender consoleAppender = new ConsoleAppender("[{loggerName}] {logLevel}: {message}");
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+        File logsFile = new File("plugins/NDailyRewards/logs/ndr-logs-" + date + ".txt");
+        if (!logsFile.exists()) {
+            try {
+                logsFile.getParentFile().mkdirs();
+                logsFile.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        JsonAppender jsonAppender = new JsonAppender(false, false, true, logsFile.getPath());
+        this.logger = new ExtendedLogger("NDailyRewards", LogLevel.INFO, List.of(consoleAppender, jsonAppender), new ArrayList<>());
+    }
+
     public static NDailyRewards getInstance() {
         return NDailyRewards.instance;
     }
 
-    /**
-     * Get plugin language manager
-     *
-     * @return language config
-     */
     public FileConfiguration getLangConfig() {
         return langConfig;
     }
 
-    /**
-     * Get plugin database manager
-     *
-     * @return database manager
-     */
     public DatabaseManager getDatabase() {
         return database;
     }
 
-    /**
-     * Get plugin reward manager
-     *
-     * @return reward manager
-     */
     public RewardManager getRewardManager() {
         return rewardManager;
     }
 
-    /**
-     * Get plugin menu manager
-     *
-     * @return menu manager
-     */
     public MenuManager getMenuManager() {
         return menuManager;
+    }
+
+    public VersionFetcher getVersionFetcher() {
+        return versionFetcher;
+    }
+
+    public ExtendedLogger getExtendedLogger() {
+        return logger;
     }
 
     @Override
@@ -83,13 +98,13 @@ public final class NDailyRewards extends JavaPlugin {
         registerCommands();
         new Metrics(this, 13844);
 
-        LogUtil.log("Loading plugin managers...", LogUtil.LogLevel.INFO);
+        logger.info("Loading plugin managers...");
         database = new DatabaseManager();
         rewardManager = new RewardManager(this, database);
         menuManager = new MenuManager();
         new HookManager(this).registerHooks();
 
-        LogUtil.log("Registering listeners...", LogUtil.LogLevel.INFO);
+        logger.info("Registering listeners...");
         final Listener[] events = new Listener[]{
                 new InventoryClickListener(),
                 new PlayerJoinListener()
@@ -99,14 +114,14 @@ public final class NDailyRewards extends JavaPlugin {
         }
 
         Duration timeTaken = Duration.between(startTime, Instant.now());
-        LogUtil.log("Successfully enabled (took " + timeTaken.toMillis() + "ms)", LogUtil.LogLevel.INFO);
+        logger.info("Successfully enabled (took %sms)".formatted(timeTaken.toMillis()));
 
         if (getConfig().getBoolean("check-updates")) checkForUpdates();
     }
 
     @Override
     public void onDisable() {
-        LogUtil.log("Disabling plugin...", LogUtil.LogLevel.INFO);
+        logger.info("Disabling plugin...");
         getServer().getScheduler().cancelTasks(this);
         database.dbSource.close();
     }
@@ -136,16 +151,19 @@ public final class NDailyRewards extends JavaPlugin {
     }
 
     private void checkForUpdates() {
-        GitCheck gitCheck = new GitCheck();
-        GitRepository repository = GitRepository.of("BX-Team", "NDailyRewards");
+        final var current = new ComparableVersion(this.getDescription().getVersion());
 
-        GitCheckResult result = gitCheck.checkRelease(repository, GitTag.of("v" + getDescription().getVersion()));
-        if (!result.isUpToDate()) {
-            GitRelease release = result.getLatestRelease();
-            GitTag tag = release.getTag();
+        supplyAsync(getVersionFetcher()::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
+            if (error != null || newest.compareTo(current) <= 0) {
+                return;
+            }
 
-            LogUtil.log("&aA new update is available: &e" + tag.getTag(), LogUtil.LogLevel.INFO);
-            LogUtil.log("&aDownload here: &e" + release.getPageUrl(), LogUtil.LogLevel.INFO);
-        }
+            logger.warn("""
+                A new version of NDailyRewards is available!
+                Your version: %s
+                Newest version: %s
+                Download it at: %s
+                """.formatted(current.toString(), newest, getVersionFetcher().getDownloadUrl()));
+        });
     }
 }
