@@ -1,8 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'io.papermc.paperweight.userdev' version '1.7.7'
+    id 'com.gradleup.shadow' version '8.3.6'
 }
 
 group = project.group
@@ -35,10 +34,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:${project.paper_api}") // Paper API
-    paperweight.paperDevBundle("${project.paper_api}")
-
-    // Dependencies
+    compileOnly("io.papermc.paper:paper-api:${project.paper_api}")
+    
     implementation("com.zaxxer:HikariCP:${project.hikari_cp}")
     implementation("org.mariadb.jdbc:mariadb-java-client:${project.mariadb}")
     implementation("org.bxteam:commons:${project.commons}")
@@ -70,9 +67,6 @@ tasks {
         filesMatching('plugin.yml') {
             expand props
         }
-    }
-    assemble {
-        dependsOn(tasks.reobfJar)
     }
     shadowJar {
         archiveClassifier.set('')

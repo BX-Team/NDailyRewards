@@ -1,17 +1,14 @@
 package org.bxteam.ndailyrewards.utils;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
@@ -27,19 +24,11 @@ import java.util.UUID;
  * @author NONPLAYT (code modifications)
  */
 public class HeadUtil {
-    private static Field blockProfileField;
-    private static Method metaSetProfileMethod;
-    private static Field metaProfileField;
-
     /**
-     * Creates a player skull, should work in both legacy and new Bukkit APIs.
+     * Creates a player skull
      */
     public static ItemStack createSkull() {
-        try {
-            return new ItemStack(Material.valueOf("PLAYER_HEAD"));
-        } catch (IllegalArgumentException e) {
-            return new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (byte) 3);
-        }
+        return new ItemStack(Material.PLAYER_HEAD);
     }
 
     /**
@@ -98,7 +87,7 @@ public class HeadUtil {
         notNull(name, "name");
 
         SkullMeta meta = (SkullMeta) item.getItemMeta();
-        meta.setOwner(name);
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(name));
         item.setItemMeta(meta);
 
         return item;
@@ -229,7 +218,6 @@ public class HeadUtil {
     }
 
     private static String urlToBase64(String url) {
-
         URI actualUrl;
         try {
             actualUrl = new URI(url);
@@ -240,49 +228,23 @@ public class HeadUtil {
         return Base64.getEncoder().encodeToString(toEncode.getBytes());
     }
 
-    private static GameProfile makeProfile(String b64) {
-        // random uuid based on the b64 string
+    private static PlayerProfile makeProfile(String b64) {
         UUID id = new UUID(
                 b64.substring(b64.length() - 20).hashCode(),
                 b64.substring(b64.length() - 10).hashCode()
         );
-        GameProfile profile = new GameProfile(id, "Player");
-        profile.getProperties().put("textures", new Property("textures", b64));
+
+        PlayerProfile profile = Bukkit.createProfile(id, "Player");
+        profile.setProperty(new ProfileProperty("textures", b64));
+
         return profile;
     }
 
     private static void mutateBlockState(Skull block, String b64) {
-        try {
-            if (blockProfileField == null) {
-                blockProfileField = block.getClass().getDeclaredField("profile");
-                blockProfileField.setAccessible(true);
-            }
-            blockProfileField.set(block, makeProfile(b64));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        block.setPlayerProfile(makeProfile(b64));
     }
 
     private static void mutateItemMeta(SkullMeta meta, String b64) {
-        try {
-            if (metaSetProfileMethod == null) {
-                metaSetProfileMethod = meta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
-                metaSetProfileMethod.setAccessible(true);
-            }
-            metaSetProfileMethod.invoke(meta, makeProfile(b64));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-            // if in an older API where there is no setProfile method,
-            // we set the profile field directly.
-            try {
-                if (metaProfileField == null) {
-                    metaProfileField = meta.getClass().getDeclaredField("profile");
-                    metaProfileField.setAccessible(true);
-                }
-                metaProfileField.set(meta, makeProfile(b64));
-
-            } catch (NoSuchFieldException | IllegalAccessException ex2) {
-                ex2.printStackTrace();
-            }
-        }
+        meta.setPlayerProfile(makeProfile(b64));
     }
 }
