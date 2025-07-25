@@ -1,78 +1,68 @@
+import org.bxteam.runserver.ServerType
+
 plugins {
-    java
+    `java-library`
     `maven-publish`
-    id("com.gradleup.shadow") version "8.3.8"
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.paperweight) apply false
+    alias(libs.plugins.run.server)
 }
 
-group = project.property("group") as String
-version = project.property("version") as String
-description = project.property("description") as String
+allprojects {
+    apply(plugin = "java-library")
 
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-    maven("https://repo.papermc.io/repository/maven-public/")
-    maven("https://oss.sonatype.org/content/groups/public/")
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-    maven("https://jitpack.io")
-    maven("https://repo.bxteam.org/releases")
+    repositories {
+        mavenCentral()
+        maven("https://repo.papermc.io/repository/maven-public/")
+        maven("https://oss.sonatype.org/content/groups/public/")
+        maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        maven("https://jitpack.io/")
+        maven("https://repo.bxteam.org/releases")
+    }
+
+    tasks.compileJava {
+        options.encoding = "UTF-8"
+    }
+
+    tasks.javadoc {
+        options.encoding = "UTF-8"
+    }
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:${project.property("paper_api")}")
-
-    implementation("com.zaxxer:HikariCP:${project.property("hikari_cp")}")
-    implementation("org.mariadb.jdbc:mariadb-java-client:${project.property("mariadb")}")
-    implementation("org.bxteam:commons:${project.property("commons")}")
-    compileOnly("me.clip:placeholderapi:${project.property("placeholder_api")}")
+    api(project(":core"))
 }
 
 tasks {
-    compileJava {
-        options.encoding = "UTF-8"
-        options.release.set(17)
-    }
-
-    java {
-        withSourcesJar()
-        withJavadocJar()
-    }
-
-    javadoc {
-        options.encoding = "UTF-8"
-    }
-
-    jar {
-        enabled = false
-    }
-
-    build {
-        dependsOn("shadowJar")
-    }
-
-    processResources {
-        val props = mapOf("version" to version)
-        inputs.properties(props)
-        filteringCharset = "UTF-8"
-        filesMatching("plugin.yml") {
-            expand(props)
+    shadowJar {
+        archiveClassifier = ""
+        minimize()
+        manifest {
+            attributes["paperweight-mappings-namespace"] = io.papermc.paperweight.util.constants.SPIGOT_NAMESPACE
         }
     }
 
-    shadowJar {
-        archiveClassifier.set("")
-        archiveFileName.set("${project.name}-${project.version}.jar")
-        from(file("LICENSE"))
+    build {
+        dependsOn(shadowJar)
+    }
 
-        dependencies {
-            include(dependency("com.zaxxer:HikariCP:${project.property("hikari_cp")}"))
-            include(dependency("org.mariadb.jdbc:mariadb-java-client:${project.property("mariadb")}"))
-            include(dependency("org.bxteam:commons:${project.property("commons")}"))
+    compileJava {
+        options.release = 17
+    }
 
-            exclude("META-INF/NOTICE")
-            exclude("META-INF/maven/**")
-            exclude("META-INF/versions/**")
-            exclude("META-INF/**.kotlin_module")
+    processResources {
+        from("resources")
+    }
+
+    runServer {
+        serverType(ServerType.PAPER)
+        serverVersion("1.21.8")
+        noGui(true)
+        acceptMojangEula()
+
+        downloadPlugins {
+            modrinth("luckperms", "v5.5.0-bukkit")
+            hangar("PlaceholderAPI", "2.11.6")
         }
     }
 }
