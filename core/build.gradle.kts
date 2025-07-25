@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.hikari)
     implementation(libs.mariadb)
     implementation(libs.commons.bukkit)
+    implementation(libs.bstats)
 }
 
 tasks {

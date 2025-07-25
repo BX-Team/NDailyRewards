@@ -1,6 +1,7 @@
 package org.bxteam.ndailyrewards;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -20,7 +21,6 @@ import org.bxteam.ndailyrewards.managers.MenuManager;
 import org.bxteam.ndailyrewards.managers.database.DatabaseManager;
 import org.bxteam.ndailyrewards.managers.enums.Language;
 import org.bxteam.ndailyrewards.managers.reward.RewardManager;
-import org.bxteam.ndailyrewards.utils.metrics.Metrics;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

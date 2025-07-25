@@ -36,9 +36,16 @@ dependencies {
 tasks {
     shadowJar {
         archiveClassifier = ""
+        from(file("LICENSE"))
         minimize()
         manifest {
             attributes["paperweight-mappings-namespace"] = io.papermc.paperweight.util.constants.SPIGOT_NAMESPACE
+        }
+        dependencies {
+            exclude("META-INF/NOTICE")
+            exclude("META-INF/maven/**")
+            exclude("META-INF/versions/**")
+            exclude("META-INF/**.kotlin_module")
         }
     }
 
