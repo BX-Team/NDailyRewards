@@ -2,7 +2,6 @@ import org.bxteam.runserver.ServerType
 
 plugins {
     `java-library`
-    `maven-publish`
     alias(libs.plugins.shadow)
     alias(libs.plugins.paperweight) apply false
     alias(libs.plugins.run.server)
@@ -70,33 +69,6 @@ tasks {
         downloadPlugins {
             modrinth("luckperms", "v5.5.0-bukkit")
             hangar("PlaceholderAPI", "2.11.6")
-        }
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "ndailyrewards"
-            url = uri(
-                if (project.version.toString().endsWith("-SNAPSHOT")) {
-                    "https://repo.bxteam.org/snapshots"
-                } else {
-                    "https://repo.bxteam.org/releases"
-                }
-            )
-            credentials(PasswordCredentials::class)
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
-        }
-    }
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "org.bxteam"
-            artifactId = "ndailyrewards"
-            version = project.version.toString()
-            from(components["java"])
         }
     }
 }

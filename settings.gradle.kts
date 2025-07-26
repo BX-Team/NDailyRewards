@@ -12,3 +12,4 @@ plugins {
 rootProject.name = "NDailyRewards"
 
 include("core")
+include("api")
