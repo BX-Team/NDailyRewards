@@ -15,6 +15,10 @@ tasks {
         options.use()
         options.tags("apiNote:a:API Note:")
     }
+
+    compileJava {
+        options.release.set(17)
+    }
 }
 
 publishing {

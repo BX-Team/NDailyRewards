@@ -4,11 +4,10 @@ plugin-yml = "0.7.1"
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "8.3.8" }
 plugin-yml-bukkit = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "plugin-yml" }
-paperweight = { id = "io.papermc.paperweight.userdev", version = "2.0.0-beta.18" }
 run-server = { id = "org.bxteam.runserver", version = "1.2.0" }
 
 [libraries]
-paper = { module = "io.papermc.paper:paper-api", version = "1.21.8-R0.1-SNAPSHOT" }
+paper = { module = "io.papermc.paper:paper-api", version = "1.19.4-R0.1-SNAPSHOT" }
 
 hikari = { module = "com.zaxxer:HikariCP", version = "6.3.2" }
 mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.4" }

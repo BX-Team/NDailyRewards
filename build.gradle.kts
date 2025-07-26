@@ -3,7 +3,6 @@ import org.bxteam.runserver.ServerType
 plugins {
     `java-library`
     alias(libs.plugins.shadow)
-    alias(libs.plugins.paperweight) apply false
     alias(libs.plugins.run.server)
 }
 
@@ -37,9 +36,6 @@ tasks {
         archiveClassifier = ""
         from(file("LICENSE"))
         minimize()
-        manifest {
-            attributes["paperweight-mappings-namespace"] = io.papermc.paperweight.util.constants.SPIGOT_NAMESPACE
-        }
         dependencies {
             exclude("META-INF/NOTICE")
             exclude("META-INF/maven/**")
