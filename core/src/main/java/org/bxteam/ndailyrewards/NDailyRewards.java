@@ -1,7 +1,10 @@
 package org.bxteam.ndailyrewards;
 
+import dev.rollczi.litecommands.LiteCommands;
+import dev.rollczi.litecommands.bukkit.LiteBukkitFactory;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -15,10 +18,9 @@ import org.bxteam.commons.updater.MasterVersionFetcher;
 import org.bxteam.commons.updater.VersionFetcher;
 import org.bxteam.ndailyrewards.listeners.InventoryClickListener;
 import org.bxteam.ndailyrewards.listeners.PlayerJoinListener;
-import org.bxteam.ndailyrewards.commands.RewardCommand;
 import org.bxteam.ndailyrewards.hooks.HookManager;
 import org.bxteam.ndailyrewards.managers.MenuManager;
-import org.bxteam.ndailyrewards.managers.database.DatabaseManager;
+import org.bxteam.ndailyrewards.database.DatabaseManager;
 import org.bxteam.ndailyrewards.managers.enums.Language;
 import org.bxteam.ndailyrewards.managers.reward.RewardManager;
 
@@ -43,6 +45,7 @@ public final class NDailyRewards extends JavaPlugin {
     private DatabaseManager database;
     private RewardManager rewardManager;
     private MenuManager menuManager;
+    private LiteCommands<CommandSender> liteCommands;
 
     public NDailyRewards() {
         Appender consoleAppender = new ConsoleAppender("[{loggerName}] {logLevel}: {message}");
@@ -95,7 +98,6 @@ public final class NDailyRewards extends JavaPlugin {
         saveDefaultConfig();
         createLangFile();
         Language.init(this);
-        registerCommands();
         new Metrics(this, 13844);
 
         logger.info("Loading plugin managers...");
@@ -113,6 +115,11 @@ public final class NDailyRewards extends JavaPlugin {
             getServer().getPluginManager().registerEvents(event, this);
         }
 
+        this.liteCommands = LiteBukkitFactory.builder("ndailyrewards", this)
+                .commands(new Commands())
+
+                .build();
+
         Duration timeTaken = Duration.between(startTime, Instant.now());
         logger.info("Successfully enabled (took %sms)".formatted(timeTaken.toMillis()));
 
@@ -122,6 +129,7 @@ public final class NDailyRewards extends JavaPlugin {
     @Override
     public void onDisable() {
         logger.info("Disabling plugin...");
+        if (liteCommands != null) liteCommands.unregister();
         getServer().getScheduler().cancelTasks(this);
         database.dbSource.close();
     }
@@ -144,10 +152,6 @@ public final class NDailyRewards extends JavaPlugin {
             saveResource("lang.yml", false);
         }
         langConfig = YamlConfiguration.loadConfiguration(langFile);
-    }
-
-    private void registerCommands() {
-        new RewardCommand().registerMainCommand(this, "reward");
     }
 
     private void checkForUpdates() {

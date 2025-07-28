@@ -5,7 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bxteam.ndailyrewards.NDailyRewards;
 import org.bxteam.ndailyrewards.api.event.PlayerClaimRewardEvent;
-import org.bxteam.ndailyrewards.managers.database.DatabaseManager;
+import org.bxteam.ndailyrewards.database.DatabaseManager;
 import org.bxteam.ndailyrewards.managers.enums.Language;
 
 import java.sql.Connection;

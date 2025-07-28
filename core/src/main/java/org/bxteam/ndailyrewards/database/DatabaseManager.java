@@ -1,4 +1,4 @@
-package org.bxteam.ndailyrewards.managers.database;
+package org.bxteam.ndailyrewards.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -30,9 +30,6 @@ public class DatabaseManager {
         }
     }
 
-    /**
-     * Set up the database source
-     */
     private void setupDatabaseSource() {
         switch (Objects.requireNonNull(NDailyRewards.getInstance().getConfig().getString("database.type"))) {
             case "sqlite" -> {
@@ -66,12 +63,6 @@ public class DatabaseManager {
         dbSource = new HikariDataSource(hikariConfig);
     }
 
-    /**
-     * Initialize the database tables
-     *
-     * @throws @NotNull SQLException
-     * @throws @NotNull IOException
-     */
     private void initTables() throws @NotNull SQLException, @NotNull IOException {
         final @NotNull HashMap<@NotNull String, @NotNull String> initFiles = new HashMap<>() {{
             put("sqlite", "databases/sqlite.sql");

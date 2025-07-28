@@ -16,6 +16,7 @@ allprojects {
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven("https://jitpack.io/")
         maven("https://repo.bxteam.org/releases")
+        maven("https://repo.panda-lang.org/releases")
     }
 
     tasks.compileJava {

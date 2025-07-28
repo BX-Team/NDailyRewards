@@ -14,6 +14,8 @@ dependencies {
     implementation(libs.mariadb)
     implementation(libs.commons.bukkit)
     implementation(libs.bstats)
+    implementation(libs.guice)
+    implementation(libs.litecommands)
 }
 
 tasks {
