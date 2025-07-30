@@ -2,6 +2,8 @@ package org.bxteam.ndailyrewards;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.j256.ormlite.logger.Level;
+import com.j256.ormlite.logger.Logger;
 import dev.rollczi.litecommands.LiteCommands;
 import dev.rollczi.litecommands.bukkit.LiteBukkitFactory;
 import org.apache.maven.artifact.versioning.ComparableVersion;
@@ -75,6 +77,7 @@ public final class NDailyRewards extends JavaPlugin {
         );
 
         logger.info("Loading plugin managers...");
+        Logger.setGlobalLogLevel(Level.ERROR);
         try {
             this.injector.getInstance(DatabaseClient.class).open();
         } catch (SQLException e) {
