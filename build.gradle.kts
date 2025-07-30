@@ -40,9 +40,16 @@ tasks {
         minimize()
         dependencies {
             exclude("META-INF/NOTICE")
+            exclude("META-INF/NOTICE.md")
+            exclude("META-INF/LICENSE")
+            exclude("META-INF/LICENSE.txt")
+            exclude("META-INF/DEPENDENCIES")
             exclude("META-INF/maven/**")
             exclude("META-INF/versions/**")
             exclude("META-INF/**.kotlin_module")
+            exclude("deprecated.properties")
+            exclude("driver.properties")
+            exclude("mariadb.properties")
         }
     }
 
