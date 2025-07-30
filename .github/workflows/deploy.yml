@@ -1,0 +1,69 @@
+name: Deploy NDailyRewards
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Extract Version Number
+      id: version
+      run: |
+        VERSION=${{ github.event.release.tag_name }}
+        VERSION=${VERSION#v}
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'gradle'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Make Gradlew executable
+      run: chmod +x ./gradlew
+
+    - name: Publish API
+      continue-on-error: true
+      run: ./gradlew api:publish
+      env:
+        REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
+        REPO_PASSWORD: ${{ secrets.REPO_SECRET }}
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Publish to Modrinth
+      uses: Kira-NT/mc-publish@v3.3.0
+      with:
+        modrinth-id: 'ZiFzQAnz'
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+        modrinth-featured: true
+        modrinth-unfeature-mode: 'any'
+
+        files: 'build/libs/NDailyRewards-*.jar'
+
+        name: 'NDailyRewards ${{ steps.version.outputs.version }}'
+        version: ${{ steps.version.outputs.version }}
+        version-type: 'release'
+        changelog: ${{ github.event.release.body }}
+
+        loaders: |
+          paper
+          purpur
+          spigot
+        game-versions: |
+          >=1.16
+        java: 17

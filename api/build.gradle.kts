@@ -3,11 +3,19 @@ plugins {
     `maven-publish`
 }
 
+group = project.group
+version = project.version
+
 dependencies {
     compileOnly(libs.paper)
 }
 
 tasks {
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
     javadoc {
         val options = options as StandardJavadocDocletOptions
         options.encoding = Charsets.UTF_8.name()
@@ -25,24 +33,21 @@ publishing {
     repositories {
         maven {
             name = "ndailyrewards"
-            url = uri(
-                if (project.version.toString().endsWith("-SNAPSHOT")) {
-                    "https://repo.bxteam.org/snapshots"
-                } else {
-                    "https://repo.bxteam.org/releases"
-                }
-            )
-            credentials(PasswordCredentials::class)
-            authentication {
-                create<BasicAuthentication>("basic")
+            url = uri("https://repo.bxteam.org/releases/")
+
+            if (version.toString().endsWith("-SNAPSHOT")) {
+                url = uri("https://repo.bxteam.org/snapshots/")
             }
+
+            credentials.username = System.getenv("REPO_USERNAME")
+            credentials.password = System.getenv("REPO_PASSWORD")
         }
     }
     publications {
         create<MavenPublication>("maven") {
-            groupId = "org.bxteam"
+            groupId = group.toString()
             artifactId = "ndailyrewards"
-            version = project.version.toString()
+            version = version.toString()
             from(components["java"])
         }
     }
