@@ -5,7 +5,10 @@ import com.google.inject.Injector;
 import com.j256.ormlite.logger.Level;
 import com.j256.ormlite.logger.Logger;
 import dev.rollczi.litecommands.LiteCommands;
+import dev.rollczi.litecommands.argument.ArgumentKey;
 import dev.rollczi.litecommands.bukkit.LiteBukkitFactory;
+import dev.rollczi.litecommands.bukkit.LiteBukkitMessages;
+import dev.rollczi.litecommands.message.LiteMessages;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.command.CommandSender;
@@ -19,6 +22,8 @@ import org.bxteam.commons.logger.appender.ConsoleAppender;
 import org.bxteam.commons.logger.appender.JsonAppender;
 import org.bxteam.commons.scheduler.Scheduler;
 import org.bxteam.commons.updater.VersionFetcher;
+import org.bxteam.ndailyrewards.commands.Commands;
+import org.bxteam.ndailyrewards.commands.argument.SetDayArgument;
 import org.bxteam.ndailyrewards.database.DatabaseClient;
 import org.bxteam.ndailyrewards.database.DatabaseModule;
 import org.bxteam.ndailyrewards.integration.IntegrationRegistry;
@@ -76,6 +81,11 @@ public final class NDailyRewards extends JavaPlugin {
                 new SchedulerSetup(this)
         );
 
+        saveDefaultConfig();
+        createLangFile();
+        Language.init(this);
+        new Metrics(this, 13844);
+
         logger.info("Loading plugin managers...");
         Logger.setGlobalLogLevel(Level.ERROR);
         try {
@@ -87,17 +97,18 @@ public final class NDailyRewards extends JavaPlugin {
         this.injector.getInstance(RewardManager.class);
         this.injector.getInstance(MenuManager.class);
 
-        saveDefaultConfig();
-        createLangFile();
-        Language.init(this);
-        new Metrics(this, 13844);
-
         logger.info("Registering listeners...");
         getServer().getPluginManager().registerEvents(injector.getInstance(InventoryClickListener.class), this);
         getServer().getPluginManager().registerEvents(injector.getInstance(PlayerJoinListener.class), this);
 
         this.liteCommands = LiteBukkitFactory.builder("ndailyrewards", this)
                 .commands(this.injector.getInstance(Commands.class))
+                .argument(Integer.class, ArgumentKey.of(SetDayArgument.KEY), this.injector.getInstance(SetDayArgument.class))
+
+                .message(LiteMessages.MISSING_PERMISSIONS, Language.PREFIX.asColoredString() + Language.NO_PERMISSION.asColoredString())
+                .message(LiteMessages.INVALID_USAGE, Language.PREFIX.asColoredString() + Language.INVALID_SYNTAX.asColoredString())
+                .message(LiteBukkitMessages.PLAYER_NOT_FOUND, Language.PREFIX.asColoredString() + Language.PLAYER_NOT_FOUND.asColoredString())
+                .message(LiteBukkitMessages.PLAYER_ONLY, Language.PREFIX.asColoredString() + Language.NOT_PLAYER.asColoredString())
 
                 .build();
 
@@ -115,6 +126,12 @@ public final class NDailyRewards extends JavaPlugin {
         this.injector.getInstance(DatabaseClient.class).close();
         this.injector.getInstance(MenuManager.class).shutdown();
         this.injector.getInstance(RewardManager.class).unload();
+    }
+
+    public void reload() {
+        reloadConfig();
+        createLangFile();
+        Language.init(this);
     }
 
     private void createLangFile() {

@@ -1,18 +1,20 @@
-package org.bxteam.ndailyrewards;
+package org.bxteam.ndailyrewards.commands;
 
 import com.google.inject.Inject;
 import dev.rollczi.litecommands.annotations.argument.Arg;
 import dev.rollczi.litecommands.annotations.command.Command;
 import dev.rollczi.litecommands.annotations.context.Context;
 import dev.rollczi.litecommands.annotations.execute.Execute;
+import dev.rollczi.litecommands.annotations.execute.ExecuteDefault;
 import dev.rollczi.litecommands.annotations.permission.Permission;
 import lombok.RequiredArgsConstructor;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bxteam.commons.updater.VersionFetcher;
+import org.bxteam.ndailyrewards.NDailyRewards;
+import org.bxteam.ndailyrewards.commands.argument.SetDayArgument;
 import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.manager.menu.MenuManager;
 import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
@@ -27,7 +29,7 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 @Command(name = "reward", aliases = {"rw", "ndailyrewards", "ndr"})
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class Commands {
-    private final Plugin plugin;
+    private final NDailyRewards plugin;
     private final MenuManager menuManager;
     private final RewardManager rewardManager;
     private final PluginDescriptionFile pluginDescription;
@@ -37,9 +39,15 @@ public class Commands {
     @Execute
     void execute(@Context Player sender) {
         this.menuManager.openRewardsMenu(sender);
+
         if (this.plugin.getConfig().getBoolean("sound.open.enabled")) {
             soundUtil.playSound(sender, "open");
         }
+    }
+
+    @ExecuteDefault
+    void executeDefault(@Context CommandSender sender) {
+        sender.sendMessage(Language.PREFIX.asColoredString() + Language.INVALID_SYNTAX.asColoredString());
     }
 
     @Execute(name = "claim")
@@ -68,7 +76,7 @@ public class Commands {
     @Permission("ndailyrewards.reload")
     void reload(@Context CommandSender sender) {
         try {
-            //NDailyRewards.getInstance().reload(); // TODO
+            this.plugin.reload();
             sender.sendMessage(Language.PREFIX.asColoredString() + Language.COMMANDS_RELOAD.asColoredString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,7 +85,7 @@ public class Commands {
 
     @Execute(name = "setday")
     @Permission("ndailyrewards.setday")
-    void setDay(@Context CommandSender sender, @Arg Player target, @Arg int day) {
+    void setDay(@Context CommandSender sender, @Arg Player target, @Arg(SetDayArgument.KEY) Integer day) {
         try {
             this.rewardManager.setDay(target, day - 1);
             sender.sendMessage(Language.PREFIX.asColoredString() + Language.COMMANDS_SETDAY.asColoredString()

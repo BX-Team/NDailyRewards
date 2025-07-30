@@ -23,6 +23,7 @@ public class NDailyRewardsModule extends AbstractModule {
     @Override
     protected void configure() {
         this.bind(Plugin.class).toInstance(plugin);
+        this.bind(NDailyRewards.class).toInstance((NDailyRewards) plugin);
         this.bind(PluginManager.class).toInstance(plugin.getServer().getPluginManager());
         this.bind(Server.class).toInstance(plugin.getServer());
         this.bind(PluginDescriptionFile.class).toInstance(plugin.getDescription());
