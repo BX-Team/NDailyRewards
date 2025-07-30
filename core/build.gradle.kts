@@ -43,14 +43,6 @@ bukkit {
     main = "org.bxteam.ndailyrewards.NDailyRewards"
     apiVersion = "1.16"
 
-    commands {
-        register("reward") {
-            description = "Main command for NDailyRewards"
-            usage = "/<command> [subcommand]"
-            aliases = listOf("rw", "ndailyrewards", "ndr")
-        }
-    }
-
     permissions {
         register("ndailyrewards.claim") {
             default = BukkitPluginDescription.Permission.Default.TRUE
