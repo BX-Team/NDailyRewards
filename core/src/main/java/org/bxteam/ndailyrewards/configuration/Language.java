@@ -1,4 +1,4 @@
-package org.bxteam.ndailyrewards.managers.enums;
+package org.bxteam.ndailyrewards.configuration;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;

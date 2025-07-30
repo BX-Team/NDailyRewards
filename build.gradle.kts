@@ -36,6 +36,7 @@ tasks {
     shadowJar {
         archiveClassifier = ""
         from(file("LICENSE"))
+        relocate("org.bstats", "org.bxteam.ndailyrewards.dependencies.bstats")
         minimize()
         dependencies {
             exclude("META-INF/NOTICE")

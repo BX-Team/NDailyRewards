@@ -1,13 +1,27 @@
-package org.bxteam.ndailyrewards.hooks.list;
+package org.bxteam.ndailyrewards.integration.placeholderapi;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bxteam.ndailyrewards.integration.Integration;
+import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
+import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.jetbrains.annotations.NotNull;
-import org.bxteam.ndailyrewards.NDailyRewards;
-import org.bxteam.ndailyrewards.managers.reward.PlayerRewardData;
-import org.bxteam.ndailyrewards.managers.reward.RewardManager;
 
-public class PlaceholderAPIHook extends PlaceholderExpansion {
+@Singleton
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
+public class PlaceholderAPIIntegration extends PlaceholderExpansion implements Integration {
+    private final RewardManager rewardManager;
+    private final PluginDescriptionFile pluginDescription;
+
+    @Override
+    public void enable() {
+        this.register();
+    }
+
     @Override
     public @NotNull String getIdentifier() {
         return "dailyrewards";
@@ -15,12 +29,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return NDailyRewards.getInstance().getDescription().getAuthors().toString();
+        return String.join(", ", pluginDescription.getAuthors());
     }
 
     @Override
     public @NotNull String getVersion() {
-        return NDailyRewards.getInstance().getDescription().getVersion();
+        return this.pluginDescription.getVersion();
     }
 
     @Override
@@ -36,15 +50,13 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         if (params.equalsIgnoreCase("reward_day")) {
-            RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-            PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+            PlayerRewardData playerRewardData = this.rewardManager.getPlayerRewardData(player.getUniqueId());
 
             return String.valueOf(playerRewardData.currentDay() + 1);
         }
 
         if (params.equalsIgnoreCase("remaining_time")) {
-            RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-            PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+            PlayerRewardData playerRewardData = this.rewardManager.getPlayerRewardData(player.getUniqueId());
 
             long timeLeft = playerRewardData.next() - System.currentTimeMillis() / 1000L;
             if (timeLeft < 0) {

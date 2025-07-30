@@ -1,5 +1,6 @@
 package org.bxteam.ndailyrewards.utils;
 
+import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,11 +24,12 @@ import java.util.UUID;
  * @author deanveloper (original)
  * @author NONPLAYT (code modifications)
  */
+@UtilityClass
 public class HeadUtil {
     /**
      * Creates a player skull
      */
-    public static ItemStack createSkull() {
+    public ItemStack createSkull() {
         return new ItemStack(Material.PLAYER_HEAD);
     }
 
@@ -39,7 +41,7 @@ public class HeadUtil {
      * @deprecated names don't make for good identifiers.
      */
     @Deprecated
-    public static ItemStack itemFromName(String name) {
+    public ItemStack itemFromName(String name) {
         return itemWithName(createSkull(), name);
     }
 
@@ -49,7 +51,7 @@ public class HeadUtil {
      * @param id The Player's UUID.
      * @return The head of the Player.
      */
-    public static ItemStack itemFromUuid(UUID id) {
+    public ItemStack itemFromUuid(UUID id) {
         return itemWithUuid(createSkull(), id);
     }
 
@@ -59,7 +61,7 @@ public class HeadUtil {
      * @param url The Mojang URL.
      * @return The head of the Player.
      */
-    public static ItemStack itemFromUrl(String url) {
+    public ItemStack itemFromUrl(String url) {
         return itemWithUrl(createSkull(), url);
     }
 
@@ -69,7 +71,7 @@ public class HeadUtil {
      * @param base64 The Base64 string.
      * @return The head of the Player.
      */
-    public static ItemStack itemFromBase64(String base64) {
+    public ItemStack itemFromBase64(String base64) {
         return itemWithBase64(createSkull(), base64);
     }
 
@@ -82,7 +84,7 @@ public class HeadUtil {
      * @deprecated names don't make for good identifiers.
      */
     @Deprecated
-    public static ItemStack itemWithName(ItemStack item, String name) {
+    public ItemStack itemWithName(ItemStack item, String name) {
         notNull(item, "item");
         notNull(name, "name");
 
@@ -100,7 +102,7 @@ public class HeadUtil {
      * @param id   The Player's UUID.
      * @return The head of the Player.
      */
-    public static ItemStack itemWithUuid(ItemStack item, UUID id) {
+    public ItemStack itemWithUuid(ItemStack item, UUID id) {
         notNull(item, "item");
         notNull(id, "id");
 
@@ -118,7 +120,7 @@ public class HeadUtil {
      * @param url  The URL of the Mojang skin.
      * @return The head associated with the URL.
      */
-    public static ItemStack itemWithUrl(ItemStack item, String url) {
+    public ItemStack itemWithUrl(ItemStack item, String url) {
         notNull(item, "item");
         notNull(url, "url");
 
@@ -132,7 +134,7 @@ public class HeadUtil {
      * @param base64 The base64 string containing the texture.
      * @return The head with a custom texture.
      */
-    public static ItemStack itemWithBase64(ItemStack item, String base64) {
+    public ItemStack itemWithBase64(ItemStack item, String base64) {
         notNull(item, "item");
         notNull(base64, "base64");
 
@@ -153,7 +155,7 @@ public class HeadUtil {
      * @deprecated names don't make for good identifiers.
      */
     @Deprecated
-    public static void blockWithName(Block block, String name) {
+    public void blockWithName(Block block, String name) {
         notNull(block, "block");
         notNull(name, "name");
 
@@ -168,7 +170,7 @@ public class HeadUtil {
      * @param block The block to set.
      * @param id    The player to set it to.
      */
-    public static void blockWithUuid(Block block, UUID id) {
+    public void blockWithUuid(Block block, UUID id) {
         notNull(block, "block");
         notNull(id, "id");
 
@@ -184,7 +186,7 @@ public class HeadUtil {
      * @param block The block to set.
      * @param url   The mojang URL to set it to use.
      */
-    public static void blockWithUrl(Block block, String url) {
+    public void blockWithUrl(Block block, String url) {
         notNull(block, "block");
         notNull(url, "url");
 
@@ -197,7 +199,7 @@ public class HeadUtil {
      * @param block  The block to set.
      * @param base64 The base64 to set it to use.
      */
-    public static void blockWithBase64(Block block, String base64) {
+    public void blockWithBase64(Block block, String base64) {
         notNull(block, "block");
         notNull(base64, "base64");
 
@@ -207,17 +209,17 @@ public class HeadUtil {
         state.update(false, false);
     }
 
-    private static void setToSkull(Block block) {
+    private void setToSkull(Block block) {
         block.setType(Material.PLAYER_HEAD, false);
     }
 
-    private static void notNull(Object o, String name) {
+    private void notNull(Object o, String name) {
         if (o == null) {
             throw new NullPointerException(name + " should not be null!");
         }
     }
 
-    private static String urlToBase64(String url) {
+    private String urlToBase64(String url) {
         URI actualUrl;
         try {
             actualUrl = new URI(url);
@@ -228,7 +230,7 @@ public class HeadUtil {
         return Base64.getEncoder().encodeToString(toEncode.getBytes());
     }
 
-    private static PlayerProfile makeProfile(String b64) {
+    private PlayerProfile makeProfile(String b64) {
         UUID id = new UUID(
                 b64.substring(b64.length() - 20).hashCode(),
                 b64.substring(b64.length() - 10).hashCode()
@@ -240,11 +242,11 @@ public class HeadUtil {
         return profile;
     }
 
-    private static void mutateBlockState(Skull block, String b64) {
+    private void mutateBlockState(Skull block, String b64) {
         block.setPlayerProfile(makeProfile(b64));
     }
 
-    private static void mutateItemMeta(SkullMeta meta, String b64) {
+    private void mutateItemMeta(SkullMeta meta, String b64) {
         meta.setPlayerProfile(makeProfile(b64));
     }
 }

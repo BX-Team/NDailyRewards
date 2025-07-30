@@ -1,17 +1,19 @@
-package org.bxteam.ndailyrewards.managers;
+package org.bxteam.ndailyrewards.manager.menu;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.bxteam.ndailyrewards.managers.enums.Language;
+import org.bukkit.plugin.Plugin;
+import org.bxteam.commons.scheduler.Scheduler;
+import org.bxteam.commons.scheduler.Task;
+import org.bxteam.ndailyrewards.configuration.Language;
 import org.jetbrains.annotations.NotNull;
-import org.bxteam.ndailyrewards.NDailyRewards;
-import org.bxteam.ndailyrewards.managers.reward.PlayerRewardData;
-import org.bxteam.ndailyrewards.managers.reward.RewardManager;
+import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
+import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.bxteam.ndailyrewards.utils.ItemBuilder;
 import org.bxteam.ndailyrewards.utils.TextUtils;
 
@@ -19,46 +21,33 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+@Singleton
 public class MenuManager {
-    private static MenuManager instance;
+    private final Plugin plugin;
+    private final RewardManager rewardManager;
+    private final Scheduler scheduler;
 
     private final InventoryHolder MAIN_MENU_HOLDER = new MainMenuHolder();
-
-    // Cached filler and prebuilt items for each day
     private ItemStack cachedFillerItem;
     private final Map<Integer, DayItems> dayItemsCache = new HashMap<>();
     private final List<CustomItemConfig> cachedCustomItems = new ArrayList<>();
-
-    // Mapping of slot positions to day numbers for quick lookup
     private final Map<Integer, Integer> slotToDayMap = new HashMap<>();
-
-    // Set of players who currently have the rewards menu open
     private final Set<Player> openMenuPlayers = ConcurrentHashMap.newKeySet();
 
-    // Global scheduled task reference
-    private BukkitTask updateTask;
+    private Task updateTask;
 
-    public MenuManager() {
+    @Inject
+    public MenuManager(Plugin plugin, RewardManager rewardManager, Scheduler scheduler) {
+        this.plugin = plugin;
+        this.rewardManager = rewardManager;
+        this.scheduler = scheduler;
+
         initializeCaches();
         startGlobalUpdateTask();
     }
 
-    /**
-     * Singleton instance retrieval.
-     */
-    public static synchronized MenuManager getInstance() {
-        if (instance == null) {
-            instance = new MenuManager();
-        }
-        return instance;
-    }
-
-    /**
-     * Initialize static caches for filler, custom items, and day items.
-     */
     private void initializeCaches() {
-        final NDailyRewards instance = NDailyRewards.getInstance();
-        final ConfigurationSection config = instance.getConfig();
+        final ConfigurationSection config = plugin.getConfig();
 
         // Cache filler item
         if (config.getBoolean("gui.reward.display.filler.enable") && this.cachedFillerItem == null) {
@@ -84,7 +73,6 @@ public class MenuManager {
         // Cache day items and slot-to-day mappings
         ConfigurationSection daysSection = config.getConfigurationSection("rewards.days");
         if (daysSection != null && dayItemsCache.isEmpty()) {
-            RewardManager rewardManager = instance.getRewardManager();
             for (String dayKey : daysSection.getKeys(false)) {
                 int day = Integer.parseInt(dayKey);
                 ConfigurationSection daySection = daysSection.getConfigurationSection(dayKey);
@@ -96,32 +84,19 @@ public class MenuManager {
         }
     }
 
-    /**
-     * Starts a global scheduled task that updates all open reward menus every second.
-     */
     private void startGlobalUpdateTask() {
-        final NDailyRewards instance = NDailyRewards.getInstance();
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                long currentTime = System.currentTimeMillis() / 1000L;
-                for (Player player : openMenuPlayers) {
-                    updatePlayerInventory(player, currentTime);
-                }
+        updateTask = scheduler.runTaskTimer(() -> {
+            long currentTime = System.currentTimeMillis() / 1000L;
+            for (Player player : openMenuPlayers) {
+                updatePlayerInventory(player, currentTime);
             }
-        }.runTaskTimer(instance, 20L, 20L); // Run every second
+        }, 20L, 20L);
     }
 
-    /**
-     * Opens the rewards menu for a player.
-     * @param player The player to open the menu for.
-     */
     public void openRewardsMenu(Player player) {
-        final NDailyRewards instance = NDailyRewards.getInstance();
-        final ConfigurationSection config = instance.getConfig();
+        final ConfigurationSection config = plugin.getConfig();
 
-        RewardManager rewardManager = instance.getRewardManager();
-        boolean wasReset = rewardManager.checkResetForPlayer(player.getUniqueId());
+        boolean wasReset = this.rewardManager.checkResetForPlayer(player.getUniqueId());
         if (wasReset) {
             player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString());
         }
@@ -132,40 +107,28 @@ public class MenuManager {
 
         final Inventory inventory = Bukkit.createInventory(MAIN_MENU_HOLDER, size, title);
 
-        // Fill inventory with filler items if enabled
         if (useFiller && cachedFillerItem != null) {
             for (int i = 0; i < size; i++) {
                 inventory.setItem(i, cachedFillerItem);
             }
         }
 
-        // Place custom items
         for (CustomItemConfig cic : cachedCustomItems) {
             inventory.setItem(cic.position, cic.itemStack);
         }
 
-        // Initialize day items
         ConfigurationSection daysSection = config.getConfigurationSection("rewards.days");
         if (daysSection != null) {
-            PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+            PlayerRewardData playerRewardData = this.rewardManager.getPlayerRewardData(player.getUniqueId());
 
-            // Initial population of day items
             populateDayItems(inventory, playerRewardData, System.currentTimeMillis() / 1000L);
 
-            // Track the player for inventory updates
             openMenuPlayers.add(player);
         }
 
-        // Open the inventory for the player
         player.openInventory(inventory);
     }
 
-    /**
-     * Populates the day items in the inventory based on the player's reward data.
-     * @param inventory The inventory to populate.
-     * @param playerRewardData The player's reward data.
-     * @param currentTime The current server time in seconds.
-     */
     private void populateDayItems(Inventory inventory, PlayerRewardData playerRewardData, long currentTime) {
         int currentDay = playerRewardData.currentDay();
         long nextTime = playerRewardData.next();
@@ -190,11 +153,6 @@ public class MenuManager {
         }
     }
 
-    /**
-     * Updates the inventory of a player with the current time.
-     * @param player The player whose inventory is to be updated.
-     * @param currentTime The current server time in seconds.
-     */
     private void updatePlayerInventory(Player player, long currentTime) {
         if (!player.isOnline()) {
             openMenuPlayers.remove(player);
@@ -207,9 +165,7 @@ public class MenuManager {
             return;
         }
 
-        final NDailyRewards instance = NDailyRewards.getInstance();
-        RewardManager rewardManager = instance.getRewardManager();
-        PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+        PlayerRewardData playerRewardData = this.rewardManager.getPlayerRewardData(player.getUniqueId());
 
         int currentDay = playerRewardData.currentDay();
         long nextTime = playerRewardData.next();
@@ -230,14 +186,10 @@ public class MenuManager {
         }
     }
 
-    /**
-     * Load the filler item once.
-     */
     private ItemStack loadFillItem() {
-        final NDailyRewards instance = NDailyRewards.getInstance();
-        final String material = instance.getConfig().getString("gui.reward.display.filler.material");
-        final String name = instance.getConfig().getString("gui.reward.display.filler.name");
-        final List<String> lore = instance.getConfig().getStringList("gui.reward.display.filler.lore");
+        final String material = plugin.getConfig().getString("gui.reward.display.filler.material");
+        final String name = plugin.getConfig().getString("gui.reward.display.filler.name");
+        final List<String> lore = plugin.getConfig().getStringList("gui.reward.display.filler.lore");
 
         return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
                 .setName(name)
@@ -245,13 +197,6 @@ public class MenuManager {
                 .build();
     }
 
-    /**
-     * Pre-build all items related to a specific day: claimed, available, unavailable, and the next template.
-     * This avoids rebuilding them every tick.
-     * @param day The day number.
-     * @param daySection The configuration section for the day.
-     * @return A DayItems object containing all related ItemStacks.
-     */
     private DayItems preCacheDayItems(int day, ConfigurationSection daySection) {
         int position = daySection.getInt("position");
         List<String> rewardLore = daySection.getStringList("lore").stream()
@@ -267,16 +212,12 @@ public class MenuManager {
         return new DayItems(day, position, claimed, available, unavailable, nextTemplate);
     }
 
-    /**
-     * Create static items (claimed, available, unavailable) once.
-     */
     private ItemStack createStaticItem(String type, int day, List<String> rewardLore) {
-        final NDailyRewards instance = NDailyRewards.getInstance();
-        String material = instance.getConfig().getString("gui.reward.display." + type + ".material");
-        String name = Objects.requireNonNull(instance.getConfig().getString("gui.reward.display." + type + ".name"))
+        String material = plugin.getConfig().getString("gui.reward.display." + type + ".material");
+        String name = Objects.requireNonNull(plugin.getConfig().getString("gui.reward.display." + type + ".name"))
                 .replace("<dayNum>", String.valueOf(day));
 
-        List<String> loreFormatted = instance.getConfig().getStringList("gui.reward.display." + type + ".lore").stream()
+        List<String> loreFormatted = plugin.getConfig().getStringList("gui.reward.display." + type + ".lore").stream()
                 .map(s -> s.replace("<reward-lore>", String.join("\n", rewardLore)))
                 .flatMap(s -> Arrays.stream(s.split("\n")))
                 .map(TextUtils::applyColor)
@@ -288,17 +229,12 @@ public class MenuManager {
                 .build();
     }
 
-    /**
-     * Create a "next" item template.
-     * We leave "<time-left>" as a placeholder in the lore and just replace it each tick later.
-     */
     private ItemStack createNextTemplate(int day, List<String> rewardLore) {
-        final NDailyRewards instance = NDailyRewards.getInstance();
-        String material = instance.getConfig().getString("gui.reward.display.next.material");
-        String name = Objects.requireNonNull(instance.getConfig().getString("gui.reward.display.next.name"))
+        String material = plugin.getConfig().getString("gui.reward.display.next.material");
+        String name = Objects.requireNonNull(plugin.getConfig().getString("gui.reward.display.next.name"))
                 .replace("<dayNum>", String.valueOf(day));
 
-        List<String> loreTemplate = instance.getConfig().getStringList("gui.reward.display.next.lore").stream()
+        List<String> loreTemplate = plugin.getConfig().getStringList("gui.reward.display.next.lore").stream()
                 .map(s -> s.replace("<reward-lore>", String.join("\n", rewardLore)))
                 .flatMap(s -> Arrays.stream(s.split("\n")))
                 .map(TextUtils::applyColor)
@@ -310,12 +246,6 @@ public class MenuManager {
                 .build();
     }
 
-    /**
-     * Update the "<time-left>" value in the next item without rebuilding everything.
-     * @param template The cached next template item.
-     * @param timeLeft The time left in seconds.
-     * @return A new ItemStack with updated time lore.
-     */
     private ItemStack updateNextItemTime(ItemStack template, long timeLeft) {
         ItemStack copy = template.clone();
         ItemMeta meta = copy.getItemMeta();
@@ -334,11 +264,6 @@ public class MenuManager {
         return copy;
     }
 
-    /**
-     * Format seconds into HH:MM:SS.
-     * @param seconds The number of seconds to format.
-     * @return A formatted time string.
-     */
     private String formatTime(long seconds) {
         long hours = seconds / 3600;
         long minutes = (seconds % 3600) / 60;
@@ -346,22 +271,42 @@ public class MenuManager {
         return String.format("%02d:%02d:%02d", hours, minutes, secs);
     }
 
-    /**
-     * Removes a player from the tracking set when they close the inventory.
-     * Should be called from an InventoryCloseEvent listener.
-     * @param player The player who closed the inventory.
-     */
+    public void shutdown() {
+        if (updateTask != null && !updateTask.isCancelled()) {
+            updateTask.cancel();
+        }
+        openMenuPlayers.clear();
+        dayItemsCache.clear();
+        cachedCustomItems.clear();
+        slotToDayMap.clear();
+        cachedFillerItem = null;
+    }
+
     public void removePlayer(Player player) {
         openMenuPlayers.remove(player);
     }
 
-    /**
-     * Holder used to identify the main menu, so we can manage updates.
-     */
+    public void refreshPlayerInventory(Player player) {
+        if (!player.isOnline()) {
+            openMenuPlayers.remove(player);
+            return;
+        }
+
+        Inventory inventory = player.getOpenInventory().getTopInventory();
+        if (!(inventory.getHolder() instanceof MainMenuHolder)) {
+            openMenuPlayers.remove(player);
+            return;
+        }
+
+        PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
+        long currentTime = System.currentTimeMillis() / 1000L;
+        populateDayItems(inventory, playerRewardData, currentTime);
+    }
+
     public static class MainMenuHolder implements InventoryHolder {
         @Override
         public @NotNull Inventory getInventory() {
-            return Bukkit.createInventory(this, 0, ""); // Placeholder, actual inventory is managed elsewhere
+            return Bukkit.createInventory(this, 0, "");
         }
     }
 

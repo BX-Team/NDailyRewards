@@ -1,21 +1,26 @@
-package org.bxteam.ndailyrewards.managers.reward;
+package org.bxteam.ndailyrewards.manager.reward;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bxteam.ndailyrewards.NDailyRewards;
+import org.bxteam.commons.logger.ExtendedLogger;
 import org.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.util.Random;
 
 public class ActionsExecutor {
+    private final ExtendedLogger logger;
     private final Player player;
     private final Reward reward;
     private final String[] titleText = new String[]{"", ""};
     private final Random random = new Random();
 
-    public ActionsExecutor(Player player, Reward reward) {
+    @Inject
+    public ActionsExecutor(ExtendedLogger logger, @Assisted Player player, @Assisted Reward reward) {
+        this.logger = logger;
         this.player = player;
         this.reward = reward;
     }
@@ -54,7 +59,7 @@ public class ActionsExecutor {
                                 float pitch = Float.parseFloat(parts[2]);
                                 player.playSound(player.getLocation(), sound, volume, pitch);
                             } catch (IllegalArgumentException e) {
-                                NDailyRewards.getInstance().getExtendedLogger().warn("Invalid sound action: " + action);
+                                logger.warn("Invalid sound action: " + action);
                             }
                         }
                         break;
@@ -85,7 +90,7 @@ public class ActionsExecutor {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), luckCommand.replace("<player>", player.getName()));
                                 }
                             } catch (NumberFormatException e) {
-                                NDailyRewards.getInstance().getExtendedLogger().warn("Invalid luck action: " + action);
+                                logger.warn("Invalid luck action: " + action);
                             }
                         }
                         break;
@@ -94,12 +99,16 @@ public class ActionsExecutor {
                         break;
                 }
             } catch (Exception e) {
-                NDailyRewards.getInstance().getExtendedLogger().error("Error executing action: " + e.getMessage());
+                logger.error("Error executing action: " + e.getMessage());
             }
         });
 
         if (!titleText[0].isEmpty() || !titleText[1].isEmpty()) {
             player.sendTitle(titleText[0], titleText[1], 10, 70, 20);
         }
+    }
+
+    public interface Factory {
+        ActionsExecutor create(Player player, Reward reward);
     }
 }

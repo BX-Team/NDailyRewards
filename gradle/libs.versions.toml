@@ -1,5 +1,8 @@
 [versions]
 plugin-yml = "0.7.1"
+commons = "3.0.0"
+ormlite = "6.1"
+guice = "7.0.0"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "8.3.8" }
@@ -8,14 +11,37 @@ run-server = { id = "org.bxteam.runserver", version = "1.2.0" }
 
 [libraries]
 paper = { module = "io.papermc.paper:paper-api", version = "1.19.4-R0.1-SNAPSHOT" }
+paperlib = { module = "io.papermc:paperlib", version = "1.0.8" }
 
+commons-bukkit = { module = "org.bxteam:commons-bukkit", version.ref = "commons" }
+commons-folia = { module = "org.bxteam:commons-folia", version.ref = "commons"}
+
+ormlite = { module = "com.j256.ormlite:ormlite-core", version.ref = "ormlite" }
+ormlite-jdbc = { module = "com.j256.ormlite:ormlite-jdbc", version.ref = "ormlite" }
 hikari = { module = "com.zaxxer:HikariCP", version = "6.3.2" }
 mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.4" }
 
-commons-bukkit = { module = "org.bxteam:commons-bukkit", version = "3.0.0" }
-
 placeholderapi = { module = "me.clip:placeholderapi", version = "2.11.6" }
 bstats = { module = "org.bstats:bstats-bukkit", version = "3.1.0" }
-guice = { module = "com.google.inject:guice", version = "7.0.0" }
+lombok = { module = "org.projectlombok:lombok", version = "1.18.38" }
+
+guice = { module = "com.google.inject:guice", version.ref = "guice" }
+guice-assistedinject = { module = "com.google.inject.extensions:guice-assistedinject", version.ref = "guice" }
 
 litecommands = { module = "dev.rollczi:litecommands-bukkit", version = "3.10.2" }
+
+[bundles]
+commons = [
+    "commons-bukkit",
+    "commons-folia"
+]
+
+ormlite = [
+    "ormlite",
+    "ormlite-jdbc"
+]
+
+guice = [
+    "guice",
+    "guice-assistedinject"
+]

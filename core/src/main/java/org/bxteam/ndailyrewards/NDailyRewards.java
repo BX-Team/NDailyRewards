@@ -1,5 +1,7 @@
 package org.bxteam.ndailyrewards;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import dev.rollczi.litecommands.LiteCommands;
 import dev.rollczi.litecommands.bukkit.LiteBukkitFactory;
 import org.apache.maven.artifact.versioning.ComparableVersion;
@@ -7,24 +9,26 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bxteam.commons.logger.ExtendedLogger;
 import org.bxteam.commons.logger.LogLevel;
 import org.bxteam.commons.logger.appender.Appender;
 import org.bxteam.commons.logger.appender.ConsoleAppender;
 import org.bxteam.commons.logger.appender.JsonAppender;
-import org.bxteam.commons.updater.MasterVersionFetcher;
+import org.bxteam.commons.scheduler.Scheduler;
 import org.bxteam.commons.updater.VersionFetcher;
-import org.bxteam.ndailyrewards.listeners.InventoryClickListener;
-import org.bxteam.ndailyrewards.listeners.PlayerJoinListener;
-import org.bxteam.ndailyrewards.hooks.HookManager;
-import org.bxteam.ndailyrewards.managers.MenuManager;
-import org.bxteam.ndailyrewards.database.DatabaseManager;
-import org.bxteam.ndailyrewards.managers.enums.Language;
-import org.bxteam.ndailyrewards.managers.reward.RewardManager;
+import org.bxteam.ndailyrewards.database.DatabaseClient;
+import org.bxteam.ndailyrewards.database.DatabaseModule;
+import org.bxteam.ndailyrewards.integration.IntegrationRegistry;
+import org.bxteam.ndailyrewards.listener.InventoryClickListener;
+import org.bxteam.ndailyrewards.listener.PlayerJoinListener;
+import org.bxteam.ndailyrewards.manager.menu.MenuManager;
+import org.bxteam.ndailyrewards.configuration.Language;
+import org.bxteam.ndailyrewards.manager.reward.RewardManager;
+import org.bxteam.ndailyrewards.scheduler.SchedulerSetup;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -36,18 +40,20 @@ import java.util.Objects;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public final class NDailyRewards extends JavaPlugin {
-    private final VersionFetcher versionFetcher = new MasterVersionFetcher("NDailyRewards");
-    private final ExtendedLogger logger;
-
-    private static NDailyRewards instance;
+    private Injector injector;
+    private ExtendedLogger logger;
     private File langFile;
     private FileConfiguration langConfig;
-    private DatabaseManager database;
-    private RewardManager rewardManager;
-    private MenuManager menuManager;
     private LiteCommands<CommandSender> liteCommands;
 
-    public NDailyRewards() {
+    public FileConfiguration getLangConfig() {
+        return langConfig;
+    }
+
+    @Override
+    public void onEnable() {
+        Instant startTime = Instant.now();
+
         Appender consoleAppender = new ConsoleAppender("[{loggerName}] {logLevel}: {message}");
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
         File logsFile = new File("plugins/NDailyRewards/logs/ndr-logs-" + date + ".txt");
@@ -61,62 +67,34 @@ public final class NDailyRewards extends JavaPlugin {
         }
         JsonAppender jsonAppender = new JsonAppender(false, false, true, logsFile.getPath());
         this.logger = new ExtendedLogger("NDailyRewards", LogLevel.INFO, List.of(consoleAppender, jsonAppender), new ArrayList<>());
-    }
 
-    public static NDailyRewards getInstance() {
-        return NDailyRewards.instance;
-    }
+        this.injector = Guice.createInjector(
+                new NDailyRewardsModule(this, logger),
+                new DatabaseModule(this),
+                new SchedulerSetup(this)
+        );
 
-    public FileConfiguration getLangConfig() {
-        return langConfig;
-    }
+        logger.info("Loading plugin managers...");
+        try {
+            this.injector.getInstance(DatabaseClient.class).open();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        this.injector.getInstance(IntegrationRegistry.class).init();
+        this.injector.getInstance(RewardManager.class);
+        this.injector.getInstance(MenuManager.class);
 
-    public DatabaseManager getDatabase() {
-        return database;
-    }
-
-    public RewardManager getRewardManager() {
-        return rewardManager;
-    }
-
-    public MenuManager getMenuManager() {
-        return menuManager;
-    }
-
-    public VersionFetcher getVersionFetcher() {
-        return versionFetcher;
-    }
-
-    public ExtendedLogger getExtendedLogger() {
-        return logger;
-    }
-
-    @Override
-    public void onEnable() {
-        Instant startTime = Instant.now();
-        NDailyRewards.instance = this;
         saveDefaultConfig();
         createLangFile();
         Language.init(this);
         new Metrics(this, 13844);
 
-        logger.info("Loading plugin managers...");
-        database = new DatabaseManager();
-        rewardManager = new RewardManager(this, database);
-        menuManager = new MenuManager();
-        new HookManager(this).registerHooks();
-
         logger.info("Registering listeners...");
-        final Listener[] events = new Listener[]{
-                new InventoryClickListener(),
-                new PlayerJoinListener()
-        };
-        for (final Listener event : events) {
-            getServer().getPluginManager().registerEvents(event, this);
-        }
+        getServer().getPluginManager().registerEvents(injector.getInstance(InventoryClickListener.class), this);
+        getServer().getPluginManager().registerEvents(injector.getInstance(PlayerJoinListener.class), this);
 
         this.liteCommands = LiteBukkitFactory.builder("ndailyrewards", this)
-                .commands(new Commands())
+                .commands(this.injector.getInstance(Commands.class))
 
                 .build();
 
@@ -128,21 +106,12 @@ public final class NDailyRewards extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        logger.info("Disabling plugin...");
-        if (liteCommands != null) liteCommands.unregister();
         getServer().getScheduler().cancelTasks(this);
-        database.dbSource.close();
-    }
-
-    public void reload() {
-        this.database.dbSource.close();
-        this.rewardManager.unload();
-
-        reloadConfig();
-        createLangFile();
-        Language.init(this);
-        this.database = new DatabaseManager();
-        this.rewardManager = new RewardManager(this, this.database);
+        this.injector.getInstance(Scheduler.class).cancelTasks(this);
+        if (liteCommands != null) liteCommands.unregister();
+        this.injector.getInstance(DatabaseClient.class).close();
+        this.injector.getInstance(MenuManager.class).shutdown();
+        this.injector.getInstance(RewardManager.class).unload();
     }
 
     private void createLangFile() {
@@ -157,7 +126,7 @@ public final class NDailyRewards extends JavaPlugin {
     private void checkForUpdates() {
         final var current = new ComparableVersion(this.getDescription().getVersion());
 
-        supplyAsync(getVersionFetcher()::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
+        supplyAsync(this.injector.getInstance(VersionFetcher.class)::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
             if (error != null || newest.compareTo(current) <= 0) {
                 return;
             }
@@ -167,7 +136,7 @@ public final class NDailyRewards extends JavaPlugin {
                 Your version: %s
                 Newest version: %s
                 Download it at: %s
-                """.formatted(current.toString(), newest, getVersionFetcher().getDownloadUrl()));
+                """.formatted(current.toString(), newest, this.injector.getInstance(VersionFetcher.class).getDownloadUrl()));
         });
     }
 }

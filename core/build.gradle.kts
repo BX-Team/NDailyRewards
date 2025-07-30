@@ -7,14 +7,19 @@ plugins {
 
 dependencies {
     api(project(":api"))
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+
     compileOnly(libs.paper)
     compileOnly(libs.placeholderapi)
 
+    implementation(libs.paperlib)
     implementation(libs.hikari)
     implementation(libs.mariadb)
-    implementation(libs.commons.bukkit)
+    implementation(libs.bundles.ormlite)
+    implementation(libs.bundles.commons)
     implementation(libs.bstats)
-    implementation(libs.guice)
+    implementation(libs.bundles.guice)
     implementation(libs.litecommands)
 }
 

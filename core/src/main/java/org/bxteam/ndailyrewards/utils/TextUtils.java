@@ -1,5 +1,6 @@
 package org.bxteam.ndailyrewards.utils;
 
+import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -12,12 +13,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@UtilityClass
 public class TextUtils {
-    private static final Pattern GRADIENT_PATTERN = Pattern.compile("<(#[A-Fa-f0-9]{6})>(.*?)</(#[A-Fa-f0-9]{6})>");
-    private static final Pattern LEGACY_GRADIENT_PATTERN = Pattern.compile("<(&[A-Za-z0-9])>(.*?)</(&[A-Za-z0-9])>");
-    private static final Pattern RGB_PATTERN = Pattern.compile("<(#......)>");
+    private Pattern GRADIENT_PATTERN = Pattern.compile("<(#[A-Fa-f0-9]{6})>(.*?)</(#[A-Fa-f0-9]{6})>");
+    private Pattern LEGACY_GRADIENT_PATTERN = Pattern.compile("<(&[A-Za-z0-9])>(.*?)</(&[A-Za-z0-9])>");
+    private Pattern RGB_PATTERN = Pattern.compile("<(#......)>");
 
-    public static String applyColor(String text) {
+    public String applyColor(String text) {
         if (text == null) {
             return "Not found";
         }
@@ -60,7 +62,7 @@ public class TextUtils {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
-    private static String rgbGradient(String str, Color from, Color to, BeforeType[] types) {
+    private String rgbGradient(String str, Color from, Color to, BeforeType[] types) {
         final double[] red = linear(from.getRed(), to.getRed(), str.length());
         final double[] green = linear(from.getGreen(), to.getGreen(), str.length());
         final double[] blue = linear(from.getBlue(), to.getBlue(), str.length());
@@ -78,7 +80,7 @@ public class TextUtils {
         return builder.toString();
     }
 
-    private static double[] linear(double from, double to, int max) {
+    private double[] linear(double from, double to, int max) {
         final double[] res = new double[max];
         for (int i = 0; i < max; i++) {
             res[i] = from + i * ((to - from) / (max - 1));
@@ -86,7 +88,7 @@ public class TextUtils {
         return res;
     }
 
-    public static String applyPlaceholders(Player player, String text) {
+    public String applyPlaceholders(Player player, String text) {
         if (player != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             return PlaceholderAPI.setPlaceholders(player, text);
         }

@@ -1,4 +1,4 @@
-package org.bxteam.ndailyrewards.managers.reward;
+package org.bxteam.ndailyrewards.manager.reward;
 
 public enum ActionType {
     CONSOLE("[console]"),

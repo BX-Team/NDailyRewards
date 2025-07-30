@@ -1,5 +1,6 @@
-package org.bxteam.ndailyrewards.listeners;
+package org.bxteam.ndailyrewards.listener;
 
+import com.google.inject.Inject;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -8,37 +9,31 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bxteam.ndailyrewards.NDailyRewards;
-import org.bxteam.ndailyrewards.managers.MenuManager;
-import org.bxteam.ndailyrewards.managers.reward.RewardManager;
+import org.bukkit.plugin.Plugin;
+import org.bxteam.ndailyrewards.manager.menu.MenuManager;
+import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Optimized InventoryClickListener:
- * - Utilizes a precomputed slot-to-day map for faster lookups.
- * - Reduces configuration access by caching actions per custom button.
- */
 public class InventoryClickListener implements Listener {
-    // Precomputed map of slot positions to day numbers
-    private final Map<Integer, Integer> slotToDayMap = new ConcurrentHashMap<>();
+    private final Plugin plugin;
+    private final RewardManager rewardManager;
 
-    // Precomputed map of custom button slots to their actions
+    private final Map<Integer, Integer> slotToDayMap = new ConcurrentHashMap<>();
     private final Map<Integer, List<String>> customButtonActions = new ConcurrentHashMap<>();
 
-    public InventoryClickListener() {
+    @Inject
+    public InventoryClickListener(Plugin plugin, RewardManager rewardManager) {
+        this.plugin = plugin;
+        this.rewardManager = rewardManager;
         initializeMappings();
     }
 
-    /**
-     * Initializes slot-to-day and custom button action mappings.
-     */
     private void initializeMappings() {
-        final NDailyRewards instance = NDailyRewards.getInstance();
-        ConfigurationSection daysSection = instance.getConfig().getConfigurationSection("rewards.days");
+        ConfigurationSection daysSection = this.plugin.getConfig().getConfigurationSection("rewards.days");
         if (daysSection != null) {
             for (String dayKey : daysSection.getKeys(false)) {
                 int day = Integer.parseInt(dayKey);
@@ -50,7 +45,7 @@ public class InventoryClickListener implements Listener {
             }
         }
 
-        ConfigurationSection customSection = instance.getConfig().getConfigurationSection("gui.reward.custom");
+        ConfigurationSection customSection = this.plugin.getConfig().getConfigurationSection("gui.reward.custom");
         if (customSection != null) {
             for (String customKey : customSection.getKeys(false)) {
                 int position = customSection.getInt(customKey + ".position");
@@ -68,12 +63,11 @@ public class InventoryClickListener implements Listener {
 
         Player player = (Player) event.getWhoClicked();
         int slot = event.getSlot();
-        RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
 
         // Check if the clicked slot corresponds to a day
         Integer day = slotToDayMap.get(slot);
         if (day != null && day > 0) {
-            rewardManager.handleReward(player, day);
+            this.rewardManager.handleReward(player, day);
             return;
         }
 
@@ -84,11 +78,6 @@ public class InventoryClickListener implements Listener {
         }
     }
 
-    /**
-     * Executes a list of actions defined in the configuration.
-     * @param player The player to execute actions for.
-     * @param actions The list of action strings.
-     */
     private void executeActions(Player player, List<String> actions) {
         for (String action : actions) {
             if (action.startsWith("[console]")) {
@@ -112,7 +101,6 @@ public class InventoryClickListener implements Listener {
                         float pitch = soundParams.length > 2 ? Float.parseFloat(soundParams[2]) : 1.0f;
                         player.playSound(player.getLocation(), sound, volume, pitch);
                     } catch (IllegalArgumentException e) {
-                        // Invalid sound, ignore or log as needed
                         player.sendMessage(TextUtils.applyColor("&cInvalid sound specified: " + soundParams[0]));
                     }
                 }

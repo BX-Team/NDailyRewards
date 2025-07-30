@@ -1,12 +1,14 @@
 package org.bxteam.ndailyrewards.utils;
 
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
-public final class Permissions {
-    public static final @NotNull String UPDATE_NOTIFY = "ndailyrewards.update-notify";
-    public static final @NotNull String CLAIM = "ndailyrewards.claim";
-    public static final @NotNull String HELP = "ndailyrewards.help";
-    public static final @NotNull String RELOAD = "ndailyrewards.reload";
-    public static final @NotNull String SETDAY = "ndailyrewards.setday";
-    public static final @NotNull String VERSION = "ndailyrewards.version";
+@UtilityClass
+public class Permissions {
+    public @NotNull String UPDATE_NOTIFY = "ndailyrewards.update-notify";
+    public @NotNull String CLAIM = "ndailyrewards.claim";
+    public @NotNull String HELP = "ndailyrewards.help";
+    public @NotNull String RELOAD = "ndailyrewards.reload";
+    public @NotNull String SETDAY = "ndailyrewards.setday";
+    public @NotNull String VERSION = "ndailyrewards.version";
 }

@@ -1,16 +1,22 @@
 package org.bxteam.ndailyrewards;
 
+import com.google.inject.Inject;
 import dev.rollczi.litecommands.annotations.argument.Arg;
 import dev.rollczi.litecommands.annotations.command.Command;
 import dev.rollczi.litecommands.annotations.context.Context;
 import dev.rollczi.litecommands.annotations.execute.Execute;
 import dev.rollczi.litecommands.annotations.permission.Permission;
+import lombok.RequiredArgsConstructor;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bxteam.ndailyrewards.managers.enums.Language;
-import org.bxteam.ndailyrewards.managers.reward.PlayerRewardData;
-import org.bxteam.ndailyrewards.managers.reward.RewardManager;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bxteam.commons.updater.VersionFetcher;
+import org.bxteam.ndailyrewards.configuration.Language;
+import org.bxteam.ndailyrewards.manager.menu.MenuManager;
+import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
+import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.bxteam.ndailyrewards.utils.SoundUtil;
 import org.bxteam.ndailyrewards.utils.TextUtils;
 
@@ -19,24 +25,31 @@ import java.util.Objects;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 @Command(name = "reward", aliases = {"rw", "ndailyrewards", "ndr"})
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class Commands {
+    private final Plugin plugin;
+    private final MenuManager menuManager;
+    private final RewardManager rewardManager;
+    private final PluginDescriptionFile pluginDescription;
+    private final VersionFetcher versionFetcher;
+    private final SoundUtil soundUtil;
+
     @Execute
     void execute(@Context Player sender) {
-        NDailyRewards.getInstance().getMenuManager().openRewardsMenu(sender);
-        if (NDailyRewards.getInstance().getConfig().getBoolean("sound.open.enabled")) {
-            SoundUtil.playSound(sender, "open");
+        this.menuManager.openRewardsMenu(sender);
+        if (this.plugin.getConfig().getBoolean("sound.open.enabled")) {
+            soundUtil.playSound(sender, "open");
         }
     }
 
     @Execute(name = "claim")
     @Permission("ndailyrewards.claim")
     void claim(@Context Player sender) {
-        RewardManager rewardManager = NDailyRewards.getInstance().getRewardManager();
-        PlayerRewardData rewardData = rewardManager.getPlayerRewardData(sender.getUniqueId());
+        PlayerRewardData rewardData = this.rewardManager.getPlayerRewardData(sender.getUniqueId());
         int nextDay = rewardData.currentDay() + 1;
 
-        if (rewardManager.isRewardAvailable(rewardData, nextDay)) {
-            rewardManager.giveReward(sender, nextDay);
+        if (this.rewardManager.isRewardAvailable(rewardData, nextDay)) {
+            this.rewardManager.giveReward(sender, nextDay);
         } else {
             sender.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_NOT_AVAILABLE.asColoredString());
         }
@@ -55,7 +68,7 @@ public class Commands {
     @Permission("ndailyrewards.reload")
     void reload(@Context CommandSender sender) {
         try {
-            NDailyRewards.getInstance().reload();
+            //NDailyRewards.getInstance().reload(); // TODO
             sender.sendMessage(Language.PREFIX.asColoredString() + Language.COMMANDS_RELOAD.asColoredString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,7 +79,7 @@ public class Commands {
     @Permission("ndailyrewards.setday")
     void setDay(@Context CommandSender sender, @Arg Player target, @Arg int day) {
         try {
-            NDailyRewards.getInstance().getRewardManager().setDay(target, day - 1);
+            this.rewardManager.setDay(target, day - 1);
             sender.sendMessage(Language.PREFIX.asColoredString() + Language.COMMANDS_SETDAY.asColoredString()
                     .replace("<player>", target.getName())
                     .replace("<day>", String.valueOf(day)));
@@ -78,17 +91,17 @@ public class Commands {
     @Execute(name = "version")
     @Permission("ndailyrewards.version")
     void version(@Context CommandSender sender) {
-        final var current = new ComparableVersion(NDailyRewards.getInstance().getDescription().getVersion());
+        final var current = new ComparableVersion(this.pluginDescription.getVersion());
 
         sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aCurrent installed version: &e" + current));
 
-        supplyAsync(NDailyRewards.getInstance().getVersionFetcher()::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
+        supplyAsync(this.versionFetcher::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
             if (error != null || newest.compareTo(current) <= 0) {
                 return;
             }
 
             sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aA new update is available: &e" + newest));
-            sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aDownload here: &e" + NDailyRewards.getInstance().getVersionFetcher().getDownloadUrl()));
+            sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aDownload here: &e" + this.versionFetcher.getDownloadUrl()));
         });
     }
 }
