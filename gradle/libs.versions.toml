@@ -10,7 +10,7 @@ plugin-yml-bukkit = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "plugin
 run-server = { id = "org.bxteam.runserver", version = "1.2.0" }
 
 [libraries]
-paper = { module = "io.papermc.paper:paper-api", version = "1.19.4-R0.1-SNAPSHOT" }
+paper = { module = "com.destroystokyo.paper:paper-api", version = "1.16.5-R0.1-SNAPSHOT" }
 paperlib = { module = "io.papermc:paperlib", version = "1.0.8" }
 
 commons-bukkit = { module = "org.bxteam:commons-bukkit", version.ref = "commons" }
