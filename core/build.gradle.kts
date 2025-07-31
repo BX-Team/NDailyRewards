@@ -42,6 +42,7 @@ bukkit {
 
     main = "org.bxteam.ndailyrewards.NDailyRewards"
     apiVersion = "1.16"
+    foliaSupported = true
 
     permissions {
         register("ndailyrewards.claim") {

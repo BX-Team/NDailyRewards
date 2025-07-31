@@ -120,7 +120,6 @@ public final class NDailyRewards extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().getScheduler().cancelTasks(this);
         this.injector.getInstance(Scheduler.class).cancelTasks(this);
         if (liteCommands != null) liteCommands.unregister();
         this.injector.getInstance(DatabaseClient.class).close();

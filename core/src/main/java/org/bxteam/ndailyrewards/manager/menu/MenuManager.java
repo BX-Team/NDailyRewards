@@ -282,10 +282,6 @@ public class MenuManager {
         cachedFillerItem = null;
     }
 
-    public void removePlayer(Player player) {
-        openMenuPlayers.remove(player);
-    }
-
     public void refreshPlayerInventory(Player player) {
         if (!player.isOnline()) {
             openMenuPlayers.remove(player);
