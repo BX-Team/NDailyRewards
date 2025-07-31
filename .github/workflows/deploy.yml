@@ -46,12 +46,15 @@ jobs:
       run: ./gradlew build
 
     - name: Publish to Modrinth
-      uses: Kira-NT/mc-publish@v3.3.0
+      uses: WiIIiam278/mc-publish@hangar
       with:
         modrinth-id: 'ZiFzQAnz'
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
         modrinth-featured: true
         modrinth-unfeature-mode: 'any'
+
+        hangar-id: BX-Team/NDailyRewards
+        hangar-token: ${{ secrets.HANGAR_TOKEN }}
 
         files: 'build/libs/NDailyRewards-*.jar'
 
