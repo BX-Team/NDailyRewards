@@ -1,7 +1,6 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 plugins {
-    `java-library`
     alias(libs.plugins.plugin.yml.bukkit)
 }
 
@@ -14,12 +13,13 @@ dependencies {
     compileOnly(libs.placeholderapi)
 
     implementation(libs.paperlib)
-    implementation(libs.hikari)
-    implementation(libs.mariadb)
-    implementation(libs.bundles.ormlite)
+    library(libs.hikari)
+    library(libs.mariadb)
+    library(libs.bundles.ormlite)
     implementation(libs.bundles.commons)
     implementation(libs.bstats)
-    implementation(libs.bundles.guice)
+    library(libs.bundles.guice)
+    library(libs.commons.lang3)
     implementation(libs.litecommands)
 }
 

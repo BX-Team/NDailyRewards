@@ -10,7 +10,7 @@ allprojects {
     apply(plugin = "java-library")
 
     repositories {
-        mavenCentral()
+        maven("https://maven-central.storage-download.googleapis.com/maven2")
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://oss.sonatype.org/content/groups/public/")
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -21,6 +21,7 @@ allprojects {
 
     tasks.compileJava {
         options.encoding = "UTF-8"
+        options.release.set(17)
     }
 
     tasks.javadoc {
@@ -70,6 +71,7 @@ tasks {
         serverVersion("1.21.8")
         noGui(true)
         acceptMojangEula()
+        perVersionFolder(true)
 
         downloadPlugins {
             modrinth("luckperms", "v5.5.0-bukkit")

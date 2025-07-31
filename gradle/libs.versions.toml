@@ -2,7 +2,7 @@
 plugin-yml = "0.7.1"
 commons = "3.0.0"
 ormlite = "6.1"
-guice = "7.0.0"
+guice = "5.1.0"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "8.3.8" }
@@ -15,11 +15,12 @@ paperlib = { module = "io.papermc:paperlib", version = "1.0.8" }
 
 commons-bukkit = { module = "org.bxteam:commons-bukkit", version.ref = "commons" }
 commons-folia = { module = "org.bxteam:commons-folia", version.ref = "commons"}
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.17.0"}
 
 ormlite = { module = "com.j256.ormlite:ormlite-core", version.ref = "ormlite" }
 ormlite-jdbc = { module = "com.j256.ormlite:ormlite-jdbc", version.ref = "ormlite" }
-hikari = { module = "com.zaxxer:HikariCP", version = "6.3.2" }
-mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.4" }
+hikari = { module = "com.zaxxer:HikariCP", version = "6.3.0" }
+mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.3" }
 
 placeholderapi = { module = "me.clip:placeholderapi", version = "2.11.6" }
 bstats = { module = "org.bstats:bstats-bukkit", version = "3.1.0" }
