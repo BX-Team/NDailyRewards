@@ -24,7 +24,7 @@
       "automerge": true,
       "matchPackageNames": [
         "*",
-        "!/io.papermc.paper*/"
+        "!/com.destroystokyo.paper*/"
       ]
     },
     {
@@ -35,7 +35,7 @@
       "automerge": true,
       "matchPackageNames": [
         "*",
-        "!/io.papermc.paper*/"
+        "!/com.destroystokyo.paper*/"
       ]
     },
     {
@@ -46,15 +46,7 @@
       "automerge": false,
       "matchPackageNames": [
         "*",
-        "!/io.papermc.paper*/"
-      ]
-    },
-    {
-      "groupName": "paper",
-      "allowedVersions": "/^\\d+\\.\\d+(\\.\\d+)?-R\\d+\\.\\d+-SNAPSHOT$/",
-      "automerge": false,
-      "matchPackageNames": [
-        "/io.papermc.paper*/"
+        "!/com.destroystokyo.paper*/"
       ]
     }
   ]

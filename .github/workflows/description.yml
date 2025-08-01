@@ -1,0 +1,19 @@
+name: Auto Update Modrinth Description
+
+on:
+  push:
+    paths:
+      - README.md
+
+jobs:
+  modrinth-desc:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Auto Update Modrinth Description
+        uses: funnyboy-roks/modrinth-auto-desc@v1.6
+        with:
+          auth-token: ${{ secrets.MODRINTH_TOKEN }}
+          slug: 'ndailyrewards'
