@@ -5,7 +5,7 @@ ormlite = "6.1"
 guice = "5.1.0"
 
 [plugins]
-shadow = { id = "com.gradleup.shadow", version = "8.3.8" }
+shadow = { id = "com.gradleup.shadow", version = "8.3.9" }
 plugin-yml-bukkit = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "plugin-yml" }
 run-server = { id = "org.bxteam.runserver", version = "1.2.1" }
 
