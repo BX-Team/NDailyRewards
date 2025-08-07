@@ -12,6 +12,7 @@ run-server = { id = "org.bxteam.runserver", version = "1.2.1" }
 [libraries]
 paper = { module = "com.destroystokyo.paper:paper-api", version = "1.16.5-R0.1-SNAPSHOT" }
 paperlib = { module = "io.papermc:paperlib", version = "1.0.8" }
+quark-bukkit = { module = "org.bxteam.quark:bukkit", version = "1.0.0-SNAPSHOT" }
 
 commons-bukkit = { module = "org.bxteam:commons-bukkit", version.ref = "commons" }
 commons-folia = { module = "org.bxteam:commons-folia", version.ref = "commons"}
@@ -19,8 +20,8 @@ commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.17.0
 
 ormlite = { module = "com.j256.ormlite:ormlite-core", version.ref = "ormlite" }
 ormlite-jdbc = { module = "com.j256.ormlite:ormlite-jdbc", version.ref = "ormlite" }
-hikari = { module = "com.zaxxer:HikariCP", version = "6.3.0" }
-mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.3" }
+hikari = { module = "com.zaxxer:HikariCP", version = "7.0.0" }
+mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.4" }
 
 placeholderapi = { module = "me.clip:placeholderapi", version = "2.11.6" }
 bstats = { module = "org.bstats:bstats-bukkit", version = "3.1.0" }

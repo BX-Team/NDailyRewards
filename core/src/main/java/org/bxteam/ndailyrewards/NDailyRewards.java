@@ -33,6 +33,7 @@ import org.bxteam.ndailyrewards.manager.menu.MenuManager;
 import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.bxteam.ndailyrewards.scheduler.SchedulerSetup;
+import org.bxteam.ndailyrewards.utils.LibraryLoaderUtil;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -55,6 +56,11 @@ public final class NDailyRewards extends JavaPlugin {
 
     public FileConfiguration getLangConfig() {
         return langConfig;
+    }
+
+    @Override
+    public void onLoad() {
+        LibraryLoaderUtil.loadDependencies(this);
     }
 
     @Override

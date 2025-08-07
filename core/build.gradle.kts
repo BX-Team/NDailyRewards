@@ -9,18 +9,20 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
+    implementation(libs.bundles.commons)
+    implementation(libs.bstats)
+    implementation(libs.quark.bukkit)
+
     compileOnly(libs.paper)
     compileOnly(libs.placeholderapi)
 
-    implementation(libs.paperlib)
-    library(libs.hikari)
-    library(libs.mariadb)
-    library(libs.bundles.ormlite)
-    implementation(libs.bundles.commons)
-    implementation(libs.bstats)
-    library(libs.bundles.guice)
-    library(libs.commons.lang3)
-    implementation(libs.litecommands)
+    compileOnly(libs.paperlib)
+    compileOnly(libs.hikari)
+    compileOnly(libs.mariadb)
+    compileOnly(libs.bundles.ormlite)
+    compileOnly(libs.bundles.guice)
+    compileOnly(libs.commons.lang3)
+    compileOnly(libs.litecommands)
 }
 
 tasks {
