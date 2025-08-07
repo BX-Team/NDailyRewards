@@ -7,9 +7,16 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This event is called when the player received a reminder for the daily reward.
+ * Called when a player receives a reminder notification for their unclaimed daily reward.
+ * <p>
+ * This event is fired when the plugin sends a reminder to a player about their
+ * available daily reward. Reminders can be triggered by various actions such as
+ * player login, periodic checks, or specific plugin configurations. The reminder
+ * appears as a message.
  *
  * @since 3.0.0
+ * @see AutoClaimEvent
+ * @see PlayerClaimRewardEvent
  */
 public class PlayerReceiveReminderEvent extends Event implements Cancellable {
     private static final HandlerList HANDLER_LIST = new HandlerList();
@@ -17,15 +24,31 @@ public class PlayerReceiveReminderEvent extends Event implements Cancellable {
     private final int day;
     private boolean cancelled = false;
 
+    /**
+     * Constructs a new PlayerReceiveReminderEvent.
+     *
+     * @param player The player who received the reminder notification.
+     * @param day    The day of the reward for which the reminder was sent.
+     */
     public PlayerReceiveReminderEvent(Player player, int day) {
         this.player = player;
         this.day = day;
     }
 
+    /**
+     * Gets the player who received the reminder notification.
+     *
+     * @return The player who received the reminder.
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * Gets the day of the reward for which the reminder was sent.
+     *
+     * @return The day of the reward.
+     */
     public int getDay() {
         return day;
     }
@@ -46,6 +69,11 @@ public class PlayerReceiveReminderEvent extends Event implements Cancellable {
         return HANDLER_LIST;
     }
 
+    /**
+     * Gets the handler list for this event.
+     *
+     * @return The handler list for this event.
+     */
     @NotNull
     public static HandlerList getHandlerList() {
         return HANDLER_LIST;
