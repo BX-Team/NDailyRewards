@@ -16,7 +16,6 @@ public class LibraryLoaderUtil {
             Dependency.of("aopalliance", "aopalliance", "1.0"),
             Dependency.of("com.google.inject", "guice", "5.1.0"),
             Dependency.of("com.google.inject.extensions", "guice-assistedinject", "5.1.0"),
-            Dependency.of("org.apache.commons", "commons-lang3", "3.17.0"),
             Dependency.of("dev.rollczi", "litecommands-bukkit", "3.10.2")
     );
 

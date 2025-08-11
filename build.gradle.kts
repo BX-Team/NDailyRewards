@@ -1,7 +1,7 @@
 import org.bxteam.runserver.ServerType
 
 plugins {
-    `java-library`
+    id("java-library")
     alias(libs.plugins.shadow)
     alias(libs.plugins.run.server)
 }
@@ -16,7 +16,6 @@ allprojects {
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven("https://jitpack.io/")
         maven("https://repo.bxteam.org/releases")
-        maven("https://repo.bxteam.org/snapshots")
         maven("https://repo.panda-lang.org/releases")
     }
 

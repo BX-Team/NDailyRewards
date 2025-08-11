@@ -1,5 +1,5 @@
 plugins {
-    `maven-publish`
+    id("maven-publish")
 }
 
 group = project.group
