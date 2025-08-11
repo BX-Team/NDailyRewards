@@ -43,17 +43,17 @@ public class PlayerJoinListener implements Listener {
         UUID uuid = player.getUniqueId();
 
         this.rewardManager.createInitialPlayerData(uuid)
+                .thenAccept(initialData -> checkPlayerRewards(player))
                 .exceptionally(throwable -> {
                     this.logger.error("Could not create initial player data: %s".formatted(throwable.getMessage()));
                     return null;
                 });
     }
 
-    @EventHandler
-    public void onPlayerJoinEvents(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-
+    private void checkPlayerRewards(Player player) {
         this.rewardManager.getPlayerRewardDataAsync(player.getUniqueId()).thenAccept(playerRewardData -> {
+            if (playerRewardData == null) return;
+
             int currentDay = playerRewardData.currentDay() + 1;
             long delayTime = this.plugin.getConfig().getLong("events.auto-claim-delay");
 
