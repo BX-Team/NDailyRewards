@@ -93,14 +93,14 @@ public class RewardManager {
                 Reward reward = rewards.get(day);
                 if (reward != null) {
                     this.scheduler.runTask(() -> {
-                        ActionsExecutor executor = actionsExecutorFactory.create(player, reward);
+                        ActionsExecutor executor = this.actionsExecutorFactory.create(player, reward);
                         executor.execute();
                     });
 
                     updatePlayerRewardDataAsync(uuid, day).thenRun(() -> {
                         this.scheduler.runTask(() -> {
                             if (player.getOpenInventory().getTopInventory().getHolder() instanceof MenuManager.MainMenuHolder) {
-                                menuManagerProvider.get().refreshPlayerInventory(player);
+                                this.menuManagerProvider.get().refreshPlayerInventory(player);
                             }
                         });
                     });
@@ -109,15 +109,15 @@ public class RewardManager {
                         resetPlayerRewardDataAsync(uuid);
                     }
 
-                    eventCaller.callEvent(new PlayerClaimRewardEvent(player, day));
+                    this.eventCaller.callEvent(new PlayerClaimRewardEvent(player, day));
                 }
             });
         });
     }
 
     private CompletableFuture<Void> updatePlayerRewardDataAsync(UUID uuid, int nextDay) {
-        long nextTime = getUnixTimeForNextDay();
-        return rewardRepository.updatePlayerRewardData(uuid, nextTime, nextDay)
+        long nextTime = getUnixTimeForNextDay(false);
+        return this.rewardRepository.updatePlayerRewardData(uuid, nextTime, nextDay)
                 .exceptionally(throwable -> {
                     this.logger.error("Could not update player reward data: %s".formatted(throwable.getMessage()));
                     throwable.printStackTrace();
@@ -125,8 +125,16 @@ public class RewardManager {
                 });
     }
 
+    public CompletableFuture<PlayerRewardData> createInitialPlayerData(UUID uuid) {
+        return rewardRepository.createPlayerData(uuid, getUnixTimeForNextDay(true))
+                .exceptionally(throwable -> {
+                    this.logger.error("Could not create initial player data: %s".formatted(throwable.getMessage()));
+                    return null;
+                });
+    }
+
     private CompletableFuture<Void> resetPlayerRewardDataAsync(UUID uuid) {
-        long nextTime = getUnixTimeForNextDay();
+        long nextTime = getUnixTimeForNextDay(false);
         return rewardRepository.resetPlayerRewardData(uuid, nextTime)
                 .exceptionally(throwable -> {
                     this.logger.error("Could not reset player reward data: %s".formatted(throwable.getMessage()));
@@ -136,11 +144,10 @@ public class RewardManager {
     }
 
     public CompletableFuture<PlayerRewardData> getPlayerRewardDataAsync(UUID uuid) {
-        return rewardRepository.getPlayerRewardData(uuid)
+        return this.rewardRepository.getPlayerRewardData(uuid)
                 .exceptionally(throwable -> {
                     this.logger.error("Could not retrieve player reward data: %s".formatted(throwable.getMessage()));
-                    throwable.printStackTrace();
-                    return new PlayerRewardData(System.currentTimeMillis() / 1000L, 0);
+                    return null;
                 });
     }
 
@@ -149,44 +156,41 @@ public class RewardManager {
             return getPlayerRewardDataAsync(uuid).get();
         } catch (Exception e) {
             this.logger.error("Could not retrieve player reward data: %s".formatted(e.getMessage()));
-            return new PlayerRewardData(System.currentTimeMillis() / 1000L, 0);
+            return null;
         }
     }
 
     public CompletableFuture<Boolean> canClaimRewardAsync(UUID uuid) {
         return getPlayerRewardDataAsync(uuid).thenApply(data -> {
+            if (data == null) return false;
+            
             long currentTime = System.currentTimeMillis() / 1000L;
             return currentTime >= data.next() && data.currentDay() < rewards.size();
         });
     }
 
-    private long getUnixTimeForNextDay() {
-        if (unlockAfterMidnight) {
-            LocalDate tomorrow = LocalDate.now().plusDays(1);
-            return tomorrow.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
-        } else {
-            return Instant.now().plusSeconds(cooldown * 3600L).getEpochSecond();
-        }
-    }
-
-    public boolean shouldResetWhenAllClaimed() {
-        return resetWhenAllClaimed;
-    }
 
     public boolean isRewardClaimed(PlayerRewardData playerRewardData, int day) {
+        if (playerRewardData == null) return false;
+        
         return playerRewardData.currentDay() >= day;
     }
 
     public boolean isRewardAvailable(PlayerRewardData playerRewardData, int day) {
+        if (playerRewardData == null) return false;
+        
         return playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L >= playerRewardData.next();
     }
 
     public boolean isRewardNext(PlayerRewardData playerRewardData, int day) {
+        if (playerRewardData == null) return false;
+        
         return playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L < playerRewardData.next();
     }
 
     public CompletableFuture<Boolean> checkResetForPlayerAsync(UUID uuid) {
         return getPlayerRewardDataAsync(uuid).thenCompose(data -> {
+            if (data == null) return CompletableFuture.completedFuture(false);
             long currentTime = System.currentTimeMillis() / 1000L;
             if (currentTime >= data.next() + resetTime * 3600L) {
                 return resetPlayerRewardDataAsync(uuid).thenApply(v -> true);
@@ -204,13 +208,25 @@ public class RewardManager {
         }
     }
 
+    private long getUnixTimeForNextDay(boolean isFirstJoin) {
+        if (isFirstJoin && this.plugin.getConfig().getBoolean("rewards.first-join-reward")) {
+            return Instant.now().getEpochSecond();
+        }
+
+        if (unlockAfterMidnight) {
+            LocalDate tomorrow = LocalDate.now().plusDays(1);
+            return tomorrow.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+        } else {
+            return Instant.now().plusSeconds(cooldown * 3600L).getEpochSecond();
+        }
+    }
+
     public void handleReward(Player player, int day) {
         getPlayerRewardDataAsync(player.getUniqueId()).thenAccept(playerRewardData -> {
             if (isRewardClaimed(playerRewardData, day)) {
                 player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_ALREADY_CLAIMED.asColoredString());
             } else if (isRewardAvailable(playerRewardData, day)) {
                 giveReward(player, day);
-                // Remove the immediate menu opening - it will be refreshed after database update
             } else if (isRewardNext(playerRewardData, day)) {
                 player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_AVAILABLE_SOON.asColoredString());
             } else {
@@ -222,7 +238,7 @@ public class RewardManager {
     public void setDay(Player player, int day) {
         UUID uuid = player.getUniqueId();
         long currentTime = System.currentTimeMillis() / 1000L;
-        rewardRepository.updatePlayerRewardData(uuid, currentTime, day)
+        this.rewardRepository.updatePlayerRewardData(uuid, currentTime, day)
                 .exceptionally(throwable -> {
                     this.logger.error("Could not set player day: %s".formatted(throwable.getMessage()));
                     throwable.printStackTrace();

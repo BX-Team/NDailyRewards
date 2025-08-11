@@ -12,5 +12,5 @@ public interface RewardRepository {
 
     CompletableFuture<Void> resetPlayerRewardData(UUID uuid, long nextTime);
 
-    CompletableFuture<Void> createPlayerData(UUID uuid);
+    CompletableFuture<PlayerRewardData> createPlayerData(UUID uuid, long nextTime);
 }

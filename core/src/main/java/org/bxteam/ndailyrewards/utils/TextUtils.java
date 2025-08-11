@@ -15,9 +15,9 @@ import java.util.regex.Pattern;
 
 @UtilityClass
 public class TextUtils {
-    private Pattern GRADIENT_PATTERN = Pattern.compile("<(#[A-Fa-f0-9]{6})>(.*?)</(#[A-Fa-f0-9]{6})>");
-    private Pattern LEGACY_GRADIENT_PATTERN = Pattern.compile("<(&[A-Za-z0-9])>(.*?)</(&[A-Za-z0-9])>");
-    private Pattern RGB_PATTERN = Pattern.compile("<(#......)>");
+    private final Pattern GRADIENT_PATTERN = Pattern.compile("<(#[A-Fa-f0-9]{6})>(.*?)</(#[A-Fa-f0-9]{6})>");
+    private final Pattern LEGACY_GRADIENT_PATTERN = Pattern.compile("<(&[A-Za-z0-9])>(.*?)</(&[A-Za-z0-9])>");
+    private final Pattern RGB_PATTERN = Pattern.compile("<(#......)>");
 
     public String applyColor(String text) {
         if (text == null) {
