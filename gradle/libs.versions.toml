@@ -2,7 +2,7 @@
 plugin-yml = "0.7.1"
 commons = "3.0.0"
 ormlite = "6.1"
-guice = "5.1.0"
+guice = "7.0.0"
 litecommands = "3.10.0"
 
 [plugins]
