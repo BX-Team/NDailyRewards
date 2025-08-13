@@ -21,7 +21,7 @@ dependencies {
     compileOnly(libs.mariadb)
     compileOnly(libs.bundles.ormlite)
     compileOnly(libs.bundles.guice)
-    compileOnly(libs.litecommands)
+    compileOnly(libs.bundles.litecommands)
 }
 
 tasks {

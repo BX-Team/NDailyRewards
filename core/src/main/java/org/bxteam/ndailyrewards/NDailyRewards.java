@@ -4,14 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.j256.ormlite.logger.Level;
 import com.j256.ormlite.logger.Logger;
-import dev.rollczi.litecommands.LiteCommands;
-import dev.rollczi.litecommands.argument.ArgumentKey;
-import dev.rollczi.litecommands.bukkit.LiteBukkitFactory;
-import dev.rollczi.litecommands.bukkit.LiteBukkitMessages;
-import dev.rollczi.litecommands.message.LiteMessages;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,8 +16,6 @@ import org.bxteam.commons.logger.appender.ConsoleAppender;
 import org.bxteam.commons.logger.appender.JsonAppender;
 import org.bxteam.commons.scheduler.Scheduler;
 import org.bxteam.commons.updater.VersionFetcher;
-import org.bxteam.ndailyrewards.commands.Commands;
-import org.bxteam.ndailyrewards.commands.argument.SetDayArgument;
 import org.bxteam.ndailyrewards.database.DatabaseClient;
 import org.bxteam.ndailyrewards.database.DatabaseModule;
 import org.bxteam.ndailyrewards.integration.IntegrationRegistry;
@@ -33,6 +25,7 @@ import org.bxteam.ndailyrewards.manager.menu.MenuManager;
 import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.bxteam.ndailyrewards.scheduler.SchedulerSetup;
+import org.bxteam.ndailyrewards.manager.CommandManager;
 import org.bxteam.ndailyrewards.utils.LibraryLoaderUtil;
 
 import java.io.File;
@@ -52,7 +45,7 @@ public final class NDailyRewards extends JavaPlugin {
     private ExtendedLogger logger;
     private File langFile;
     private FileConfiguration langConfig;
-    private LiteCommands<CommandSender> liteCommands;
+    private CommandManager commandManager;
 
     public FileConfiguration getLangConfig() {
         return langConfig;
@@ -107,16 +100,8 @@ public final class NDailyRewards extends JavaPlugin {
         getServer().getPluginManager().registerEvents(injector.getInstance(InventoryClickListener.class), this);
         getServer().getPluginManager().registerEvents(injector.getInstance(PlayerJoinListener.class), this);
 
-        this.liteCommands = LiteBukkitFactory.builder("ndailyrewards", this)
-                .commands(this.injector.getInstance(Commands.class))
-                .argument(Integer.class, ArgumentKey.of(SetDayArgument.KEY), this.injector.getInstance(SetDayArgument.class))
-
-                .message(LiteMessages.MISSING_PERMISSIONS, Language.PREFIX.asColoredString() + Language.NO_PERMISSION.asColoredString())
-                .message(LiteMessages.INVALID_USAGE, Language.PREFIX.asColoredString() + Language.INVALID_SYNTAX.asColoredString())
-                .message(LiteBukkitMessages.PLAYER_NOT_FOUND, Language.PREFIX.asColoredString() + Language.PLAYER_NOT_FOUND.asColoredString())
-                .message(LiteBukkitMessages.PLAYER_ONLY, Language.PREFIX.asColoredString() + Language.NOT_PLAYER.asColoredString())
-
-                .build();
+        this.commandManager = new CommandManager(this.injector);
+        this.commandManager.registerCommands(this);
 
         Duration timeTaken = Duration.between(startTime, Instant.now());
         logger.info("Successfully enabled (took %sms)".formatted(timeTaken.toMillis()));
@@ -127,7 +112,7 @@ public final class NDailyRewards extends JavaPlugin {
     @Override
     public void onDisable() {
         this.injector.getInstance(Scheduler.class).cancelTasks(this);
-        if (liteCommands != null) liteCommands.unregister();
+        this.commandManager.unRegisterCommands();
         this.injector.getInstance(DatabaseClient.class).close();
         this.injector.getInstance(MenuManager.class).shutdown();
         this.injector.getInstance(RewardManager.class).unload();
