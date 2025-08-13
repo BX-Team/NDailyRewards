@@ -1,4 +1,4 @@
-name: Auto approve renovate PRs
+name: Approve Renovate-Bot PRs
 
 on: pull_request_target
 
