@@ -96,37 +96,41 @@ public class MenuManager {
     public void openRewardsMenu(Player player) {
         final ConfigurationSection config = plugin.getConfig();
 
-        boolean wasReset = this.rewardManager.checkResetForPlayer(player.getUniqueId());
-        if (wasReset) {
-            player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString());
-        }
+        this.rewardManager.checkResetForPlayerAsync(player.getUniqueId())
+            .thenCompose(wasReset -> {
+                if (wasReset) {
+                    scheduler.runTask(() -> player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString()));
+                }
 
-        int size = config.getInt("gui.reward.size");
-        String title = TextUtils.applyColor(config.getString("gui.reward.title"));
-        boolean useFiller = config.getBoolean("gui.reward.display.filler.enable");
+                return this.rewardManager.getPlayerRewardDataAsync(player.getUniqueId());
+            })
+            .thenAccept(playerRewardData -> {
+                int size = config.getInt("gui.reward.size");
+                String title = TextUtils.applyColor(config.getString("gui.reward.title"));
+                boolean useFiller = config.getBoolean("gui.reward.display.filler.enable");
 
-        final Inventory inventory = Bukkit.createInventory(MAIN_MENU_HOLDER, size, title);
+                scheduler.runTask(() -> {
+                    final Inventory inventory = Bukkit.createInventory(MAIN_MENU_HOLDER, size, title);
 
-        if (useFiller && cachedFillerItem != null) {
-            for (int i = 0; i < size; i++) {
-                inventory.setItem(i, cachedFillerItem);
-            }
-        }
+                    if (useFiller && cachedFillerItem != null) {
+                        for (int i = 0; i < size; i++) {
+                            inventory.setItem(i, cachedFillerItem);
+                        }
+                    }
 
-        for (CustomItemConfig cic : cachedCustomItems) {
-            inventory.setItem(cic.position, cic.itemStack);
-        }
+                    for (CustomItemConfig cic : cachedCustomItems) {
+                        inventory.setItem(cic.position, cic.itemStack);
+                    }
 
-        ConfigurationSection daysSection = config.getConfigurationSection("rewards.days");
-        if (daysSection != null) {
-            PlayerRewardData playerRewardData = this.rewardManager.getPlayerRewardData(player.getUniqueId());
+                    ConfigurationSection daysSection = config.getConfigurationSection("rewards.days");
+                    if (daysSection != null && playerRewardData != null) {
+                        populateDayItems(inventory, playerRewardData, System.currentTimeMillis() / 1000L);
+                        openMenuPlayers.add(player);
+                    }
 
-            populateDayItems(inventory, playerRewardData, System.currentTimeMillis() / 1000L);
-
-            openMenuPlayers.add(player);
-        }
-
-        player.openInventory(inventory);
+                    player.openInventory(inventory);
+                });
+            });
     }
 
     private void populateDayItems(Inventory inventory, PlayerRewardData playerRewardData, long currentTime) {
@@ -165,25 +169,12 @@ public class MenuManager {
             return;
         }
 
-        PlayerRewardData playerRewardData = this.rewardManager.getPlayerRewardData(player.getUniqueId());
-
-        int currentDay = playerRewardData.currentDay();
-        long nextTime = playerRewardData.next();
-
-        for (DayItems cached : dayItemsCache.values()) {
-            ItemStack toSet;
-            if (currentDay >= cached.day) {
-                toSet = cached.claimed;
-            } else if (currentDay + 1 == cached.day && currentTime >= nextTime) {
-                toSet = cached.available;
-            } else if (currentDay + 1 == cached.day && currentTime < nextTime) {
-                toSet = updateNextItemTime(cached.nextTemplate, nextTime - currentTime);
-            } else {
-                toSet = cached.unavailable;
-            }
-
-            inventory.setItem(cached.position, toSet);
-        }
+        this.rewardManager.getPlayerRewardDataAsync(player.getUniqueId())
+            .thenAccept(playerRewardData -> {
+                if (playerRewardData != null) {
+                    scheduler.runTask(() -> populateDayItems(inventory, playerRewardData, currentTime));
+                }
+            });
     }
 
     private ItemStack loadFillItem() {
@@ -294,9 +285,15 @@ public class MenuManager {
             return;
         }
 
-        PlayerRewardData playerRewardData = rewardManager.getPlayerRewardData(player.getUniqueId());
-        long currentTime = System.currentTimeMillis() / 1000L;
-        populateDayItems(inventory, playerRewardData, currentTime);
+        this.rewardManager.getPlayerRewardDataAsync(player.getUniqueId())
+            .thenAccept(playerRewardData -> {
+                if (playerRewardData != null) {
+                    scheduler.runTask(() -> {
+                        long currentTime = System.currentTimeMillis() / 1000L;
+                        populateDayItems(inventory, playerRewardData, currentTime);
+                    });
+                }
+            });
     }
 
     public static class MainMenuHolder implements InventoryHolder {

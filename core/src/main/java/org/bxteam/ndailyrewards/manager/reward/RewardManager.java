@@ -176,6 +176,14 @@ public class RewardManager {
         return playerRewardData.currentDay() >= day;
     }
 
+    public CompletableFuture<Boolean> isRewardAvailableAsync(PlayerRewardData playerRewardData, int day) {
+        if (playerRewardData == null) return CompletableFuture.completedFuture(false);
+
+        return CompletableFuture.completedFuture(
+            playerRewardData.currentDay() + 1 == day && System.currentTimeMillis() / 1000L >= playerRewardData.next()
+        );
+    }
+
     public boolean isRewardAvailable(PlayerRewardData playerRewardData, int day) {
         if (playerRewardData == null) return false;
         
@@ -196,16 +204,10 @@ public class RewardManager {
                 return resetPlayerRewardDataAsync(uuid).thenApply(v -> true);
             }
             return CompletableFuture.completedFuture(false);
-        });
-    }
-
-    public boolean checkResetForPlayer(UUID uuid) {
-        try {
-            return checkResetForPlayerAsync(uuid).get();
-        } catch (Exception e) {
-            this.logger.error("Could not check reset for player: %s".formatted(e.getMessage()));
+        }).exceptionally(throwable -> {
+            this.logger.error("Could not check reset for player: %s".formatted(throwable.getMessage()));
             return false;
-        }
+        });
     }
 
     private long getUnixTimeForNextDay(boolean isFirstJoin) {
