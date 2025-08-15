@@ -1,42 +1,54 @@
 package org.bxteam.ndailyrewards.manager;
 
 import com.google.inject.Injector;
-import dev.rollczi.litecommands.LiteCommands;
-import dev.rollczi.litecommands.argument.ArgumentKey;
-import dev.rollczi.litecommands.bukkit.LiteBukkitFactory;
-import dev.rollczi.litecommands.bukkit.LiteBukkitMessages;
-import dev.rollczi.litecommands.folia.FoliaExtension;
-import dev.rollczi.litecommands.message.LiteMessages;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.command.CommandSender;
+import com.google.inject.Singleton;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bxteam.ndailyrewards.NDailyRewards;
-import org.bxteam.ndailyrewards.commands.Commands;
-import org.bxteam.ndailyrewards.commands.argument.SetDayArgument;
-import org.bxteam.ndailyrewards.configuration.Language;
+import org.bxteam.ndailyrewards.command.*;
+import org.bxteam.ndailyrewards.command.lamp.LampExceptionHandler;
+import revxrsal.commands.Lamp;
+import revxrsal.commands.bukkit.BukkitLamp;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 
-@RequiredArgsConstructor
+import java.util.List;
+
+@Singleton
 public class CommandManager {
     private final Injector injector;
-    private LiteCommands<CommandSender> liteCommands;
+    private final Lamp<BukkitCommandActor> lamp;
 
-    public void registerCommands(NDailyRewards plugin) {
-        this.liteCommands = LiteBukkitFactory.builder("ndailyrewards", plugin)
-                .commands(this.injector.getInstance(Commands.class))
-                .argument(Integer.class, ArgumentKey.of(SetDayArgument.KEY), this.injector.getInstance(SetDayArgument.class))
+    public CommandManager(NDailyRewards plugin, Injector injector) {
+        this.injector = injector;
 
-                .message(LiteMessages.MISSING_PERMISSIONS, Language.PREFIX.asColoredString() + Language.NO_PERMISSION.asColoredString())
-                .message(LiteMessages.INVALID_USAGE, Language.PREFIX.asColoredString() + Language.INVALID_SYNTAX.asColoredString())
-                .message(LiteBukkitMessages.PLAYER_NOT_FOUND, Language.PREFIX.asColoredString() + Language.PLAYER_NOT_FOUND.asColoredString())
-                .message(LiteBukkitMessages.PLAYER_ONLY, Language.PREFIX.asColoredString() + Language.NOT_PLAYER.asColoredString())
-
-                .extension(new FoliaExtension(plugin))
-
+        this.lamp = BukkitLamp.builder(plugin)
+                .exceptionHandler(new LampExceptionHandler())
+                .suggestionProviders(providers -> {
+                    providers.addProvider(Integer.class, context -> {
+                        ConfigurationSection rewards = plugin.getConfig().getConfigurationSection("rewards.days");
+                        if (rewards == null) return List.of();
+                        return rewards.getKeys(false).stream()
+                                .map(Integer::parseInt)
+                                .map(String::valueOf)
+                                .toList();
+                    });
+                })
                 .build();
     }
 
-    public void unRegisterCommands() {
-        if (this.liteCommands != null) {
-            this.liteCommands.unregister();
+    public void registerCommands() {
+        this.lamp.register(
+                this.injector.getInstance(ClaimCommand.class),
+                this.injector.getInstance(HelpCommand.class),
+                this.injector.getInstance(MainCommand.class),
+                this.injector.getInstance(ReloadCommand.class),
+                this.injector.getInstance(SetDayCommand.class),
+                this.injector.getInstance(VersionCommand.class)
+        );
+    }
+
+    public void unregisterCommands() {
+        if (this.lamp != null) {
+            this.lamp.unregisterAllCommands();
         }
     }
 }

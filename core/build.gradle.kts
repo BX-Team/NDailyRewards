@@ -21,7 +21,7 @@ dependencies {
     compileOnly(libs.mariadb)
     compileOnly(libs.bundles.ormlite)
     compileOnly(libs.bundles.guice)
-    compileOnly(libs.bundles.litecommands)
+    compileOnly(libs.bundles.lamp)
 }
 
 tasks {
@@ -32,6 +32,7 @@ tasks {
 
     compileJava {
         options.release.set(17)
+        options.compilerArgs.add("-parameters")
     }
 }
 

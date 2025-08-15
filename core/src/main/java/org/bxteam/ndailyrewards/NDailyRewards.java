@@ -21,11 +21,11 @@ import org.bxteam.ndailyrewards.database.DatabaseModule;
 import org.bxteam.ndailyrewards.integration.IntegrationRegistry;
 import org.bxteam.ndailyrewards.listener.InventoryClickListener;
 import org.bxteam.ndailyrewards.listener.PlayerJoinListener;
+import org.bxteam.ndailyrewards.manager.CommandManager;
 import org.bxteam.ndailyrewards.manager.menu.MenuManager;
 import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.bxteam.ndailyrewards.scheduler.SchedulerSetup;
-import org.bxteam.ndailyrewards.manager.CommandManager;
 import org.bxteam.ndailyrewards.utils.LibraryLoaderUtil;
 
 import java.io.File;
@@ -100,8 +100,8 @@ public final class NDailyRewards extends JavaPlugin {
         getServer().getPluginManager().registerEvents(injector.getInstance(InventoryClickListener.class), this);
         getServer().getPluginManager().registerEvents(injector.getInstance(PlayerJoinListener.class), this);
 
-        this.commandManager = new CommandManager(this.injector);
-        this.commandManager.registerCommands(this);
+        this.commandManager = new CommandManager(this, this.injector);
+        this.commandManager.registerCommands();
 
         Duration timeTaken = Duration.between(startTime, Instant.now());
         logger.info("Successfully enabled (took %sms)".formatted(timeTaken.toMillis()));
@@ -112,7 +112,7 @@ public final class NDailyRewards extends JavaPlugin {
     @Override
     public void onDisable() {
         this.injector.getInstance(Scheduler.class).cancelTasks(this);
-        this.commandManager.unRegisterCommands();
+        this.commandManager.unregisterCommands();
         this.injector.getInstance(DatabaseClient.class).close();
         this.injector.getInstance(MenuManager.class).shutdown();
         this.injector.getInstance(RewardManager.class).unload();
