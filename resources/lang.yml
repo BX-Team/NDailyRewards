@@ -9,6 +9,7 @@ no-permission: "&cYou don't have permission to do that!"
 not-player: "&cYou must be a player to do that!"
 player-not-found: "&cPlayer not found!"
 invalid-syntax: "&cInvalid syntax! Use &f/reward help &cto see available commands"
+invalid-day: "&cInvalid day! Specify a number between 1 and <max-day>"
 
 commands:
   help:

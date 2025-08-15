@@ -14,6 +14,7 @@ public enum Language {
     NOT_PLAYER("not-player"),
     PLAYER_NOT_FOUND("player-not-found"),
     INVALID_SYNTAX("invalid-syntax"),
+    INVALID_DAY("invalid-day"),
 
     COMMANDS_HELP("commands.help"),
     COMMANDS_RELOAD("commands.reload"),
