@@ -1,19 +1,19 @@
 <div align="center">
 
-### NDailyRewards
+# NDailyRewards
 Simple and lightweight plugin that allows you to reward your players for playing on your server every day.
 
 [![Available on Modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg)](https://modrinth.com/plugin/ndailyrewards)
 [![Available on Hangar](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/hangar_vector.svg)](https://hangar.papermc.io/BX-Team/NDailyRewards)
 
-[![Chat on Discord](https://raw.githubusercontent.com/vLuckyyy/badges/main//chat-with-us-on-discord.svg)](https://discord.gg/qNyybSSPm5)
-[![Read the Docs](https://raw.githubusercontent.com/vLuckyyy/badges/main/read-the-documentation.svg)](https://bxteam.org/docs/ndailyrewards)
-[![Available on BStats](https://raw.githubusercontent.com/vLuckyyy/badges/main/available-on-bstats.svg)](https://bstats.org/plugin/bukkit/NDailyRewards/13844)
+[![Chat on Discord](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-plural_vector.svg)](https://discord.gg/qNyybSSPm5)
+[![Read the Docs](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/generic_vector.svg)](https://bxteam.org/docs/ndailyrewards)
+[![Available on BStats](https://raw.githubusercontent.com/NONPLAYT/badges/refs/heads/master/available-on-bstats.svg)](https://bstats.org/plugin/bukkit/NDailyRewards/13844)
 </div>
 
-## ✨ Features
+## ⚙️ Features
 - 📇 MariaDB and SQLite support
-- ⚙️ High adjustable and simple configuration
+- 🔍 High adjustable and simple configuration
 - 🌈 HEX Colors with gradient support
 - ⌨️ Various action types for rewards
 - 📄 PlaceholderAPI Support
@@ -23,19 +23,13 @@ Simple and lightweight plugin that allows you to reward your players for playing
 - 🔔 Join notifications and auto-GUI opening
 - ...and more!
 
-## ⚒️ Developer API
+## 🧪 Developer API
 To use NDailyRewards API, you first need to add NDailyRewards to your project. To do that follow these steps:
 
-### Add repository:
-
-For Gradle projects use:
-```groovy
-repositories {
-    maven("https://repo.bxteam.org/releases")
-}
+### ➕ Add our Repository
+```kts
+maven("https://repo.bxteam.org/releases")
 ```
-
-For Maven projects use:
 ```xml
 <repository>
     <id>bx-team-releases</id>
@@ -43,26 +37,20 @@ For Maven projects use:
 </repository>
 ```
 
-### Add dependency:
-
-For Gradle projects use:
-```groovy
+### ➕ Add NDailyRewards to dependencies
+```kts
 dependencies {
-    compileOnly("org.bxteam.ndailyrewards:VERSION")
+    compileOnly("org.bxteam:ndailyrewards:3.3.0")
 }
 ```
-
-For Maven projects use:
 ```xml
 <dependency>
     <groupId>org.bxteam</groupId>
     <artifactId>ndailyrewards</artifactId>
-    <version>VERSION</version>
+    <version>3.3.0</version>
     <scope>provided</scope>
 </dependency>
 ```
-
-You can check the latest version number [here](https://github.com/BX-Team/NDailyRewards/releases/latest).
 
 ## 📦 Building
 To build NDailyRewards, follow these steps (Make sure you have **JDK 17 or higher**):
@@ -72,6 +60,6 @@ To build NDailyRewards, follow these steps (Make sure you have **JDK 17 or highe
 ```
 - The output file will be located at `build/libs`.
 
-## 🧾 License ![Static Badge](https://img.shields.io/badge/license-GPL_3.0-lightgreen)
+## ⚖️ License ![Static Badge](https://img.shields.io/badge/license-GPL_3.0-lightgreen)
 
 NDailyRewards is licensed under the GNU General Public License v3.0. You can find the license [here](LICENSE).
