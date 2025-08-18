@@ -68,6 +68,5 @@ jobs:
           purpur
           spigot
           folia
-        game-versions: |
-          >=1.16
+        game-versions: '>=1.16'
         java: 17
