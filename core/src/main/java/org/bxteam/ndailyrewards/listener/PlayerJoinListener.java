@@ -55,40 +55,35 @@ public class PlayerJoinListener implements Listener {
             if (playerRewardData == null) return;
 
             int currentDay = playerRewardData.currentDay() + 1;
-            long delayTime = this.plugin.getConfig().getLong("events.auto-claim-delay");
 
-            if (this.plugin.getConfig().getBoolean("events.auto-claim-reward") && this.rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
-                this.scheduler.runTaskLater(() -> {
-                    this.rewardManager.giveReward(player, currentDay);
-                    this.eventCaller.callEvent(new AutoClaimEvent(player, currentDay));
-                }, delayTime * 20L);
-            }
-
-            if (this.plugin.getConfig().getBoolean("events.open-gui-when-available") && this.rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
+            if (this.rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
                 this.rewardManager.checkResetForPlayerAsync(player.getUniqueId()).thenAccept(wasReset -> {
                     if (wasReset) {
                         player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString());
                         return;
                     }
 
-                    this.scheduler.runTask(() -> {
-                        this.menuManager.openRewardsMenu(player);
-                        if (plugin.getConfig().getBoolean("sound.open.enabled")) {
-                            this.soundUtil.playSound(player, "open");
-                        }
-                    });
-                });
-            }
-
-            if (this.plugin.getConfig().getBoolean("events.notify-when-available") && this.rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
-                this.rewardManager.checkResetForPlayerAsync(player.getUniqueId()).thenAccept(wasReset -> {
-                    if (wasReset) {
-                        player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString());
-                        return;
+                    long delayTime = this.plugin.getConfig().getLong("events.auto-claim-delay");
+                    if (this.plugin.getConfig().getBoolean("events.auto-claim-reward")) {
+                        this.scheduler.runTaskLater(() -> {
+                            this.rewardManager.giveReward(player, currentDay);
+                            this.eventCaller.callEvent(new AutoClaimEvent(player, currentDay));
+                        }, delayTime * 20L);
                     }
 
-                    player.sendMessage(Language.PREFIX.asColoredString() + Language.EVENTS_NOTIFY_WHEN_AVAILABLE.asColoredString());
-                    this.eventCaller.callEvent(new PlayerReceiveReminderEvent(player, currentDay));
+                    if (this.plugin.getConfig().getBoolean("events.open-gui-when-available")) {
+                        this.scheduler.runTask(() -> {
+                            this.menuManager.openRewardsMenu(player);
+                            if (plugin.getConfig().getBoolean("sound.open.enabled")) {
+                                this.soundUtil.playSound(player, "open");
+                            }
+                        });
+                    }
+
+                    if (this.plugin.getConfig().getBoolean("events.notify-when-available")) {
+                        player.sendMessage(Language.PREFIX.asColoredString() + Language.EVENTS_NOTIFY_WHEN_AVAILABLE.asColoredString());
+                        this.eventCaller.callEvent(new PlayerReceiveReminderEvent(player, currentDay));
+                    }
                 });
             }
         });
