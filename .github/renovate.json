@@ -1,17 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "dependencyDashboard": true,
   "extends": [
     "config:recommended"
   ],
-  "groupName": "all dependencies",
-  "groupSlug": "all",
-  "lockFileMaintenance": {
-    "enabled": false
-  },
-  "separateMajorMinor": true,
-  "pruneStaleBranches": true,
-  "commitMessagePrefix": "dependency:",
   "labels": [
     "\uD83D\uDD04 dependencies"
   ],
@@ -49,5 +40,10 @@
         "!/com.destroystokyo.paper*/"
       ]
     }
-  ]
+  ],
+  "schedule": [
+    "before 4am on Monday"
+  ],
+  "semanticCommitType": "build",
+  "commitMessagePrefix": "chore(deps): "
 }
