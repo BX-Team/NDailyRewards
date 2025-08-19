@@ -9,8 +9,8 @@ import java.util.List;
 public class LibraryLoaderUtil {
     private static final List<Dependency> DEPENDENCIES = List.of(
             Dependency.of("io.papermc", "paperlib", "1.0.8"),
-            Dependency.of("com.zaxxer", "HikariCP", "7.0.0"),
-            Dependency.of("org.mariadb.jdbc", "mariadb-java-client", "3.5.4"),
+            Dependency.of("com.zaxxer", "HikariCP", "7.0.2"),
+            Dependency.of("org.mariadb.jdbc", "mariadb-java-client", "3.5.5"),
             Dependency.of("com.j256.ormlite", "ormlite-core", "6.1"),
             Dependency.of("com.j256.ormlite", "ormlite-jdbc", "6.1"),
             Dependency.of("aopalliance", "aopalliance", "1.0"),

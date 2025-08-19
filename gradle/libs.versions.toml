@@ -20,7 +20,7 @@ commons-folia = { module = "org.bxteam:commons-folia", version.ref = "commons"}
 
 ormlite = { module = "com.j256.ormlite:ormlite-core", version.ref = "ormlite" }
 ormlite-jdbc = { module = "com.j256.ormlite:ormlite-jdbc", version.ref = "ormlite" }
-hikari = { module = "com.zaxxer:HikariCP", version = "7.0.1" }
+hikari = { module = "com.zaxxer:HikariCP", version = "7.0.2" }
 mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.5" }
 
 placeholderapi = { module = "me.clip:placeholderapi", version = "2.11.6" }
