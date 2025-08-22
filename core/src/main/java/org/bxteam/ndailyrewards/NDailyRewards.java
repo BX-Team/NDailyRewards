@@ -13,7 +13,7 @@ import org.bxteam.helix.database.DatabaseClient;
 import org.bxteam.helix.logger.ExtendedLogger;
 import org.bxteam.helix.logger.LogLevel;
 import org.bxteam.helix.logger.appender.Appender;
-import org.bxteam.helix.logger.appender.ConsoleAppender;
+import org.bxteam.helix.logger.appender.JavaLoggerAppender;
 import org.bxteam.helix.scheduler.Scheduler;
 import org.bxteam.helix.updater.VersionFetcher;
 import org.bxteam.ndailyrewards.database.DatabaseModule;
@@ -57,8 +57,8 @@ public final class NDailyRewards extends JavaPlugin {
     public void onEnable() {
         Instant startTime = Instant.now();
 
-        Appender consoleAppender = new ConsoleAppender("[{loggerName}] {logLevel}: {message}");
-        this.logger = new ExtendedLogger("NDailyRewards", LogLevel.INFO, List.of(consoleAppender), new ArrayList<>());
+        Appender javaLoggerAppender = new JavaLoggerAppender(this.getLogger());
+        this.logger = new ExtendedLogger("NDailyRewards", LogLevel.INFO, List.of(javaLoggerAppender), new ArrayList<>());
 
         this.injector = Guice.createInjector(
                 new NDailyRewardsModule(this, logger),
