@@ -1,0 +1,34 @@
+name: Set Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to set'
+        required: true
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+jobs:
+  set-version:
+    name: Set Version
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set Version
+        run: |
+          sed -i 's/^version=.*/version='"${{ inputs.version }}"'/g' gradle.properties
+
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: 'chore(release): bump version to ${{ inputs.version }}'
