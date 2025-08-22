@@ -2,9 +2,6 @@ plugins {
     id("maven-publish")
 }
 
-group = project.group
-version = project.version
-
 dependencies {
     compileOnly(libs.paper)
 }
@@ -43,10 +40,10 @@ publishing {
     }
     publications {
         create<MavenPublication>("maven") {
-            groupId = group.toString()
-            artifactId = "ndailyrewards"
-            version = version.toString()
-            from(components["java"])
+            groupId = project.group.toString()
+            artifactId = project.name.lowercase()
+            version = project.version.toString()
+            from(components.getByName("java"))
         }
     }
 }
