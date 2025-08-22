@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bxteam.commons.updater.VersionFetcher;
+import org.bxteam.helix.updater.VersionFetcher;
 import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.utils.TextUtils;
 import revxrsal.commands.annotation.Command;

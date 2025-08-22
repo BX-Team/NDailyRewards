@@ -9,7 +9,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.Plugin;
-import org.bxteam.ndailyrewards.database.DatabaseClient;
+import org.bxteam.helix.database.DatabaseClient;
 
 import java.sql.SQLException;
 import java.util.Map;

@@ -8,12 +8,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
-import org.bxteam.commons.logger.ExtendedLogger;
-import org.bxteam.commons.scheduler.Scheduler;
-import org.bxteam.commons.updater.VersionFetcher;
+import org.bxteam.helix.logger.ExtendedLogger;
+import org.bxteam.helix.scheduler.Scheduler;
+import org.bxteam.helix.updater.VersionFetcher;
 import org.bxteam.ndailyrewards.event.EventCaller;
 import org.bxteam.ndailyrewards.manager.menu.MenuManager;
-import org.bxteam.ndailyrewards.utils.Permissions;
 import org.bxteam.ndailyrewards.utils.SoundUtil;
 import org.bxteam.ndailyrewards.utils.TextUtils;
 import org.bxteam.ndailyrewards.api.event.AutoClaimEvent;
@@ -93,7 +92,7 @@ public class PlayerJoinListener implements Listener {
     public void updateChecker(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if (this.plugin.getConfig().getBoolean("check-updates") && player.hasPermission(Permissions.UPDATE_NOTIFY)) {
+        if (this.plugin.getConfig().getBoolean("check-updates") && player.hasPermission("ndailyrewards.update-notify")) {
             final var current = new ComparableVersion(this.plugin.getDescription().getVersion());
 
             supplyAsync(this.versionFetcher::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {

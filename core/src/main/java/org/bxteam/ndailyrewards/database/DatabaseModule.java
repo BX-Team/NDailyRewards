@@ -3,6 +3,7 @@ package org.bxteam.ndailyrewards.database;
 import com.google.inject.AbstractModule;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.Plugin;
+import org.bxteam.helix.database.DatabaseClient;
 import org.bxteam.ndailyrewards.database.clients.MariaDBClient;
 import org.bxteam.ndailyrewards.database.clients.SQLiteClient;
 import org.bxteam.ndailyrewards.manager.reward.database.RewardRepository;

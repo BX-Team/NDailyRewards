@@ -9,8 +9,8 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
-    implementation(libs.bundles.commons)
-    implementation(libs.bstats)
+    implementation(libs.helix)
+    implementation(libs.maven.artifact)
     implementation(libs.quark.bukkit)
 
     compileOnly(libs.paper)

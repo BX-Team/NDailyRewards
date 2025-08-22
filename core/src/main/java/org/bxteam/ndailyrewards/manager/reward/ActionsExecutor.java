@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bxteam.commons.logger.ExtendedLogger;
+import org.bxteam.helix.logger.ExtendedLogger;
 import org.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.util.Random;

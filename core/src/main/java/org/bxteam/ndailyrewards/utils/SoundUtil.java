@@ -6,9 +6,9 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bxteam.helix.logger.ExtendedLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.bxteam.commons.logger.ExtendedLogger;
 
 @Singleton
 public class SoundUtil {

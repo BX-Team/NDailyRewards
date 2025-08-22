@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bxteam.commons.logger.ExtendedLogger;
+import org.bxteam.helix.logger.ExtendedLogger;
 import org.bxteam.ndailyrewards.integration.placeholderapi.PlaceholderAPIIntegration;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 

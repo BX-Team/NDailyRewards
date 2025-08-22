@@ -8,9 +8,9 @@ import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bxteam.commons.logger.ExtendedLogger;
-import org.bxteam.commons.updater.ModrinthVersionFetcher;
-import org.bxteam.commons.updater.VersionFetcher;
+import org.bxteam.helix.logger.ExtendedLogger;
+import org.bxteam.helix.updater.ModrinthVersionFetcher;
+import org.bxteam.helix.updater.VersionFetcher;
 import org.bxteam.ndailyrewards.manager.reward.ActionsExecutor;
 
 import java.nio.file.Path;

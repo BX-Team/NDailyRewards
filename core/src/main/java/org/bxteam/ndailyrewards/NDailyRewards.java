@@ -5,18 +5,17 @@ import com.google.inject.Injector;
 import com.j256.ormlite.logger.Level;
 import com.j256.ormlite.logger.Logger;
 import org.apache.maven.artifact.versioning.ComparableVersion;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bxteam.commons.logger.ExtendedLogger;
-import org.bxteam.commons.logger.LogLevel;
-import org.bxteam.commons.logger.appender.Appender;
-import org.bxteam.commons.logger.appender.ConsoleAppender;
-import org.bxteam.commons.logger.appender.JsonAppender;
-import org.bxteam.commons.scheduler.Scheduler;
-import org.bxteam.commons.updater.VersionFetcher;
-import org.bxteam.ndailyrewards.database.DatabaseClient;
+import org.bxteam.helix.Metrics;
+import org.bxteam.helix.database.DatabaseClient;
+import org.bxteam.helix.logger.ExtendedLogger;
+import org.bxteam.helix.logger.LogLevel;
+import org.bxteam.helix.logger.appender.Appender;
+import org.bxteam.helix.logger.appender.ConsoleAppender;
+import org.bxteam.helix.scheduler.Scheduler;
+import org.bxteam.helix.updater.VersionFetcher;
 import org.bxteam.ndailyrewards.database.DatabaseModule;
 import org.bxteam.ndailyrewards.integration.IntegrationRegistry;
 import org.bxteam.ndailyrewards.listener.InventoryClickListener;
@@ -30,11 +29,9 @@ import org.bxteam.ndailyrewards.utils.LibraryLoaderUtil;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,18 +58,7 @@ public final class NDailyRewards extends JavaPlugin {
         Instant startTime = Instant.now();
 
         Appender consoleAppender = new ConsoleAppender("[{loggerName}] {logLevel}: {message}");
-        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-        File logsFile = new File("plugins/NDailyRewards/logs/ndr-logs-" + date + ".txt");
-        if (!logsFile.exists()) {
-            try {
-                logsFile.getParentFile().mkdirs();
-                logsFile.createNewFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        JsonAppender jsonAppender = new JsonAppender(false, false, true, logsFile.getPath());
-        this.logger = new ExtendedLogger("NDailyRewards", LogLevel.INFO, List.of(consoleAppender, jsonAppender), new ArrayList<>());
+        this.logger = new ExtendedLogger("NDailyRewards", LogLevel.INFO, List.of(consoleAppender), new ArrayList<>());
 
         this.injector = Guice.createInjector(
                 new NDailyRewardsModule(this, logger),

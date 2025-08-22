@@ -3,9 +3,9 @@ package org.bxteam.ndailyrewards.manager.reward.database;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.j256.ormlite.table.TableUtils;
-import org.bxteam.commons.scheduler.Scheduler;
-import org.bxteam.ndailyrewards.database.DatabaseClient;
-import org.bxteam.ndailyrewards.database.wrapper.AbstractOrmLiteDatabase;
+import org.bxteam.helix.database.DatabaseClient;
+import org.bxteam.helix.database.wrapper.AbstractOrmLiteDatabase;
+import org.bxteam.helix.scheduler.Scheduler;
 import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
 
 import java.sql.SQLException;
@@ -27,7 +27,7 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
                     if (wrapper == null) {
                         return new PlayerRewardData(System.currentTimeMillis() / 1000L, 0);
                     }
-                    return new PlayerRewardData(wrapper.getNextTime(), wrapper.getNextDay());
+                    return new PlayerRewardData(wrapper.nextTime(), wrapper.nextDay());
                 });
     }
 
@@ -37,8 +37,8 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
                 .thenCompose(optionalWrapper -> {
                     RewardWrapper wrapper = optionalWrapper.orElse(new RewardWrapper(uuid.toString(), nextTime, nextDay));
 
-                    wrapper.setNextTime(nextTime);
-                    wrapper.setNextDay(nextDay);
+                    wrapper.nextTime(nextTime);
+                    wrapper.nextDay(nextDay);
                     return this.save(RewardWrapper.class, wrapper);
                 })
                 .thenAccept(result -> {});
@@ -53,6 +53,6 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
     public CompletableFuture<PlayerRewardData> createPlayerData(UUID uuid, long nextTime) {
         RewardWrapper wrapper = new RewardWrapper(uuid.toString(), nextTime, 0);
         return this.saveIfNotExist(RewardWrapper.class, wrapper)
-                .thenApply(saved -> new PlayerRewardData(saved.getNextTime(), saved.getNextDay()));
+                .thenApply(saved -> new PlayerRewardData(saved.nextTime(), saved.nextDay()));
     }
 }

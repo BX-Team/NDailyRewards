@@ -2,7 +2,15 @@ package org.bxteam.ndailyrewards.manager.reward.database;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @DatabaseTable(tableName = "data")
 public class RewardWrapper {
     @DatabaseField(id = true, columnName = "uuid")
@@ -13,36 +21,4 @@ public class RewardWrapper {
 
     @DatabaseField(columnName = "next_day")
     private int nextDay;
-
-    RewardWrapper() { }
-
-    public RewardWrapper(String uuid, long nextTime, int nextDay) {
-        this.uuid = uuid;
-        this.nextTime = nextTime;
-        this.nextDay = nextDay;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public long getNextTime() {
-        return nextTime;
-    }
-
-    public void setNextTime(long nextTime) {
-        this.nextTime = nextTime;
-    }
-
-    public int getNextDay() {
-        return nextDay;
-    }
-
-    public void setNextDay(int nextDay) {
-        this.nextDay = nextDay;
-    }
 }
