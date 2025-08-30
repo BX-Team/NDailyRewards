@@ -2,6 +2,8 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 plugins {
     alias(libs.plugins.plugin.yml.bukkit)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.quark)
 }
 
 dependencies {
@@ -11,17 +13,29 @@ dependencies {
 
     implementation(libs.helix)
     implementation(libs.maven.artifact)
-    implementation(libs.quark.bukkit)
 
     compileOnly(libs.paper)
     compileOnly(libs.placeholderapi)
 
-    compileOnly(libs.paperlib)
-    compileOnly(libs.hikari)
-    compileOnly(libs.mariadb)
-    compileOnly(libs.bundles.ormlite)
-    compileOnly(libs.bundles.guice)
-    compileOnly(libs.bundles.lamp)
+    quark(libs.paperlib)
+    quark(libs.hikari) {
+        exclude("org.slf4j", "slf4j-api")
+    }
+    quark(libs.mariadb)
+    quark(libs.bundles.ormlite)
+    quark(libs.bundles.guice) {
+        exclude("com.google.guava", "guava")
+    }
+    quark(libs.bundles.lamp)
+}
+
+quark {
+    platform = "bukkit"
+    libsFolder = "libs"
+
+    repositories {
+        maven("https://repo.papermc.io/repository/maven-public/")
+    }
 }
 
 tasks {

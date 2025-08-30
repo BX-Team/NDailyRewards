@@ -8,11 +8,11 @@ lamp = "4.0.0-rc.12"
 shadow = { id = "com.gradleup.shadow", version = "9.0.2" }
 plugin-yml-bukkit = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "plugin-yml" }
 run-server = { id = "org.bxteam.runserver", version = "1.2.2" }
+quark = { id = "org.bxteam.quark", version = "1.1.0" }
 
 [libraries]
 paper = { module = "com.destroystokyo.paper:paper-api", version = "1.16.5-R0.1-SNAPSHOT" }
 paperlib = { module = "io.papermc:paperlib", version = "1.0.8" }
-quark-bukkit = { module = "org.bxteam.quark:bukkit", version = "1.0.0" }
 
 helix = { module = "org.bxteam:helix", version = "1.0.0" }
 maven-artifact = { module = "org.apache.maven:maven-artifact", version = "3.9.11" }
