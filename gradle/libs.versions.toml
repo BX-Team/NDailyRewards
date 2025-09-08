@@ -1,11 +1,11 @@
 [versions]
-plugin-yml = "0.7.1"
+plugin-yml = "0.8.0"
 ormlite = "6.1"
 guice = "5.1.0"
 lamp = "4.0.0-rc.12"
 
 [plugins]
-shadow = { id = "com.gradleup.shadow", version = "9.0.2" }
+shadow = { id = "com.gradleup.shadow", version = "9.1.0" }
 plugin-yml-bukkit = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "plugin-yml" }
 run-server = { id = "org.bxteam.runserver", version = "1.2.2" }
 quark = { id = "org.bxteam.quark", version = "1.1.0" }
