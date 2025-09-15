@@ -20,7 +20,7 @@ maven-artifact = { module = "org.apache.maven:maven-artifact", version = "3.9.11
 ormlite = { module = "com.j256.ormlite:ormlite-core", version.ref = "ormlite" }
 ormlite-jdbc = { module = "com.j256.ormlite:ormlite-jdbc", version.ref = "ormlite" }
 hikari = { module = "com.zaxxer:HikariCP", version = "7.0.2" }
-mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.5" }
+mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.6" }
 
 placeholderapi = { module = "me.clip:placeholderapi", version = "2.11.6" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.40" }
