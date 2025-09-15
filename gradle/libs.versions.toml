@@ -1,7 +1,7 @@
 [versions]
 plugin-yml = "0.8.0"
 ormlite = "6.1"
-guice = "5.1.0"
+guice = "7.0.0"
 lamp = "4.0.0-rc.12"
 
 [plugins]
