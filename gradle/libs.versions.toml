@@ -2,7 +2,7 @@
 plugin-yml = "0.8.0"
 ormlite = "6.1"
 guice = "5.1.0"
-lamp = "4.0.0-rc.13"
+lamp = "4.0.0-rc.14"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
