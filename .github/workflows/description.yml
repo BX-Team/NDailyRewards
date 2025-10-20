@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Auto Update Modrinth Description
-        uses: funnyboy-roks/modrinth-auto-desc@v1.6
+        uses: funnyboy-roks/modrinth-auto-desc@v1.7
         with:
           auth-token: ${{ secrets.MODRINTH_TOKEN }}
           slug: 'ndailyrewards'
