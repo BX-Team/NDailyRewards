@@ -1,49 +1,31 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "group:allNonMajor",
+    ":automergeMinor",
+    ":automergePatch"
   ],
+  "semanticCommitType": "build",
+  "commitMessagePrefix": "chore(deps): ",
   "labels": [
-    "\uD83D\uDD04 dependencies"
-  ],
-  "packageRules": [
-    {
-      "groupName": "patch",
-      "matchUpdateTypes": [
-        "patch"
-      ],
-      "automerge": true,
-      "matchPackageNames": [
-        "*",
-        "!/com.destroystokyo.paper*/"
-      ]
-    },
-    {
-      "groupName": "minor",
-      "matchUpdateTypes": [
-        "minor"
-      ],
-      "automerge": true,
-      "matchPackageNames": [
-        "*",
-        "!/com.destroystokyo.paper*/"
-      ]
-    },
-    {
-      "groupName": "all-major",
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "automerge": false,
-      "matchPackageNames": [
-        "*",
-        "!/com.destroystokyo.paper*/"
-      ]
-    }
+    "🔄 dependencies"
   ],
   "schedule": [
     "before 4am on Monday"
   ],
-  "semanticCommitType": "build",
-  "commitMessagePrefix": "chore(deps): "
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "com.destroystokyo.paper:paper-api",
+        "com.google.inject:guice",
+        "com.google.inject.extensions:guice-assistedinject",
+        "gradle"
+      ],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["**"],
+      "allowedVersions": "!/\\-SNAPSHOT$/"
+    }
+  ]
 }
