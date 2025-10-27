@@ -8,7 +8,7 @@ lamp = "4.0.0-rc.14"
 shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
 plugin-yml-bukkit = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "plugin-yml" }
 run-server = { id = "org.bxteam.runserver", version = "1.2.2" }
-quark = { id = "org.bxteam.quark", version = "1.2.0" }
+quark = { id = "org.bxteam.quark", version = "1.2.1" }
 
 [libraries]
 paper = { module = "com.destroystokyo.paper:paper-api", version = "1.16.5-R0.1-SNAPSHOT" }
