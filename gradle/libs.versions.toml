@@ -22,7 +22,7 @@ ormlite-jdbc = { module = "com.j256.ormlite:ormlite-jdbc", version.ref = "ormlit
 hikari = { module = "com.zaxxer:HikariCP", version = "7.0.2" }
 mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.6" }
 
-placeholderapi = { module = "me.clip:placeholderapi", version = "2.11.6" }
+placeholderapi = { module = "me.clip:placeholderapi", version = "2.11.7" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
 
 guice = { module = "com.google.inject:guice", version.ref = "guice" }
