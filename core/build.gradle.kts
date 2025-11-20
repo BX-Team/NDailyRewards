@@ -31,7 +31,6 @@ dependencies {
 
 quark {
     platform = "bukkit"
-    libsFolder = "libs"
 
     repositories {
         maven("https://repo.papermc.io/repository/maven-public/")
