@@ -10,7 +10,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Auto Update Modrinth Description
         uses: funnyboy-roks/modrinth-auto-desc@v1.7
