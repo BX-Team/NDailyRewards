@@ -58,6 +58,8 @@ rewards:
   reset-when-all-claimed: true
   # When player joins server for the first time, should the reward be available?
   first-join-reward: false
+  # When all rewards claimed and days has been reset, should the first day be available immediately?
+  first-day-on-reset: false
   # Specify how many days the player has to wait to claim the reward again (in hours)
   cooldown: 24
   # Specify the time for which the rewards will be reset if the player has not collected the reward (in hours)

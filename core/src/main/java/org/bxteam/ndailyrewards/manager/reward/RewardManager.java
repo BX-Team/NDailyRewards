@@ -116,7 +116,7 @@ public class RewardManager {
     }
 
     private CompletableFuture<Void> updatePlayerRewardDataAsync(UUID uuid, int nextDay) {
-        long nextTime = getUnixTimeForNextDay(false);
+        long nextTime = getUnixTimeForNextDay(false, false);
         return this.rewardRepository.updatePlayerRewardData(uuid, nextTime, nextDay)
                 .exceptionally(throwable -> {
                     this.logger.error("Could not update player reward data: %s".formatted(throwable.getMessage()));
@@ -126,7 +126,7 @@ public class RewardManager {
     }
 
     public CompletableFuture<PlayerRewardData> createInitialPlayerData(UUID uuid) {
-        return rewardRepository.createPlayerData(uuid, getUnixTimeForNextDay(true))
+        return rewardRepository.createPlayerData(uuid, getUnixTimeForNextDay(true, false))
                 .exceptionally(throwable -> {
                     this.logger.error("Could not create initial player data: %s".formatted(throwable.getMessage()));
                     return null;
@@ -134,7 +134,7 @@ public class RewardManager {
     }
 
     private CompletableFuture<Void> resetPlayerRewardDataAsync(UUID uuid) {
-        long nextTime = getUnixTimeForNextDay(false);
+        long nextTime = getUnixTimeForNextDay(false, true);
         return rewardRepository.resetPlayerRewardData(uuid, nextTime)
                 .exceptionally(throwable -> {
                     this.logger.error("Could not reset player reward data: %s".formatted(throwable.getMessage()));
@@ -210,8 +210,12 @@ public class RewardManager {
         });
     }
 
-    private long getUnixTimeForNextDay(boolean isFirstJoin) {
+    private long getUnixTimeForNextDay(boolean isFirstJoin, boolean isReset) {
         if (isFirstJoin && this.plugin.getConfig().getBoolean("rewards.first-join-reward")) {
+            return Instant.now().getEpochSecond();
+        }
+
+        if (isReset && this.plugin.getConfig().getBoolean("rewards.first-day-on-reset")) {
             return Instant.now().getEpochSecond();
         }
 
