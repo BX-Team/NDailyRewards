@@ -71,7 +71,7 @@ jobs:
 
     - name: Build Changelog
       id: github_release
-      uses: mikepenz/release-changelog-builder-action@v6.0.1
+      uses: mikepenz/release-changelog-builder-action@v6.1.0
       with:
         mode: COMMIT
         fromTag: ${{ steps.tag_search.outputs.latest_tag }}
