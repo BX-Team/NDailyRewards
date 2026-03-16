@@ -15,7 +15,7 @@ paper = { module = "com.destroystokyo.paper:paper-api", version = "1.16.5-R0.1-S
 paperlib = { module = "io.papermc:paperlib", version = "1.0.8" }
 
 helix = { module = "org.bxteam:helix", version = "1.0.0" }
-maven-artifact = { module = "org.apache.maven:maven-artifact", version = "3.9.13" }
+maven-artifact = { module = "org.apache.maven:maven-artifact", version = "3.9.14" }
 
 ormlite = { module = "com.j256.ormlite:ormlite-core", version.ref = "ormlite" }
 ormlite-jdbc = { module = "com.j256.ormlite:ormlite-jdbc", version.ref = "ormlite" }
@@ -23,7 +23,7 @@ hikari = { module = "com.zaxxer:HikariCP", version = "7.0.2" }
 mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.7" }
 
 placeholderapi = { module = "me.clip:placeholderapi", version = "2.12.2" }
-lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
+lombok = { module = "org.projectlombok:lombok", version = "1.18.44" }
 
 guice = { module = "com.google.inject:guice", version.ref = "guice" }
 guice-assistedinject = { module = "com.google.inject.extensions:guice-assistedinject", version.ref = "guice" }
