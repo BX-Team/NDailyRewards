@@ -1,5 +1,5 @@
 [versions]
-plugin-yml = "0.8.0"
+plugin-yml = "0.9.0"
 ormlite = "6.1"
 guice = "5.1.0"
 lamp = "4.0.0-rc.16"
