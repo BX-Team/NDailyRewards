@@ -60,9 +60,9 @@ rewards:
   first-join-reward: false
   # When all rewards claimed and days has been reset, should the first day be available immediately?
   first-day-on-reset: false
-  # Specify how many days the player has to wait to claim the reward again (in hours)
+  # Time the player has to wait before claiming the next reward (in hours)
   cooldown: 24
-  # Specify the time for which the rewards will be reset if the player has not collected the reward (in hours)
+  # Time without claiming a reward after which the player's streak resets to day 1 (in hours)
   reset-time: 24
   # Should next day unlock after midnight?
   unlock-after-midnight: false
