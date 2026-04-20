@@ -35,7 +35,8 @@ jobs:
       run: ./gradlew build --stacktrace
 
     - name: Upload NDailyRewards
-      uses: actions/upload-artifact@v7.0.1
+      uses: actions/upload-artifact@v7
       with:
         name: NDailyRewards
         path: "build/libs/NDailyRewards-*.jar"
+        archive: false

@@ -71,7 +71,7 @@ jobs:
 
     - name: Build Changelog
       id: github_release
-      uses: mikepenz/release-changelog-builder-action@v6.2.1
+      uses: mikepenz/release-changelog-builder-action@v6
       with:
         mode: COMMIT
         fromTag: ${{ steps.tag_search.outputs.latest_tag }}
@@ -81,7 +81,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Release to GitHub
-      uses: softprops/action-gh-release@v3.0.0
+      uses: softprops/action-gh-release@v3
       with:
         body: ${{ steps.github_release.outputs.changelog }}
         tag_name: v${{ inputs.version }}
