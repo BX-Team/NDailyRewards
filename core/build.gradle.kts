@@ -28,9 +28,7 @@ dependencies {
     }
     quark(libs.bundles.lamp)
 
-    implementation(libs.adventure.minimessage)
-    implementation(libs.adventure.legacy)
-    implementation(libs.adventure.platform.bukkit)
+    implementation(libs.bundles.adventure)
 }
 
 quark {
