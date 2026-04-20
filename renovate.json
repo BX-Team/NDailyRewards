@@ -19,6 +19,8 @@
         "com.destroystokyo.paper:paper-api",
         "com.google.inject:guice",
         "com.google.inject.extensions:guice-assistedinject",
+        "net.kyori:adventure-text-minimessage",
+        "net.kyori:adventure-text-serializer-legacy",
         "gradle"
       ],
       "enabled": false
