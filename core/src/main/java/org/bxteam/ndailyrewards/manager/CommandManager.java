@@ -21,7 +21,7 @@ public class CommandManager {
         this.injector = injector;
 
         this.lamp = BukkitLamp.builder(plugin)
-                .exceptionHandler(new LampExceptionHandler())
+                .exceptionHandler(injector.getInstance(LampExceptionHandler.class))
                 .suggestionProviders(providers -> {
                     providers.addProvider(Integer.class, context -> {
                         ConfigurationSection rewards = plugin.getConfig().getConfigurationSection("rewards.days");

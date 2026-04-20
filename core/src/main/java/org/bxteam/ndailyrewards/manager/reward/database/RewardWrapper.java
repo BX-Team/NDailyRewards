@@ -21,4 +21,22 @@ public class RewardWrapper {
 
     @DatabaseField(columnName = "next_day")
     private int nextDay;
+
+    @DatabaseField(columnName = "max_streak", defaultValue = "0")
+    private int maxStreak;
+
+    @DatabaseField(columnName = "missed_total", defaultValue = "0")
+    private int missedTotal;
+
+    @DatabaseField(columnName = "last_claim_time", defaultValue = "0")
+    private long lastClaimTime;
+
+    public RewardWrapper(String uuid, long nextTime, int nextDay) {
+        this.uuid = uuid;
+        this.nextTime = nextTime;
+        this.nextDay = nextDay;
+        this.maxStreak = 0;
+        this.missedTotal = 0;
+        this.lastClaimTime = 0L;
+    }
 }

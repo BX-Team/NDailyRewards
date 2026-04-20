@@ -37,6 +37,7 @@ tasks {
         archiveClassifier = ""
         from(file("LICENSE"))
         relocate("org.bstats", "org.bxteam.ndailyrewards.dependencies.bstats")
+        relocate("net.kyori", "org.bxteam.ndailyrewards.dependencies.kyori")
         minimize()
         dependencies {
             exclude("META-INF/NOTICE")

@@ -13,8 +13,8 @@ import org.bxteam.helix.scheduler.Scheduler;
 import org.bxteam.helix.updater.VersionFetcher;
 import org.bxteam.ndailyrewards.event.EventCaller;
 import org.bxteam.ndailyrewards.manager.menu.MenuManager;
+import org.bxteam.ndailyrewards.messaging.MessageService;
 import org.bxteam.ndailyrewards.utils.SoundUtil;
-import org.bxteam.ndailyrewards.utils.TextUtils;
 import org.bxteam.ndailyrewards.api.event.AutoClaimEvent;
 import org.bxteam.ndailyrewards.api.event.PlayerReceiveReminderEvent;
 import org.bxteam.ndailyrewards.configuration.Language;
@@ -35,6 +35,7 @@ public class PlayerJoinListener implements Listener {
     private final Scheduler scheduler;
     private final EventCaller eventCaller;
     private final SoundUtil soundUtil;
+    private final MessageService messageService;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -58,7 +59,7 @@ public class PlayerJoinListener implements Listener {
             if (this.rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
                 this.rewardManager.checkResetForPlayerAsync(player.getUniqueId()).thenAccept(wasReset -> {
                     if (wasReset) {
-                        player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString());
+                        messageService.send(player, Language.CLAIM_REWARD_RESET);
                         return;
                     }
 
@@ -80,7 +81,7 @@ public class PlayerJoinListener implements Listener {
                     }
 
                     if (this.plugin.getConfig().getBoolean("events.notify-when-available")) {
-                        player.sendMessage(Language.PREFIX.asColoredString() + Language.EVENTS_NOTIFY_WHEN_AVAILABLE.asColoredString());
+                        messageService.send(player, Language.EVENTS_NOTIFY_WHEN_AVAILABLE);
                         this.eventCaller.callEvent(new PlayerReceiveReminderEvent(player, currentDay));
                     }
                 });
@@ -100,8 +101,8 @@ public class PlayerJoinListener implements Listener {
                     return;
                 }
 
-                player.sendMessage(TextUtils.applyColor(Language.PREFIX.asString() + "&aA new update is available: &e" + newest));
-                player.sendMessage(TextUtils.applyColor(Language.PREFIX.asString() + "&aDownload here: &e" + versionFetcher.getDownloadUrl()));
+                messageService.sendPrefixed(player, "&aA new update is available: &e" + newest);
+                messageService.sendPrefixed(player, "&aDownload here: &e" + versionFetcher.getDownloadUrl());
             });
         }
     }

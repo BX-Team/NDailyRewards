@@ -3,10 +3,8 @@ package org.bxteam.ndailyrewards.configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.bxteam.ndailyrewards.NDailyRewards;
-import org.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public enum Language {
     PREFIX("prefix"),
@@ -42,17 +40,7 @@ public enum Language {
         return langConfig.getString(this.path);
     }
 
-    public String asColoredString() {
-        return TextUtils.applyColor(asString());
-    }
-
     public List<String> asStringList() {
         return langConfig.getStringList(this.path);
-    }
-
-    public List<String> asColoredStringList() {
-        return asStringList().stream()
-                .map(TextUtils::applyColor)
-                .collect(Collectors.toList());
     }
 }

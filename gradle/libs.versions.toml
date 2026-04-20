@@ -3,6 +3,7 @@ plugin-yml = "0.9.0"
 ormlite = "6.1"
 guice = "5.1.0"
 lamp = "4.0.0-rc.16"
+adventure = "4.17.0"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
@@ -31,6 +32,10 @@ guice-assistedinject = { module = "com.google.inject.extensions:guice-assistedin
 lamp-common = { module = "io.github.revxrsal:lamp.common", version.ref = "lamp" }
 lamp-bukkit = { module = "io.github.revxrsal:lamp.bukkit", version.ref = "lamp" }
 
+adventure-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
+adventure-legacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventure" }
+adventure-platform-bukkit = { module = "net.kyori:adventure-platform-bukkit", version = "4.3.4" }
+
 [bundles]
 ormlite = [
     "ormlite",
@@ -45,4 +50,10 @@ guice = [
 lamp = [
     "lamp-common",
     "lamp-bukkit"
+]
+
+adventure = [
+    "adventure-minimessage",
+    "adventure-legacy",
+    "adventure-platform-bukkit"
 ]

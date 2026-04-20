@@ -14,8 +14,8 @@ import org.bxteam.ndailyrewards.configuration.Language;
 import org.jetbrains.annotations.NotNull;
 import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
+import org.bxteam.ndailyrewards.messaging.MessageService;
 import org.bxteam.ndailyrewards.utils.ItemBuilder;
-import org.bxteam.ndailyrewards.utils.TextUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +26,7 @@ public class MenuManager {
     private final Plugin plugin;
     private final RewardManager rewardManager;
     private final Scheduler scheduler;
+    private final MessageService messageService;
 
     private final InventoryHolder MAIN_MENU_HOLDER = new MainMenuHolder();
     private ItemStack cachedFillerItem;
@@ -37,10 +38,11 @@ public class MenuManager {
     private Task updateTask;
 
     @Inject
-    public MenuManager(Plugin plugin, RewardManager rewardManager, Scheduler scheduler) {
+    public MenuManager(Plugin plugin, RewardManager rewardManager, Scheduler scheduler, MessageService messageService) {
         this.plugin = plugin;
         this.rewardManager = rewardManager;
         this.scheduler = scheduler;
+        this.messageService = messageService;
 
         initializeCaches();
         startGlobalUpdateTask();
@@ -63,8 +65,8 @@ public class MenuManager {
                 List<String> lore = customSection.getStringList(customKey + ".lore");
                 int position = customSection.getInt(customKey + ".position");
                 ItemStack customItem = new ItemBuilder(ItemBuilder.parseItemStack(materialStr))
-                        .setName(name)
-                        .setLore(lore)
+                        .setName(messageService.toLegacyString(name))
+                        .setLore(toLegacyLore(lore))
                         .build();
                 cachedCustomItems.add(new CustomItemConfig(position, customItem));
             }
@@ -99,14 +101,14 @@ public class MenuManager {
         this.rewardManager.checkResetForPlayerAsync(player.getUniqueId())
             .thenCompose(wasReset -> {
                 if (wasReset) {
-                    scheduler.runTask(() -> player.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_REWARD_RESET.asColoredString()));
+                    scheduler.runTask(() -> messageService.send(player, Language.CLAIM_REWARD_RESET));
                 }
 
                 return this.rewardManager.getPlayerRewardDataAsync(player.getUniqueId());
             })
             .thenAccept(playerRewardData -> {
                 int size = config.getInt("gui.reward.size");
-                String title = TextUtils.applyColor(config.getString("gui.reward.title"));
+                String title = messageService.toLegacyString(config.getString("gui.reward.title"));
                 boolean useFiller = config.getBoolean("gui.reward.display.filler.enable");
 
                 scheduler.runTask(() -> {
@@ -183,16 +185,14 @@ public class MenuManager {
         final List<String> lore = plugin.getConfig().getStringList("gui.reward.display.filler.lore");
 
         return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
-                .setName(name)
-                .setLore(lore)
+                .setName(messageService.toLegacyString(name))
+                .setLore(toLegacyLore(lore))
                 .build();
     }
 
     private DayItems preCacheDayItems(int day, ConfigurationSection daySection) {
         int position = daySection.getInt("position");
-        List<String> rewardLore = daySection.getStringList("lore").stream()
-                .map(TextUtils::applyColor)
-                .collect(Collectors.toList());
+        List<String> rewardLore = toLegacyLore(daySection.getStringList("lore"));
 
         ItemStack claimed = createStaticItem("claimed", day, rewardLore);
         ItemStack available = createStaticItem("available", day, rewardLore);
@@ -211,11 +211,11 @@ public class MenuManager {
         List<String> loreFormatted = plugin.getConfig().getStringList("gui.reward.display." + type + ".lore").stream()
                 .map(s -> s.replace("<reward-lore>", String.join("\n", rewardLore)))
                 .flatMap(s -> Arrays.stream(s.split("\n")))
-                .map(TextUtils::applyColor)
+                .map(messageService::toLegacyString)
                 .collect(Collectors.toList());
 
         return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
-                .setName(name)
+                .setName(messageService.toLegacyString(name))
                 .setLore(loreFormatted)
                 .build();
     }
@@ -228,13 +228,19 @@ public class MenuManager {
         List<String> loreTemplate = plugin.getConfig().getStringList("gui.reward.display.next.lore").stream()
                 .map(s -> s.replace("<reward-lore>", String.join("\n", rewardLore)))
                 .flatMap(s -> Arrays.stream(s.split("\n")))
-                .map(TextUtils::applyColor)
+                .map(messageService::toLegacyString)
                 .collect(Collectors.toList());
 
         return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
-                .setName(name)
+                .setName(messageService.toLegacyString(name))
                 .setLore(loreTemplate)
                 .build();
+    }
+
+    private List<String> toLegacyLore(List<String> lore) {
+        return lore.stream()
+                .map(messageService::toLegacyString)
+                .collect(Collectors.toList());
     }
 
     private ItemStack updateNextItemTime(ItemStack template, long timeLeft) {

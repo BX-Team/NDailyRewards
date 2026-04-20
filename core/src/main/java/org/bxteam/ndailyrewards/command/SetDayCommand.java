@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bxteam.ndailyrewards.NDailyRewards;
 import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
+import org.bxteam.ndailyrewards.messaging.MessageService;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
@@ -17,6 +18,7 @@ import revxrsal.commands.bukkit.annotation.CommandPermission;
 public class SetDayCommand {
     private final NDailyRewards plugin;
     private final RewardManager rewardManager;
+    private final MessageService messageService;
 
     @Subcommand("setday")
     @CommandPermission("ndailyrewards.setday")
@@ -24,18 +26,18 @@ public class SetDayCommand {
         int maxDays = getMaxDays();
 
         if (day < 1 || day > maxDays) {
-            sender.sender().sendMessage(Language.PREFIX.asColoredString() + Language.INVALID_DAY.asColoredString()
-                    .replace("<max-day>", String.valueOf(maxDays)));
+            messageService.send(sender.sender(), Language.INVALID_DAY,
+                    "<max-day>", String.valueOf(maxDays));
             return;
         }
 
         try {
             this.rewardManager.setDay(target, day - 1);
-            sender.sender().sendMessage(Language.PREFIX.asColoredString() + Language.COMMANDS_SETDAY.asColoredString()
-                    .replace("<player>", target.getName())
-                    .replace("<day>", String.valueOf(day)));
+            messageService.send(sender.sender(), Language.COMMANDS_SETDAY,
+                    "<player>", target.getName(),
+                    "<day>", String.valueOf(day));
         } catch (NumberFormatException e) {
-            sender.sender().sendMessage(Language.PREFIX.asColoredString() + Language.INVALID_SYNTAX.asColoredString());
+            messageService.send(sender.sender(), Language.INVALID_SYNTAX);
         }
     }
 

@@ -11,6 +11,10 @@
 # General settings
 check-updates: true
 
+# Enable verbose debug logging. Useful for diagnosing reward actions,
+# database issues, and placeholder behavior. Leave off in production.
+debug: false
+
 # Database configuration
 database:
   # Select here the database you want to use
@@ -66,6 +70,10 @@ rewards:
   reset-time: 24
   # Should next day unlock after midnight?
   unlock-after-midnight: false
+  # Timezone for `unlock-after-midnight` and "has claimed today" checks.
+  # Use "system" to use the server machine's JVM default, or a TZ database name.
+  # Examples: "UTC", "Europe/Moscow", "America/New_York", "Asia/Tokyo"
+  timezone: "system"
   # Available actions:
   # [console] - entered statement will be executed from console
   # [player] - statement performed as player command execution

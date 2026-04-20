@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.bxteam.ndailyrewards.manager.menu.MenuManager;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
-import org.bxteam.ndailyrewards.utils.TextUtils;
+import org.bxteam.ndailyrewards.messaging.MessageService;
 
 import java.util.List;
 import java.util.Map;
@@ -21,14 +21,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InventoryClickListener implements Listener {
     private final Plugin plugin;
     private final RewardManager rewardManager;
+    private final MessageService messageService;
 
     private final Map<Integer, Integer> slotToDayMap = new ConcurrentHashMap<>();
     private final Map<Integer, List<String>> customButtonActions = new ConcurrentHashMap<>();
 
     @Inject
-    public InventoryClickListener(Plugin plugin, RewardManager rewardManager) {
+    public InventoryClickListener(Plugin plugin, RewardManager rewardManager, MessageService messageService) {
         this.plugin = plugin;
         this.rewardManager = rewardManager;
+        this.messageService = messageService;
         initializeMappings();
     }
 
@@ -88,10 +90,10 @@ public class InventoryClickListener implements Listener {
                 player.performCommand(command);
             } else if (action.startsWith("[message]")) {
                 String message = action.substring("[message]".length()).trim();
-                player.sendMessage(TextUtils.applyColor(message));
+                messageService.sendRaw(player, message);
             } else if (action.startsWith("[actionbar]")) {
                 String actionBarMessage = action.substring("[actionbar]".length()).trim();
-                player.sendActionBar(TextUtils.applyColor(actionBarMessage));
+                messageService.sendActionBar(player, actionBarMessage);
             } else if (action.startsWith("[sound]")) {
                 String[] soundParams = action.substring("[sound]".length()).trim().split(":");
                 if (soundParams.length >= 1) {
@@ -101,7 +103,7 @@ public class InventoryClickListener implements Listener {
                         float pitch = soundParams.length > 2 ? Float.parseFloat(soundParams[2]) : 1.0f;
                         player.playSound(player.getLocation(), sound, volume, pitch);
                     } catch (IllegalArgumentException e) {
-                        player.sendMessage(TextUtils.applyColor("&cInvalid sound specified: " + soundParams[0]));
+                        messageService.sendRaw(player, "&cInvalid sound specified: " + soundParams[0]);
                     }
                 }
             } else if (action.startsWith("[close]")) {

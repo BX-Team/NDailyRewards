@@ -10,7 +10,18 @@ public interface RewardRepository {
 
     CompletableFuture<Void> updatePlayerRewardData(UUID uuid, long nextTime, int nextDay);
 
+    CompletableFuture<Void> updatePlayerRewardData(
+            UUID uuid,
+            long nextTime,
+            int nextDay,
+            int maxStreak,
+            int missedTotal,
+            long lastClaimTime
+    );
+
     CompletableFuture<Void> resetPlayerRewardData(UUID uuid, long nextTime);
+
+    CompletableFuture<Void> resetPlayerRewardData(UUID uuid, long nextTime, int missedToAdd);
 
     CompletableFuture<PlayerRewardData> createPlayerData(UUID uuid, long nextTime);
 }

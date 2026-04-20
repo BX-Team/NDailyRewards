@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
+import org.bxteam.ndailyrewards.messaging.MessageService;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
@@ -13,6 +14,7 @@ import revxrsal.commands.bukkit.annotation.CommandPermission;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class ClaimCommand {
     private final RewardManager rewardManager;
+    private final MessageService messageService;
 
     @Subcommand("claim")
     @CommandPermission("ndailyrewards.claim")
@@ -20,7 +22,7 @@ public class ClaimCommand {
         this.rewardManager.getPlayerRewardDataAsync(sender.getUniqueId())
             .thenAccept(rewardData -> {
                 if (rewardData == null) {
-                    sender.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_NOT_AVAILABLE.asColoredString());
+                    messageService.send(sender, Language.CLAIM_NOT_AVAILABLE);
                     return;
                 }
 
@@ -28,7 +30,7 @@ public class ClaimCommand {
                 if (this.rewardManager.isRewardAvailable(rewardData, nextDay)) {
                     this.rewardManager.giveReward(sender, nextDay);
                 } else {
-                    sender.sendMessage(Language.PREFIX.asColoredString() + Language.CLAIM_NOT_AVAILABLE.asColoredString());
+                    messageService.send(sender, Language.CLAIM_NOT_AVAILABLE);
                 }
             });
     }

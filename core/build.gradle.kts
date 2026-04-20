@@ -27,6 +27,10 @@ dependencies {
         exclude("com.google.guava", "guava")
     }
     quark(libs.bundles.lamp)
+
+    implementation(libs.adventure.minimessage)
+    implementation(libs.adventure.legacy)
+    implementation(libs.adventure.platform.bukkit)
 }
 
 quark {

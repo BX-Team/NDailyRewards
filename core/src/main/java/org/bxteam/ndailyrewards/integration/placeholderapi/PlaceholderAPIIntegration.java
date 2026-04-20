@@ -49,24 +49,32 @@ public class PlaceholderAPIIntegration extends PlaceholderExpansion implements I
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
-        if (params.equalsIgnoreCase("reward_day")) {
-            PlayerRewardData playerRewardData = this.rewardManager.getPlayerRewardData(player.getUniqueId());
+        if (player == null) return "";
 
-            return String.valueOf(playerRewardData.currentDay() + 1);
+        PlayerRewardData data = this.rewardManager.getPlayerRewardData(player.getUniqueId());
+        if (data == null) {
+            return switch (params.toLowerCase()) {
+                case "has_claimed_today" -> "false";
+                case "remaining_time" -> "00:00:00";
+                default -> "0";
+            };
         }
 
-        if (params.equalsIgnoreCase("remaining_time")) {
-            PlayerRewardData playerRewardData = this.rewardManager.getPlayerRewardData(player.getUniqueId());
+        long now = System.currentTimeMillis() / 1000L;
 
-            long timeLeft = playerRewardData.next() - System.currentTimeMillis() / 1000L;
-            if (timeLeft < 0) {
-                return "00:00:00";
-            } else {
-                return formatTime(timeLeft);
+        return switch (params.toLowerCase()) {
+            case "reward_day", "next_day" -> String.valueOf(data.currentDay() + 1);
+            case "streak" -> String.valueOf(data.currentDay());
+            case "max_streak" -> String.valueOf(data.maxStreak());
+            case "missed_days" -> String.valueOf(rewardManager.computeMissedDaysSince(data, now));
+            case "missedtotal_days" -> String.valueOf(data.missedTotal());
+            case "has_claimed_today" -> String.valueOf(rewardManager.hasClaimedToday(data));
+            case "remaining_time" -> {
+                long timeLeft = data.next() - now;
+                yield timeLeft < 0 ? "00:00:00" : formatTime(timeLeft);
             }
-        }
-
-        return null;
+            default -> null;
+        };
     }
 
     private String formatTime(long seconds) {

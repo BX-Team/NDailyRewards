@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class ItemBuilder {
     private final ItemStack itemStack;
@@ -76,7 +75,7 @@ public class ItemBuilder {
      * @return The ItemBuilder instance
      */
     public ItemBuilder setName(final String name) {
-        this.meta.setDisplayName(TextUtils.applyColor(name));
+        this.meta.setDisplayName(name);
         return this;
     }
 
@@ -87,11 +86,7 @@ public class ItemBuilder {
      * @return The ItemBuilder instance
      */
     public ItemBuilder setLore(final List<String> lore) {
-        List<String> coloredLore = lore.stream()
-                .map(TextUtils::applyColor)
-                .collect(Collectors.toList());
-
-        this.meta.setLore(coloredLore);
+        this.meta.setLore(lore);
         return this;
     }
 

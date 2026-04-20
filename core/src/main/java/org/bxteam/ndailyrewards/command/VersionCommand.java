@@ -6,8 +6,7 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bxteam.helix.updater.VersionFetcher;
-import org.bxteam.ndailyrewards.configuration.Language;
-import org.bxteam.ndailyrewards.utils.TextUtils;
+import org.bxteam.ndailyrewards.messaging.MessageService;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
@@ -21,21 +20,22 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 public class VersionCommand {
     private final PluginDescriptionFile pluginDescription;
     private final VersionFetcher versionFetcher;
+    private final MessageService messageService;
 
     @Subcommand("version")
     @CommandPermission("ndailyrewards.version")
     void version(CommandSender sender) {
         final var current = new ComparableVersion(this.pluginDescription.getVersion());
 
-        sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aCurrent installed version: &e" + current));
+        messageService.sendPrefixed(sender, "&aCurrent installed version: &e" + current);
 
         supplyAsync(this.versionFetcher::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
             if (error != null || newest.compareTo(current) <= 0) {
                 return;
             }
 
-            sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aA new update is available: &e" + newest));
-            sender.sendMessage(Language.PREFIX.asColoredString() + TextUtils.applyColor("&aDownload here: &e" + this.versionFetcher.getDownloadUrl()));
+            messageService.sendPrefixed(sender, "&aA new update is available: &e" + newest);
+            messageService.sendPrefixed(sender, "&aDownload here: &e" + this.versionFetcher.getDownloadUrl());
         });
     }
 }

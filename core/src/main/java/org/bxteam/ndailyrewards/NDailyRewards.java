@@ -24,6 +24,7 @@ import org.bxteam.ndailyrewards.manager.CommandManager;
 import org.bxteam.ndailyrewards.manager.menu.MenuManager;
 import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
+import org.bxteam.ndailyrewards.messaging.MessageService;
 import org.bxteam.ndailyrewards.scheduler.SchedulerSetup;
 import org.bxteam.ndailyrewards.utils.LibraryLoaderUtil;
 
@@ -58,7 +59,9 @@ public final class NDailyRewards extends JavaPlugin {
         Instant startTime = Instant.now();
 
         Appender javaLoggerAppender = new JavaLoggerAppender(this.getLogger());
-        this.logger = new ExtendedLogger("NDailyRewards", LogLevel.INFO, List.of(javaLoggerAppender), new ArrayList<>());
+        saveDefaultConfig();
+        LogLevel initialLogLevel = getConfig().getBoolean("debug", false) ? LogLevel.DEBUG : LogLevel.INFO;
+        this.logger = new ExtendedLogger("NDailyRewards", initialLogLevel, List.of(javaLoggerAppender), new ArrayList<>());
 
         this.injector = Guice.createInjector(
                 new NDailyRewardsModule(this, logger),
@@ -66,7 +69,6 @@ public final class NDailyRewards extends JavaPlugin {
                 new SchedulerSetup(this)
         );
 
-        saveDefaultConfig();
         createLangFile();
         Language.init(this);
         new Metrics(this, 13844);
@@ -79,6 +81,7 @@ public final class NDailyRewards extends JavaPlugin {
             throw new RuntimeException(e);
         }
         this.injector.getInstance(IntegrationRegistry.class).init();
+        this.injector.getInstance(MessageService.class).init();
         this.injector.getInstance(RewardManager.class);
         this.injector.getInstance(MenuManager.class);
 
@@ -102,12 +105,18 @@ public final class NDailyRewards extends JavaPlugin {
         this.injector.getInstance(DatabaseClient.class).close();
         this.injector.getInstance(MenuManager.class).shutdown();
         this.injector.getInstance(RewardManager.class).unload();
+        this.injector.getInstance(MessageService.class).shutdown();
     }
 
     public void reload() {
         reloadConfig();
         createLangFile();
         Language.init(this);
+
+        LogLevel newLevel = getConfig().getBoolean("debug", false) ? LogLevel.DEBUG : LogLevel.INFO;
+        this.logger.setCurrentLevel(newLevel);
+
+        this.injector.getInstance(RewardManager.class).reload();
     }
 
     private void createLangFile() {
