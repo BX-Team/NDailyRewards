@@ -67,14 +67,14 @@ tasks {
 
     runServer {
         serverType(ServerType.PAPER)
-        serverVersion("1.21.8")
+        serverVersion("1.21.11")
         noGui(true)
         acceptMojangEula()
         perVersionFolder(true)
 
         downloadPlugins {
-            modrinth("luckperms", "v5.5.0-bukkit")
-            hangar("PlaceholderAPI", "2.11.6")
+            modrinth("luckperms", "v5.5.17-bukkit")
+            hangar("PlaceholderAPI", "2.12.2")
         }
     }
 }
