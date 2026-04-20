@@ -14,7 +14,7 @@ Simple and lightweight plugin that allows you to reward your players for playing
 ## ⚙️ Features
 - 📇 MariaDB and SQLite support
 - 🔍 High adjustable and simple configuration
-- 🌈 HEX Colors with gradient support
+- 🌈 MiniMessage with ampersand color code support
 - ⌨️ Various action types for rewards
 - 📄 PlaceholderAPI Support
 - 📝 Customizable and Translatable Messages
@@ -40,14 +40,14 @@ maven("https://repo.bxteam.org/releases")
 ### ➕ Add NDailyRewards to dependencies
 ```kts
 dependencies {
-    compileOnly("org.bxteam:ndailyrewards:3.3.0")
+    compileOnly("org.bxteam:ndailyrewards:3.4.0")
 }
 ```
 ```xml
 <dependency>
     <groupId>org.bxteam</groupId>
     <artifactId>ndailyrewards</artifactId>
-    <version>3.3.0</version>
+    <version>3.4.0</version>
     <scope>provided</scope>
 </dependency>
 ```
