@@ -13,15 +13,18 @@ import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import org.bukkit.plugin.Plugin;
 
 @Singleton
 public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements RewardRepository {
     private final ExtendedLogger logger;
+    private final Plugin plugin;
 
     @Inject
-    public RewardRepositoryOrmLite(DatabaseClient client, Scheduler scheduler, ExtendedLogger logger) throws SQLException {
+    public RewardRepositoryOrmLite(DatabaseClient client, Scheduler scheduler, ExtendedLogger logger, Plugin plugin) throws SQLException {
         super(client, scheduler);
         this.logger = logger;
+        this.plugin = plugin;
         TableUtils.createTableIfNotExists(client.getConnectionSource(), RewardWrapper.class);
         runSchemaMigrations(client);
     }
@@ -77,6 +80,7 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
 
     @Override
     public CompletableFuture<Void> updatePlayerRewardData(UUID uuid, long nextTime, int nextDay) {
+        if (plugin.getConfig().getBoolean("debug", false)) logger.info("[DEBUG] Database updatePlayerRewardData called for " + uuid + " nextDay: " + nextDay);
         return this.selectSafe(RewardWrapper.class, uuid.toString())
                 .thenCompose(optionalWrapper -> {
                     RewardWrapper wrapper = optionalWrapper.orElse(new RewardWrapper(uuid.toString(), nextTime, nextDay));
@@ -110,6 +114,7 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
 
     @Override
     public CompletableFuture<Void> resetPlayerRewardData(UUID uuid, long nextTime, int missedToAdd) {
+        if (plugin.getConfig().getBoolean("debug", false)) logger.info("[DEBUG] Database resetPlayerRewardData called for " + uuid + " missedToAdd: " + missedToAdd);
         return this.selectSafe(RewardWrapper.class, uuid.toString())
                 .thenCompose(optionalWrapper -> {
                     RewardWrapper wrapper = optionalWrapper.orElse(new RewardWrapper(uuid.toString(), nextTime, 0));

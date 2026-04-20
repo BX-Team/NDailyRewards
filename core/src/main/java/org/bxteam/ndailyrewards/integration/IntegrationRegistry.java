@@ -19,7 +19,7 @@ public class IntegrationRegistry {
 
     public void init() {
         this.tryEnable("PlaceholderAPI", () -> {
-            new PlaceholderAPIIntegration(this.rewardManager, this.pluginDescription).enable();
+            new PlaceholderAPIIntegration(this.rewardManager, this.pluginDescription, this.logger).enable();
         });
     }
 

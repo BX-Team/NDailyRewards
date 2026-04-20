@@ -41,6 +41,7 @@ public class RewardManager {
     private int resetTime;
     private boolean unlockAfterMidnight;
     private ZoneId zoneId;
+    private boolean debug;
 
     @Inject
     public RewardManager(Plugin plugin, RewardRepository rewardRepository, Provider<MenuManager> menuManagerProvider,
@@ -69,6 +70,7 @@ public class RewardManager {
     }
 
     private void loadSettings() {
+        this.debug = plugin.getConfig().getBoolean("debug", false);
         this.resetWhenAllClaimed = plugin.getConfig().getBoolean("rewards.reset-when-all-claimed", true);
         this.cooldown = plugin.getConfig().getInt("rewards.cooldown", 24);
         this.resetTime = plugin.getConfig().getInt("rewards.reset-time", 24);
@@ -86,6 +88,10 @@ public class RewardManager {
             logger.warn("Invalid timezone '%s' in config — falling back to system default. Valid examples: UTC, Europe/Moscow, America/New_York".formatted(raw));
             return ZoneId.systemDefault();
         }
+    }
+
+    public boolean isDebugEnabled() {
+        return debug;
     }
 
     public ZoneId getZoneId() {
@@ -113,21 +119,26 @@ public class RewardManager {
 
     public void giveReward(Player player, int day) {
         UUID uuid = player.getUniqueId();
+        
+        if (debug) logger.info("[DEBUG] Checking if " + player.getName() + " can claim reward for day " + day);
 
         canClaimRewardAsync(uuid).thenAccept(canClaim -> {
             if (!canClaim) {
+                if (debug) logger.info("[DEBUG] Player " + player.getName() + " cannot claim reward for day " + day);
                 messageService.send(player, Language.CLAIM_NOT_AVAILABLE);
                 return;
             }
 
             checkResetForPlayerAsync(uuid).thenAccept(wasReset -> {
                 if (wasReset) {
+                    if (debug) logger.info("[DEBUG] Player " + player.getName() + " reward was reset.");
                     messageService.send(player, Language.CLAIM_REWARD_RESET);
                     return;
                 }
 
                 Reward reward = rewards.get(day);
                 if (reward != null) {
+                    if (debug) logger.info("[DEBUG] Executing actions for " + player.getName() + " day " + day);
                     this.scheduler.runTask(() -> {
                         ActionsExecutor executor = this.actionsExecutorFactory.create(player, reward);
                         executor.execute();
@@ -136,12 +147,14 @@ public class RewardManager {
                     updatePlayerRewardDataAsync(uuid, day).thenRun(() -> {
                         this.scheduler.runTask(() -> {
                             if (player.getOpenInventory().getTopInventory().getHolder() instanceof MenuManager.MainMenuHolder) {
+                                if (debug) logger.info("[DEBUG] Refreshing inventory for " + player.getName());
                                 this.menuManagerProvider.get().refreshPlayerInventory(player);
                             }
                         });
                     });
 
                     if (resetWhenAllClaimed && day >= rewards.size()) {
+                        if (debug) logger.info("[DEBUG] Resetting rewards for " + player.getName() + " as all claimed.");
                         resetPlayerRewardDataAsync(uuid, 0);
                     }
 
@@ -154,6 +167,7 @@ public class RewardManager {
     private CompletableFuture<Void> updatePlayerRewardDataAsync(UUID uuid, int nextDay) {
         long nextTime = getUnixTimeForNextDay(false, false);
         long now = System.currentTimeMillis() / 1000L;
+        if (debug) logger.info("[DEBUG] Updating reward data async for " + uuid + " nextDay: " + nextDay + " nextTime: " + nextTime);
         return this.rewardRepository.getPlayerRewardData(uuid)
                 .thenCompose(current -> {
                     int newMaxStreak = Math.max(current.maxStreak(), nextDay);
@@ -178,6 +192,7 @@ public class RewardManager {
 
     private CompletableFuture<Void> resetPlayerRewardDataAsync(UUID uuid, int missedToAdd) {
         long nextTime = getUnixTimeForNextDay(false, true);
+        if (debug) logger.info("[DEBUG] Resetting reward data async for " + uuid + " missedToAdd: " + missedToAdd + " nextTime: " + nextTime);
         return rewardRepository.resetPlayerRewardData(uuid, nextTime, missedToAdd)
                 .exceptionally(throwable -> {
                     this.logger.error("Could not reset player reward data: %s".formatted(throwable.getMessage()));
@@ -288,6 +303,7 @@ public class RewardManager {
     }
 
     public void handleReward(Player player, int day) {
+        if (debug) logger.info("[DEBUG] Handling reward click for " + player.getName() + " day: " + day);
         getPlayerRewardDataAsync(player.getUniqueId()).thenAccept(playerRewardData -> {
             if (isRewardClaimed(playerRewardData, day)) {
                 messageService.send(player, Language.CLAIM_ALREADY_CLAIMED);
