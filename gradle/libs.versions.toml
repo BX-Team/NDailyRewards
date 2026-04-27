@@ -24,7 +24,7 @@ hikari = { module = "com.zaxxer:HikariCP", version = "7.0.2" }
 mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version = "3.5.8" }
 
 placeholderapi = { module = "me.clip:placeholderapi", version = "2.12.2" }
-lombok = { module = "org.projectlombok:lombok", version = "1.18.44" }
+lombok = { module = "org.projectlombok:lombok", version = "1.18.46" }
 
 guice = { module = "com.google.inject:guice", version.ref = "guice" }
 guice-assistedinject = { module = "com.google.inject.extensions:guice-assistedinject", version.ref = "guice" }
