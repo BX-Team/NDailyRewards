@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bxteam.helix.logger.ExtendedLogger;
 import org.bxteam.helix.scheduler.Scheduler;
@@ -87,6 +88,11 @@ public class PlayerJoinListener implements Listener {
                 });
             }
         });
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        this.rewardManager.invalidateCache(event.getPlayer().getUniqueId());
     }
 
     @EventHandler

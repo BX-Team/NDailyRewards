@@ -55,8 +55,11 @@ public class PlaceholderAPIIntegration extends PlaceholderExpansion implements I
 
         if (rewardManager.isDebugEnabled()) logger.info("[DEBUG-PAPI] Processing placeholder: " + params + " for player: " + player.getName());
 
-        PlayerRewardData data = this.rewardManager.getPlayerRewardData(player.getUniqueId());
+        PlayerRewardData data = this.rewardManager.getCachedPlayerRewardData(player.getUniqueId());
         if (data == null) {
+            if (player.isOnline()) {
+                this.rewardManager.getPlayerRewardDataAsync(player.getUniqueId());
+            }
             return switch (params.toLowerCase()) {
                 case "has_claimed_today" -> "false";
                 case "remaining_time" -> "00:00:00";

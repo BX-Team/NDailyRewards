@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
 public class RewardManager {
@@ -36,6 +37,8 @@ public class RewardManager {
     private final MessageService messageService;
 
     private final Map<Integer, Reward> rewards = new HashMap<>();
+
+    private final Map<UUID, PlayerRewardData> playerDataCache = new ConcurrentHashMap<>();
     private boolean resetWhenAllClaimed;
     private int cooldown;
     private int resetTime;
@@ -61,12 +64,21 @@ public class RewardManager {
 
     public void unload() {
         rewards.clear();
+        playerDataCache.clear();
     }
 
     public void reload() {
         rewards.clear();
         loadSettings();
         loadRewards();
+    }
+
+    public PlayerRewardData getCachedPlayerRewardData(UUID uuid) {
+        return playerDataCache.get(uuid);
+    }
+
+    public void invalidateCache(UUID uuid) {
+        playerDataCache.remove(uuid);
     }
 
     private void loadSettings() {
@@ -171,6 +183,7 @@ public class RewardManager {
         return this.rewardRepository.getPlayerRewardData(uuid)
                 .thenCompose(current -> {
                     int newMaxStreak = Math.max(current.maxStreak(), nextDay);
+                    playerDataCache.put(uuid, new PlayerRewardData(nextTime, nextDay, newMaxStreak, current.missedTotal(), now));
                     return this.rewardRepository.updatePlayerRewardData(
                             uuid, nextTime, nextDay, newMaxStreak, current.missedTotal(), now
                     );
@@ -184,6 +197,10 @@ public class RewardManager {
 
     public CompletableFuture<PlayerRewardData> createInitialPlayerData(UUID uuid) {
         return rewardRepository.createPlayerData(uuid, getUnixTimeForNextDay(true, false))
+                .thenApply(data -> {
+                    if (data != null) playerDataCache.put(uuid, data);
+                    return data;
+                })
                 .exceptionally(throwable -> {
                     this.logger.error("Could not create initial player data: %s".formatted(throwable.getMessage()));
                     return null;
@@ -194,6 +211,7 @@ public class RewardManager {
         long nextTime = getUnixTimeForNextDay(false, true);
         if (debug) logger.info("[DEBUG] Resetting reward data async for " + uuid + " missedToAdd: " + missedToAdd + " nextTime: " + nextTime);
         return rewardRepository.resetPlayerRewardData(uuid, nextTime, missedToAdd)
+                .thenRun(() -> refreshCache(uuid))
                 .exceptionally(throwable -> {
                     this.logger.error("Could not reset player reward data: %s".formatted(throwable.getMessage()));
                     throwable.printStackTrace();
@@ -201,14 +219,24 @@ public class RewardManager {
                 });
     }
 
+    /** Re-reads a player's data from storage into the in-memory cache. */
+    private void refreshCache(UUID uuid) {
+        getPlayerRewardDataAsync(uuid);
+    }
+
     public CompletableFuture<PlayerRewardData> getPlayerRewardDataAsync(UUID uuid) {
         return this.rewardRepository.getPlayerRewardData(uuid)
+                .thenApply(data -> {
+                    if (data != null) playerDataCache.put(uuid, data);
+                    return data;
+                })
                 .exceptionally(throwable -> {
                     this.logger.error("Could not retrieve player reward data: %s".formatted(throwable.getMessage()));
                     return null;
                 });
     }
 
+    @Deprecated
     public PlayerRewardData getPlayerRewardData(UUID uuid) {
         try {
             return getPlayerRewardDataAsync(uuid).get();
@@ -321,6 +349,7 @@ public class RewardManager {
         UUID uuid = player.getUniqueId();
         long currentTime = System.currentTimeMillis() / 1000L;
         this.rewardRepository.updatePlayerRewardData(uuid, currentTime, day)
+                .thenRun(() -> refreshCache(uuid))
                 .exceptionally(throwable -> {
                     this.logger.error("Could not set player day: %s".formatted(throwable.getMessage()));
                     throwable.printStackTrace();

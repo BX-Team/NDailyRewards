@@ -15,11 +15,21 @@ public class DatabaseModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        switch (DatabaseType.valueOf(this.plugin.getConfig().getString("database.type").toUpperCase())) {
+        switch (resolveDatabaseType()) {
             case SQLITE -> this.bind(DatabaseClient.class).to(SQLiteClient.class);
             case MARIADB -> this.bind(DatabaseClient.class).to(MariaDBClient.class);
         }
 
         this.bind(RewardRepository.class).to(RewardRepositoryOrmLite.class);
+    }
+
+    private DatabaseType resolveDatabaseType() {
+        String raw = this.plugin.getConfig().getString("database.type", "sqlite");
+        try {
+            return DatabaseType.valueOf(raw.trim().toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            this.plugin.getLogger().warning("Invalid database.type '" + raw + "' — falling back to SQLITE. Valid values: sqlite, mariadb.");
+            return DatabaseType.SQLITE;
+        }
     }
 }
