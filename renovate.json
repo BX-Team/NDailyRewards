@@ -1,19 +1,16 @@
 {
-  "extends": [
-    "config:recommended",
-    "group:allNonMajor",
-    ":automergeMinor",
-    ":automergePatch"
-  ],
-  "semanticCommitType": "build",
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "dependencyDashboard": false,
+  "baseBranchPatterns": ["master"],
   "commitMessagePrefix": "chore(deps): ",
-  "labels": [
-    "🔄 dependencies"
-  ],
-  "schedule": [
-    "before 4am on Monday"
-  ],
+  "labels": ["🔄 dependencies"],
   "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "ignoreTests": true
+    },
     {
       "matchPackageNames": [
         "com.destroystokyo.paper:paper-api",
