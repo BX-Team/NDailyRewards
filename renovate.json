@@ -1,30 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "dependencyDashboard": false,
-  "baseBranchPatterns": ["master"],
-  "commitMessagePrefix": "chore(deps): ",
-  "labels": ["🔄 dependencies"],
+  "extends": ["github>BX-Team/.github//renovate/gradle"],
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true,
-      "ignoreTests": true
-    },
-    {
+      "description": "Pinned by hand: the plugin targets Paper 1.16 and up, and these are the compatibility floor. Bumping any of them is a decision about which server versions to drop, not a dependency update.",
       "matchPackageNames": [
         "com.destroystokyo.paper:paper-api",
         "com.google.inject:guice",
         "com.google.inject.extensions:guice-assistedinject",
         "net.kyori:adventure-text-minimessage",
-        "net.kyori:adventure-text-serializer-legacy",
-        "gradle"
+        "net.kyori:adventure-text-serializer-legacy"
       ],
       "enabled": false
-    },
-    {
-      "matchPackageNames": ["**"],
-      "allowedVersions": "!/\\-SNAPSHOT$/"
     }
   ]
 }
