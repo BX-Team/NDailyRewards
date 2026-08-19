@@ -4,157 +4,304 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version number to release'
+        description: Version to release (e.g. 3.5.0)
         required: true
+        type: string
+      description:
+        description: "Optional summary for the top of the release notes. Use \\n for a line break."
+        required: false
+        default: ""
+        type: string
+      prerelease:
+        description: Mark as a pre-release, and publish to Modrinth/Hangar as a beta
+        default: false
+        type: boolean
+      draft:
+        description: Publish the GitHub release as a draft and skip Modrinth/Hangar
+        default: false
+        type: boolean
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  set-release-version:
+  prepare:
+    name: Resolve the version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      tag: ${{ steps.resolve.outputs.tag }}
+      previous: ${{ steps.resolve.outputs.previous }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate the version and find the previous tag
+        id: resolve
+        env:
+          VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::'$VERSION' is not a semantic version"
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
+            echo "::error::tag v$VERSION already exists"
+            exit 1
+          fi
+          {
+            echo "version=$VERSION"
+            echo "tag=v$VERSION"
+            echo "previous=$(git tag --list 'v*' --sort=-v:refname | head -n1)"
+          } >> "$GITHUB_OUTPUT"
+
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate the Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Set up the JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: "17"
+          distribution: temurin
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build
+        run: ./gradlew build --stacktrace
+
+  tag:
+    name: Tag the release
+    needs: [prepare, check]
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      sha: ${{ steps.push.outputs.sha }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v7
-      with:
-        ref: ${{ github.ref }}
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
 
-    - name: Set Version
-      run: |
-        sed -i 's/^version=.*/version='"${{ inputs.version }}"'/g' gradle.properties
+      - name: Set the version in gradle.properties
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        shell: bash
+        run: |
+          sed -i 's/^version=.*/version='"$VERSION"'/' gradle.properties
+          grep -qx "version=$VERSION" gradle.properties
 
-    - name: Commit Changes
-      uses: stefanzweifel/git-auto-commit-action@v7
-      with:
-        commit_message: 'chore(release): bump version to ${{ inputs.version }}'
+      - name: Commit the bump and push the tag
+        id: push
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add gradle.properties
+          git commit -m "chore(release): bump version to $VERSION"
+          git tag -a "$TAG" -m "$VERSION"
+          git push origin HEAD:"${GITHUB_REF_NAME}"
+          git push origin "$TAG"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   publish:
-    needs: set-release-version
+    name: Publish the release
+    needs: [prepare, tag]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v7
-      with:
-        fetch-depth: 0
+      - name: Check out the tagged commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.tag.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
 
-    - name: Checkout latest release tag
-      id: tag_search
-      run: |
-        echo "latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_OUTPUT
+      - name: Set up the JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: "17"
+          distribution: temurin
 
-    - name: Validate Gradle wrapper
-      uses: gradle/actions/wrapper-validation@v6
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v5
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-        cache: 'gradle'
+      - name: Build the release jar
+        run: ./gradlew build --stacktrace
 
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6
+      - name: Verify the release jar
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        shell: bash
+        run: |
+          ls -la build/libs
+          if [ ! -f "build/libs/NDailyRewards-$VERSION.jar" ]; then
+            echo "::error::build/libs/NDailyRewards-$VERSION.jar was not produced"
+            exit 1
+          fi
 
-    - name: Make Gradlew executable
-      run: chmod +x ./gradlew
+      - name: Publish the API to the Maven repository
+        continue-on-error: true
+        env:
+          REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
+          REPO_PASSWORD: ${{ secrets.REPO_SECRET }}
+        run: ./gradlew api:publish
 
-    - name: Build with Gradle
-      run: ./gradlew build
+      - name: Build the changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v6
+        with:
+          configuration: .github/changelog_configuration.json
+          mode: COMMIT
+          fromTag: ${{ needs.prepare.outputs.previous }}
+          toTag: ${{ needs.prepare.outputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Publish API
-      continue-on-error: true
-      run: ./gradlew api:publish
-      env:
-        REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
-        REPO_PASSWORD: ${{ secrets.REPO_SECRET }}
+      - name: Compose the release body
+        env:
+          DESCRIPTION: ${{ inputs.description }}
+          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+        shell: bash
+        run: |
+          if [ -n "$(printf '%s' "$DESCRIPTION" | tr -d '[:space:]')" ]; then
+            {
+              echo '## 📑 Changelog'
+              echo
+              # %b so a '\n' typed into the dispatch field becomes a real line
+              # break — GitHub renders that input as a single-line box.
+              printf '%b\n' "$DESCRIPTION"
+              echo
+              printf '%s\n' "$CHANGELOG" | sed 's/^## /### /'
+            } >body.md
+          else
+            printf '%s\n' "$CHANGELOG" >body.md
+          fi
 
-    - name: Build Changelog
-      id: github_release
-      uses: mikepenz/release-changelog-builder-action@v6
-      with:
-        mode: COMMIT
-        fromTag: ${{ steps.tag_search.outputs.latest_tag }}
-        toTag: ${{ github.ref }}
-        configuration: ".github/changelog_configuration.json"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish the GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          name: NDailyRewards ${{ needs.prepare.outputs.version }}
+          body_path: body.md
+          files: build/libs/NDailyRewards-${{ needs.prepare.outputs.version }}.jar
+          fail_on_unmatched_files: true
+          draft: ${{ inputs.draft }}
+          prerelease: ${{ inputs.prerelease }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Release to GitHub
-      uses: softprops/action-gh-release@v3
-      with:
-        body: ${{ steps.github_release.outputs.changelog }}
-        tag_name: v${{ inputs.version }}
-        generate_release_notes: false
-        draft: false
-        prerelease: false
-        target_commitish: master
-        token: ${{ secrets.GITHUB_TOKEN }}
-        fail_on_unmatched_files: true
-        name: NDailyRewards ${{ inputs.version }}
-        preserve_order: true
+      - name: Publish to Modrinth and Hangar
+        if: ${{ ! inputs.draft }}
+        uses: WiIIiam278/mc-publish@hangar
+        with:
+          modrinth-id: ZiFzQAnz
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+          modrinth-unfeature-mode: any
 
-    - name: Release to Modrinth and Hangar
-      uses: WiIIiam278/mc-publish@hangar
-      with:
-        modrinth-id: 'ZiFzQAnz'
-        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-        modrinth-featured: true
-        modrinth-unfeature-mode: 'any'
+          hangar-id: BX-Team/NDailyRewards
+          hangar-token: ${{ secrets.HANGAR_TOKEN }}
 
-        hangar-id: BX-Team/NDailyRewards
-        hangar-token: ${{ secrets.HANGAR_TOKEN }}
+          files: build/libs/NDailyRewards-${{ needs.prepare.outputs.version }}.jar
 
-        files: 'build/libs/NDailyRewards-*.jar'
+          name: NDailyRewards ${{ needs.prepare.outputs.version }}
+          version: ${{ needs.prepare.outputs.version }}
+          version-type: ${{ inputs.prerelease && 'beta' || 'release' }}
+          changelog: ${{ steps.changelog.outputs.changelog }}
 
-        name: 'NDailyRewards ${{ inputs.version }}'
-        version: ${{ inputs.version }}
-        version-type: 'release'
-        changelog: ${{ steps.github_release.outputs.changelog }}
+          loaders: |
+            paper
+            purpur
+            folia
+            spigot
+          game-versions: |
+            1.16
+            1.16.1
+            1.16.2
+            1.16.3
+            1.16.4
+            1.16.5
+            1.17
+            1.17.1
+            1.18
+            1.18.1
+            1.18.2
+            1.19
+            1.19.1
+            1.19.2
+            1.19.3
+            1.19.4
+            1.20
+            1.20.1
+            1.20.2
+            1.20.3
+            1.20.4
+            1.20.5
+            1.20.6
+            1.21
+            1.21.1
+            1.21.2
+            1.21.3
+            1.21.4
+            1.21.5
+            1.21.6
+            1.21.7
+            1.21.8
+            1.21.9
+            1.21.10
+            1.21.11
+            26.1
+            26.1.1
+            26.1.2
+            26.2
+          java: 17
 
-        loaders: |
-          paper
-          purpur
-          folia
-          spigot
-        game-versions: |
-          1.16
-          1.16.1
-          1.16.2
-          1.16.3
-          1.16.4
-          1.16.5
-          1.17
-          1.17.1
-          1.18
-          1.18.1
-          1.18.2
-          1.19
-          1.19.1
-          1.19.2
-          1.19.3
-          1.19.4
-          1.20
-          1.20.1
-          1.20.2
-          1.20.3
-          1.20.4
-          1.20.5
-          1.20.6
-          1.21
-          1.21.1
-          1.21.2
-          1.21.3
-          1.21.4
-          1.21.5
-          1.21.6
-          1.21.7
-          1.21.8
-          1.21.9
-          1.21.10
-          1.21.11
-          26.1
-          26.1.1
-          26.1.2
-          26.2
-        java: 17
+      - name: Write the result to the run summary
+        env:
+          TAG: ${{ needs.prepare.outputs.tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          DRAFT: ${{ inputs.draft }}
+          URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ needs.prepare.outputs.tag }}
+        shell: bash
+        run: |
+          {
+            echo "## [$TAG]($URL)"
+            echo
+            echo '| Target | Status |'
+            echo '| --- | --- |'
+            echo "| GitHub release | \`NDailyRewards-$VERSION.jar\` |"
+            echo "| Maven (\`api\`) | published |"
+            if [ "$DRAFT" = 'true' ]; then
+              echo '| Modrinth / Hangar | skipped — draft |'
+            else
+              echo "| Modrinth / Hangar | NDailyRewards $VERSION |"
+            fi
+            echo
+            cat body.md
+          } >> "$GITHUB_STEP_SUMMARY"
