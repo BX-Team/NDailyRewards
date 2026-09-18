@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import org.bxteam.helix.logger.ExtendedLogger;
 import org.bxteam.helix.scheduler.Scheduler;
 import org.bxteam.helix.scheduler.Task;
 import org.bxteam.ndailyrewards.configuration.Language;
@@ -27,6 +28,7 @@ public class MenuManager {
     private final RewardManager rewardManager;
     private final Scheduler scheduler;
     private final MessageService messageService;
+    private final ExtendedLogger logger;
 
     private final InventoryHolder MAIN_MENU_HOLDER = new MainMenuHolder();
     private ItemStack cachedFillerItem;
@@ -36,13 +38,16 @@ public class MenuManager {
     private final Set<Player> openMenuPlayers = ConcurrentHashMap.newKeySet();
 
     private Task updateTask;
+    private boolean itemModelWarningShown;
 
     @Inject
-    public MenuManager(Plugin plugin, RewardManager rewardManager, Scheduler scheduler, MessageService messageService) {
+    public MenuManager(Plugin plugin, RewardManager rewardManager, Scheduler scheduler, MessageService messageService,
+                       ExtendedLogger logger) {
         this.plugin = plugin;
         this.rewardManager = rewardManager;
         this.scheduler = scheduler;
         this.messageService = messageService;
+        this.logger = logger;
 
         initializeCaches();
         startGlobalUpdateTask();
@@ -64,7 +69,7 @@ public class MenuManager {
                 String name = customSection.getString(customKey + ".name");
                 List<String> lore = customSection.getStringList(customKey + ".lore");
                 int position = customSection.getInt(customKey + ".position");
-                ItemStack customItem = new ItemBuilder(ItemBuilder.parseItemStack(materialStr))
+                ItemStack customItem = new ItemBuilder(parseItem(materialStr))
                         .setName(messageService.toLegacyString(name))
                         .setLore(toLegacyLore(lore))
                         .build();
@@ -184,7 +189,7 @@ public class MenuManager {
         final String name = plugin.getConfig().getString("gui.reward.display.filler.name");
         final List<String> lore = plugin.getConfig().getStringList("gui.reward.display.filler.lore");
 
-        return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
+        return new ItemBuilder(parseItem(Objects.requireNonNull(material)))
                 .setName(messageService.toLegacyString(name))
                 .setLore(toLegacyLore(lore))
                 .build();
@@ -214,7 +219,7 @@ public class MenuManager {
                 .map(messageService::toLegacyString)
                 .collect(Collectors.toList());
 
-        return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
+        return new ItemBuilder(parseItem(Objects.requireNonNull(material)))
                 .setName(messageService.toLegacyString(name))
                 .setLore(loreFormatted)
                 .build();
@@ -231,10 +236,18 @@ public class MenuManager {
                 .map(messageService::toLegacyString)
                 .collect(Collectors.toList());
 
-        return new ItemBuilder(ItemBuilder.parseItemStack(Objects.requireNonNull(material)))
+        return new ItemBuilder(parseItem(Objects.requireNonNull(material)))
                 .setName(messageService.toLegacyString(name))
                 .setLore(loreTemplate)
                 .build();
+    }
+
+    private ItemStack parseItem(String material) {
+        if (!itemModelWarningShown && material.startsWith("ItemModel[") && !ItemBuilder.isItemModelSupported()) {
+            itemModelWarningShown = true;
+            logger.warn("ItemModel[...] items need Minecraft 1.21.4+; on this server the item model is ignored");
+        }
+        return ItemBuilder.parseItemStack(material);
     }
 
     private List<String> toLegacyLore(List<String> lore) {

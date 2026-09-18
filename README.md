@@ -18,7 +18,7 @@ Simple and lightweight plugin that allows you to reward your players for playing
 - ⌨️ Various action types for rewards
 - 📄 PlaceholderAPI Support
 - 📝 Customizable and Translatable Messages
-- 😎 Custom model data support
+- 😎 Custom model data and item model (1.21.4+) support
 - 🔁 Auto claim rewards
 - 🔔 Join notifications and auto-GUI opening
 - ...and more!
