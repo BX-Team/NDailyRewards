@@ -81,7 +81,7 @@ jobs:
       - name: Set up the JDK
         uses: actions/setup-java@v6
         with:
-          java-version: "17"
+          java-version: "27"
           distribution: temurin
 
       - name: Set up Gradle
@@ -146,7 +146,7 @@ jobs:
       - name: Set up the JDK
         uses: actions/setup-java@v6
         with:
-          java-version: "17"
+          java-version: "27"
           distribution: temurin
 
       - name: Set up Gradle
