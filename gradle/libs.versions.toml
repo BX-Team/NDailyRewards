@@ -2,7 +2,7 @@
 plugin-yml = "0.9.0"
 ormlite = "6.1"
 guice = "5.1.0"
-lamp = "4.0.0-rc.18"
+lamp = "4.0.0-rc.19"
 adventure = "4.26.1"
 
 [plugins]
@@ -16,7 +16,7 @@ paper = { module = "com.destroystokyo.paper:paper-api", version = "1.16.5-R0.1-S
 paperlib = { module = "io.papermc:paperlib", version = "1.0.8" }
 
 helix = { module = "org.bxteam:helix", version = "1.0.0" }
-maven-artifact = { module = "org.apache.maven:maven-artifact", version = "3.9.16" }
+maven-artifact = { module = "org.apache.maven:maven-artifact", version = "3.10.0" }
 
 ormlite = { module = "com.j256.ormlite:ormlite-core", version.ref = "ormlite" }
 ormlite-jdbc = { module = "com.j256.ormlite:ormlite-jdbc", version.ref = "ormlite" }
