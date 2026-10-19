@@ -2,15 +2,13 @@ package org.bxteam.ndailyrewards.manager;
 
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bxteam.ndailyrewards.NDailyRewards;
+import org.bxteam.ndailyrewards.configuration.PluginConfig;
 import org.bxteam.ndailyrewards.command.*;
 import org.bxteam.ndailyrewards.command.lamp.LampExceptionHandler;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.bukkit.BukkitLamp;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
-
-import java.util.List;
 
 @Singleton
 public class CommandManager {
@@ -19,18 +17,14 @@ public class CommandManager {
 
     public CommandManager(NDailyRewards plugin, Injector injector) {
         this.injector = injector;
+        PluginConfig config = injector.getInstance(PluginConfig.class);
 
         this.lamp = BukkitLamp.builder(plugin)
                 .exceptionHandler(injector.getInstance(LampExceptionHandler.class))
                 .suggestionProviders(providers -> {
-                    providers.addProvider(Integer.class, context -> {
-                        ConfigurationSection rewards = plugin.getConfig().getConfigurationSection("rewards.days");
-                        if (rewards == null) return List.of();
-                        return rewards.getKeys(false).stream()
-                                .map(Integer::parseInt)
-                                .map(String::valueOf)
-                                .toList();
-                    });
+                    providers.addProvider(Integer.class, context -> config.rewards.days.keySet().stream()
+                            .map(String::valueOf)
+                            .toList());
                 })
                 .build();
     }

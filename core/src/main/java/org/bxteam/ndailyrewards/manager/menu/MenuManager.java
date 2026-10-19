@@ -3,32 +3,33 @@ package org.bxteam.ndailyrewards.manager.menu;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
-import org.bxteam.helix.logger.ExtendedLogger;
-import org.bxteam.helix.scheduler.Scheduler;
-import org.bxteam.helix.scheduler.Task;
-import org.bxteam.ndailyrewards.configuration.Language;
-import org.jetbrains.annotations.NotNull;
+import org.bxteam.ndailyrewards.configuration.Messages;
+import org.bxteam.ndailyrewards.configuration.PluginConfig;
 import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.bxteam.ndailyrewards.messaging.MessageService;
 import org.bxteam.ndailyrewards.utils.ItemBuilder;
+import org.bxteam.quark.common.QuarkLogger;
+import org.bxteam.quark.paper.PaperScheduler;
+import org.bxteam.quark.platform.TaskHandle;
+import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Singleton
 public class MenuManager {
-    private final Plugin plugin;
+    private final PluginConfig config;
+    private final Messages messages;
     private final RewardManager rewardManager;
-    private final Scheduler scheduler;
+    private final PaperScheduler scheduler;
     private final MessageService messageService;
-    private final ExtendedLogger logger;
+    private final QuarkLogger logger;
 
     private final InventoryHolder MAIN_MENU_HOLDER = new MainMenuHolder();
     private ItemStack cachedFillerItem;
@@ -37,13 +38,14 @@ public class MenuManager {
     private final Map<Integer, Integer> slotToDayMap = new HashMap<>();
     private final Set<Player> openMenuPlayers = ConcurrentHashMap.newKeySet();
 
-    private Task updateTask;
+    private TaskHandle updateTask;
     private boolean itemModelWarningShown;
 
     @Inject
-    public MenuManager(Plugin plugin, RewardManager rewardManager, Scheduler scheduler, MessageService messageService,
-                       ExtendedLogger logger) {
-        this.plugin = plugin;
+    public MenuManager(PluginConfig config, Messages messages, RewardManager rewardManager, PaperScheduler scheduler,
+                       MessageService messageService, QuarkLogger logger) {
+        this.config = config;
+        this.messages = messages;
         this.rewardManager = rewardManager;
         this.scheduler = scheduler;
         this.messageService = messageService;
@@ -54,69 +56,56 @@ public class MenuManager {
     }
 
     private void initializeCaches() {
-        final ConfigurationSection config = plugin.getConfig();
+        PluginConfig.RewardMenu menu = config.gui.reward;
 
-        // Cache filler item
-        if (config.getBoolean("gui.reward.display.filler.enable") && this.cachedFillerItem == null) {
-            this.cachedFillerItem = loadFillItem();
+        if (menu.display.filler.enable && this.cachedFillerItem == null) {
+            this.cachedFillerItem = loadFillItem(menu.display.filler);
         }
 
-        // Cache custom items
-        ConfigurationSection customSection = config.getConfigurationSection("gui.reward.custom");
-        if (customSection != null && cachedCustomItems.isEmpty()) {
-            for (String customKey : customSection.getKeys(false)) {
-                String materialStr = customSection.getString(customKey + ".material");
-                String name = customSection.getString(customKey + ".name");
-                List<String> lore = customSection.getStringList(customKey + ".lore");
-                int position = customSection.getInt(customKey + ".position");
-                ItemStack customItem = new ItemBuilder(parseItem(materialStr))
-                        .setName(messageService.toLegacyString(name))
-                        .setLore(toLegacyLore(lore))
+        if (cachedCustomItems.isEmpty()) {
+            for (PluginConfig.CustomItem custom : menu.custom.values()) {
+                ItemStack customItem = new ItemBuilder(parseItem(custom.material))
+                        .setName(messageService.toLegacyString(custom.name))
+                        .setLore(toLegacyLore(custom.lore))
                         .build();
-                cachedCustomItems.add(new CustomItemConfig(position, customItem));
+                cachedCustomItems.add(new CustomItemConfig(custom.position, customItem));
             }
         }
 
-        // Cache day items and slot-to-day mappings
-        ConfigurationSection daysSection = config.getConfigurationSection("rewards.days");
-        if (daysSection != null && dayItemsCache.isEmpty()) {
-            for (String dayKey : daysSection.getKeys(false)) {
-                int day = Integer.parseInt(dayKey);
-                ConfigurationSection daySection = daysSection.getConfigurationSection(dayKey);
-                if (daySection == null) continue;
-                DayItems dayItems = preCacheDayItems(day, daySection);
+        if (dayItemsCache.isEmpty()) {
+            config.rewards.days.forEach((day, settings) -> {
+                DayItems dayItems = preCacheDayItems(day, settings);
                 dayItemsCache.put(day, dayItems);
                 slotToDayMap.put(dayItems.position, day);
-            }
+            });
         }
     }
 
     private void startGlobalUpdateTask() {
-        updateTask = scheduler.runTaskTimer(() -> {
+        updateTask = scheduler.repeating(() -> {
             long currentTime = System.currentTimeMillis() / 1000L;
             for (Player player : openMenuPlayers) {
                 updatePlayerInventory(player, currentTime);
             }
-        }, 20L, 20L);
+        }, Duration.ofSeconds(1), Duration.ofSeconds(1));
     }
 
     public void openRewardsMenu(Player player) {
-        final ConfigurationSection config = plugin.getConfig();
-
         this.rewardManager.checkResetForPlayerAsync(player.getUniqueId())
             .thenCompose(wasReset -> {
                 if (wasReset) {
-                    scheduler.runTask(() -> messageService.send(player, Language.CLAIM_REWARD_RESET));
+                    scheduler.sync(player, () -> messageService.send(player, messages.claim.rewardReset));
                 }
 
                 return this.rewardManager.getPlayerRewardDataAsync(player.getUniqueId());
             })
             .thenAccept(playerRewardData -> {
-                int size = config.getInt("gui.reward.size");
-                String title = messageService.toLegacyString(config.getString("gui.reward.title"));
-                boolean useFiller = config.getBoolean("gui.reward.display.filler.enable");
+                PluginConfig.RewardMenu menu = config.gui.reward;
+                int size = menu.size;
+                String title = messageService.toLegacyString(menu.title);
+                boolean useFiller = menu.display.filler.enable;
 
-                scheduler.runTask(() -> {
+                scheduler.sync(player, () -> {
                     final Inventory inventory = Bukkit.createInventory(MAIN_MENU_HOLDER, size, title);
 
                     if (useFiller && cachedFillerItem != null) {
@@ -129,8 +118,7 @@ public class MenuManager {
                         inventory.setItem(cic.position, cic.itemStack);
                     }
 
-                    ConfigurationSection daysSection = config.getConfigurationSection("rewards.days");
-                    if (daysSection != null && playerRewardData != null) {
+                    if (playerRewardData != null) {
                         populateDayItems(inventory, playerRewardData, System.currentTimeMillis() / 1000L);
                         openMenuPlayers.add(player);
                     }
@@ -170,75 +158,53 @@ public class MenuManager {
             return;
         }
 
-        Inventory inventory = player.getOpenInventory().getTopInventory();
-        if (!(inventory.getHolder() instanceof MainMenuHolder)) {
-            openMenuPlayers.remove(player);
-            return;
-        }
-
         this.rewardManager.getPlayerRewardDataAsync(player.getUniqueId())
             .thenAccept(playerRewardData -> {
                 if (playerRewardData != null) {
-                    scheduler.runTask(() -> populateDayItems(inventory, playerRewardData, currentTime));
+                    scheduler.sync(player, () -> {
+                        Inventory inventory = player.getOpenInventory().getTopInventory();
+                        if (!(inventory.getHolder() instanceof MainMenuHolder)) {
+                            openMenuPlayers.remove(player);
+                            return;
+                        }
+                        populateDayItems(inventory, playerRewardData, currentTime);
+                    });
                 }
             });
     }
 
-    private ItemStack loadFillItem() {
-        final String material = plugin.getConfig().getString("gui.reward.display.filler.material");
-        final String name = plugin.getConfig().getString("gui.reward.display.filler.name");
-        final List<String> lore = plugin.getConfig().getStringList("gui.reward.display.filler.lore");
-
-        return new ItemBuilder(parseItem(Objects.requireNonNull(material)))
-                .setName(messageService.toLegacyString(name))
-                .setLore(toLegacyLore(lore))
+    private ItemStack loadFillItem(PluginConfig.Filler filler) {
+        return new ItemBuilder(parseItem(filler.material))
+                .setName(messageService.toLegacyString(filler.name))
+                .setLore(toLegacyLore(filler.lore))
                 .build();
     }
 
-    private DayItems preCacheDayItems(int day, ConfigurationSection daySection) {
-        int position = daySection.getInt("position");
-        List<String> rewardLore = toLegacyLore(daySection.getStringList("lore"));
+    private DayItems preCacheDayItems(int day, PluginConfig.Day settings) {
+        List<String> rewardLore = toLegacyLore(settings.lore);
+        PluginConfig.Display display = config.gui.reward.display;
 
-        ItemStack claimed = createStaticItem("claimed", day, rewardLore);
-        ItemStack available = createStaticItem("available", day, rewardLore);
-        ItemStack unavailable = createStaticItem("unavailable", day, rewardLore);
+        ItemStack claimed = createDayItem(display.claimed, day, rewardLore);
+        ItemStack available = createDayItem(display.available, day, rewardLore);
+        ItemStack unavailable = createDayItem(display.unavailable, day, rewardLore);
         // Build a template for "next" once; we'll just update the time string each tick later
-        ItemStack nextTemplate = createNextTemplate(day, rewardLore);
+        ItemStack nextTemplate = createDayItem(display.next, day, rewardLore);
 
-        return new DayItems(day, position, claimed, available, unavailable, nextTemplate);
+        return new DayItems(day, settings.position, claimed, available, unavailable, nextTemplate);
     }
 
-    private ItemStack createStaticItem(String type, int day, List<String> rewardLore) {
-        String material = plugin.getConfig().getString("gui.reward.display." + type + ".material");
-        String name = Objects.requireNonNull(plugin.getConfig().getString("gui.reward.display." + type + ".name"))
-                .replace("<dayNum>", String.valueOf(day));
+    private ItemStack createDayItem(PluginConfig.DisplayItem item, int day, List<String> rewardLore) {
+        String name = Objects.requireNonNullElse(item.name, "").replace("<dayNum>", String.valueOf(day));
 
-        List<String> loreFormatted = plugin.getConfig().getStringList("gui.reward.display." + type + ".lore").stream()
+        List<String> loreFormatted = item.lore.stream()
                 .map(s -> s.replace("<reward-lore>", String.join("\n", rewardLore)))
                 .flatMap(s -> Arrays.stream(s.split("\n")))
                 .map(messageService::toLegacyString)
                 .collect(Collectors.toList());
 
-        return new ItemBuilder(parseItem(Objects.requireNonNull(material)))
+        return new ItemBuilder(parseItem(item.material))
                 .setName(messageService.toLegacyString(name))
                 .setLore(loreFormatted)
-                .build();
-    }
-
-    private ItemStack createNextTemplate(int day, List<String> rewardLore) {
-        String material = plugin.getConfig().getString("gui.reward.display.next.material");
-        String name = Objects.requireNonNull(plugin.getConfig().getString("gui.reward.display.next.name"))
-                .replace("<dayNum>", String.valueOf(day));
-
-        List<String> loreTemplate = plugin.getConfig().getStringList("gui.reward.display.next.lore").stream()
-                .map(s -> s.replace("<reward-lore>", String.join("\n", rewardLore)))
-                .flatMap(s -> Arrays.stream(s.split("\n")))
-                .map(messageService::toLegacyString)
-                .collect(Collectors.toList());
-
-        return new ItemBuilder(parseItem(Objects.requireNonNull(material)))
-                .setName(messageService.toLegacyString(name))
-                .setLore(loreTemplate)
                 .build();
     }
 
@@ -307,7 +273,7 @@ public class MenuManager {
         this.rewardManager.getPlayerRewardDataAsync(player.getUniqueId())
             .thenAccept(playerRewardData -> {
                 if (playerRewardData != null) {
-                    scheduler.runTask(() -> {
+                    scheduler.sync(player, () -> {
                         long currentTime = System.currentTimeMillis() / 1000L;
                         populateDayItems(inventory, playerRewardData, currentTime);
                     });

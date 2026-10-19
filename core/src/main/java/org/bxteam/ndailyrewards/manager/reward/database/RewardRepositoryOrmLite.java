@@ -2,29 +2,32 @@ package org.bxteam.ndailyrewards.manager.reward.database;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.table.TableUtils;
-import org.bxteam.helix.database.DatabaseClient;
-import org.bxteam.helix.database.wrapper.AbstractOrmLiteDatabase;
-import org.bxteam.helix.logger.ExtendedLogger;
-import org.bxteam.helix.scheduler.Scheduler;
+import org.bxteam.ndailyrewards.database.DatabaseClient;
 import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
+import org.bxteam.quark.common.QuarkLogger;
+import org.bxteam.quark.paper.PaperScheduler;
 
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import org.bukkit.plugin.Plugin;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executor;
 
 @Singleton
-public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements RewardRepository {
-    private final ExtendedLogger logger;
-    private final Plugin plugin;
+public class RewardRepositoryOrmLite implements RewardRepository {
+    private final DatabaseClient client;
+    private final Executor executor;
+    private final QuarkLogger logger;
 
     @Inject
-    public RewardRepositoryOrmLite(DatabaseClient client, Scheduler scheduler, ExtendedLogger logger, Plugin plugin) throws SQLException {
-        super(client, scheduler);
+    public RewardRepositoryOrmLite(DatabaseClient client, PaperScheduler scheduler, QuarkLogger logger) throws SQLException {
+        this.client = client;
+        this.executor = scheduler.asExecutor();
         this.logger = logger;
-        this.plugin = plugin;
         TableUtils.createTableIfNotExists(client.getConnectionSource(), RewardWrapper.class);
         runSchemaMigrations(client);
     }
@@ -47,7 +50,7 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
                 }
             }
         } catch (SQLException e) {
-            logger.warn("Failed to obtain DB connection for migrations: %s".formatted(e.getMessage()));
+            logger.warn("Failed to obtain DB connection for migrations: {}", e.getMessage());
         } finally {
             if (connection != null) {
                 try {
@@ -55,6 +58,33 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
                 } catch (SQLException ignored) {}
             }
         }
+    }
+
+    private <T> CompletableFuture<Dao.CreateOrUpdateStatus> save(Class<T> type, T value) {
+        return this.action(type, dao -> dao.createOrUpdate(value));
+    }
+
+    private <T> CompletableFuture<T> saveIfNotExist(Class<T> type, T value) {
+        return this.action(type, dao -> dao.createIfNotExists(value));
+    }
+
+    private <T, ID> CompletableFuture<T> select(Class<T> type, ID id) {
+        return this.<T, ID, T>action(type, dao -> dao.queryForId(id));
+    }
+
+    private <T, ID> CompletableFuture<Optional<T>> selectSafe(Class<T> type, ID id) {
+        return this.<T, ID, Optional<T>>action(type, dao -> Optional.ofNullable(dao.queryForId(id)));
+    }
+
+    private <T, ID, R> CompletableFuture<R> action(Class<T> type, DaoAction<T, ID, R> action) {
+        return CompletableFuture.supplyAsync(() -> {
+            Dao<T, ID> dao = this.client.getDao(type);
+            try {
+                return action.apply(dao);
+            } catch (SQLException e) {
+                throw new CompletionException(e);
+            }
+        }, this.executor);
     }
 
     private PlayerRewardData toData(RewardWrapper wrapper) {
@@ -80,7 +110,7 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
 
     @Override
     public CompletableFuture<Void> updatePlayerRewardData(UUID uuid, long nextTime, int nextDay) {
-        if (plugin.getConfig().getBoolean("debug", false)) logger.info("[DEBUG] Database updatePlayerRewardData called for " + uuid + " nextDay: " + nextDay);
+        logger.debug(() -> "Database updatePlayerRewardData called for " + uuid + " nextDay: " + nextDay);
         return this.selectSafe(RewardWrapper.class, uuid.toString())
                 .thenCompose(optionalWrapper -> {
                     RewardWrapper wrapper = optionalWrapper.orElse(new RewardWrapper(uuid.toString(), nextTime, nextDay));
@@ -114,7 +144,7 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
 
     @Override
     public CompletableFuture<Void> resetPlayerRewardData(UUID uuid, long nextTime, int missedToAdd) {
-        if (plugin.getConfig().getBoolean("debug", false)) logger.info("[DEBUG] Database resetPlayerRewardData called for " + uuid + " missedToAdd: " + missedToAdd);
+        logger.debug(() -> "Database resetPlayerRewardData called for " + uuid + " missedToAdd: " + missedToAdd);
         return this.selectSafe(RewardWrapper.class, uuid.toString())
                 .thenCompose(optionalWrapper -> {
                     RewardWrapper wrapper = optionalWrapper.orElse(new RewardWrapper(uuid.toString(), nextTime, 0));
@@ -131,5 +161,10 @@ public class RewardRepositoryOrmLite extends AbstractOrmLiteDatabase implements 
         RewardWrapper wrapper = new RewardWrapper(uuid.toString(), nextTime, 0);
         return this.saveIfNotExist(RewardWrapper.class, wrapper)
                 .thenApply(this::toData);
+    }
+
+    @FunctionalInterface
+    private interface DaoAction<T, ID, R> {
+        R apply(Dao<T, ID> dao) throws SQLException;
     }
 }

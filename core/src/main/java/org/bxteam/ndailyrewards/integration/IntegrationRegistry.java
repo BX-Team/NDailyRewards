@@ -5,16 +5,16 @@ import com.google.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bxteam.helix.logger.ExtendedLogger;
 import org.bxteam.ndailyrewards.integration.placeholderapi.PlaceholderAPIIntegration;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
+import org.bxteam.quark.common.QuarkLogger;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class IntegrationRegistry {
     private final PluginManager pluginManager;
     private final PluginDescriptionFile pluginDescription;
-    private final ExtendedLogger logger;
+    private final QuarkLogger logger;
     private final RewardManager rewardManager;
 
     public void init() {
@@ -27,10 +27,9 @@ public class IntegrationRegistry {
         if (pluginManager.isPluginEnabled(pluginName)) {
             try {
                 integration.enable();
-                logger.info("Enabled integration " + pluginName);
+                logger.info("Enabled integration {}", pluginName);
             } catch (Exception e) {
-                logger.error("Failed to enable integration " + pluginName);
-                e.printStackTrace();
+                logger.error("Failed to enable integration " + pluginName, e);
             }
         }
     }

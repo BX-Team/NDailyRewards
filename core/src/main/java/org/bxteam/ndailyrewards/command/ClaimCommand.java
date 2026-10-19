@@ -3,7 +3,7 @@ package org.bxteam.ndailyrewards.command;
 import com.google.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
-import org.bxteam.ndailyrewards.configuration.Language;
+import org.bxteam.ndailyrewards.configuration.Messages;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.bxteam.ndailyrewards.messaging.MessageService;
 import revxrsal.commands.annotation.Command;
@@ -15,6 +15,7 @@ import revxrsal.commands.bukkit.annotation.CommandPermission;
 public class ClaimCommand {
     private final RewardManager rewardManager;
     private final MessageService messageService;
+    private final Messages messages;
 
     @Subcommand("claim")
     @CommandPermission("ndailyrewards.claim")
@@ -22,7 +23,7 @@ public class ClaimCommand {
         this.rewardManager.getPlayerRewardDataAsync(sender.getUniqueId())
             .thenAccept(rewardData -> {
                 if (rewardData == null) {
-                    messageService.send(sender, Language.CLAIM_NOT_AVAILABLE);
+                    messageService.send(sender, messages.claim.notAvailable);
                     return;
                 }
 
@@ -30,7 +31,7 @@ public class ClaimCommand {
                 if (this.rewardManager.isRewardAvailable(rewardData, nextDay)) {
                     this.rewardManager.giveReward(sender, nextDay);
                 } else {
-                    messageService.send(sender, Language.CLAIM_NOT_AVAILABLE);
+                    messageService.send(sender, messages.claim.notAvailable);
                 }
             });
     }

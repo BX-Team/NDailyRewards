@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bxteam.helix.logger.ExtendedLogger;
 import org.bxteam.ndailyrewards.integration.Integration;
 import org.bxteam.ndailyrewards.manager.reward.PlayerRewardData;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
+import org.bxteam.quark.common.QuarkLogger;
 import org.jetbrains.annotations.NotNull;
 
 @Singleton
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public class PlaceholderAPIIntegration extends PlaceholderExpansion implements Integration {
     private final RewardManager rewardManager;
     private final PluginDescriptionFile pluginDescription;
-    private final ExtendedLogger logger;
+    private final QuarkLogger logger;
 
     @Override
     public void enable() {
@@ -53,7 +53,7 @@ public class PlaceholderAPIIntegration extends PlaceholderExpansion implements I
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         if (player == null) return "";
 
-        if (rewardManager.isDebugEnabled()) logger.info("[DEBUG-PAPI] Processing placeholder: " + params + " for player: " + player.getName());
+        logger.debug(() -> "[PAPI] Processing placeholder: " + params + " for player: " + player.getName());
 
         PlayerRewardData data = this.rewardManager.getCachedPlayerRewardData(player.getUniqueId());
         if (data == null) {

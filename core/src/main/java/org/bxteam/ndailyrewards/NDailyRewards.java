@@ -4,76 +4,97 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.j256.ormlite.logger.Level;
 import com.j256.ormlite.logger.Logger;
-import org.apache.maven.artifact.versioning.ComparableVersion;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bxteam.helix.Metrics;
-import org.bxteam.helix.database.DatabaseClient;
-import org.bxteam.helix.logger.ExtendedLogger;
-import org.bxteam.helix.logger.LogLevel;
-import org.bxteam.helix.logger.appender.Appender;
-import org.bxteam.helix.logger.appender.JavaLoggerAppender;
-import org.bxteam.helix.scheduler.Scheduler;
-import org.bxteam.helix.updater.VersionFetcher;
+import org.bstats.bukkit.Metrics;
+import org.bxteam.ndailyrewards.database.DatabaseClient;
+import org.bxteam.ndailyrewards.configuration.Messages;
+import org.bxteam.ndailyrewards.configuration.PluginConfig;
 import org.bxteam.ndailyrewards.database.DatabaseModule;
 import org.bxteam.ndailyrewards.integration.IntegrationRegistry;
 import org.bxteam.ndailyrewards.listener.InventoryClickListener;
 import org.bxteam.ndailyrewards.listener.PlayerJoinListener;
 import org.bxteam.ndailyrewards.manager.CommandManager;
 import org.bxteam.ndailyrewards.manager.menu.MenuManager;
-import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
 import org.bxteam.ndailyrewards.messaging.MessageService;
-import org.bxteam.ndailyrewards.scheduler.SchedulerSetup;
-import org.bxteam.ndailyrewards.utils.LibraryLoaderUtil;
+import org.bxteam.quark.LibraryManager;
+import org.bxteam.quark.bukkit.BukkitUpdateNotifier;
+import org.bxteam.quark.common.JulLogger;
+import org.bxteam.quark.common.QuarkLogger;
+import org.bxteam.quark.config.ConfigException;
+import org.bxteam.quark.config.backend.BackendProvider;
+import org.bxteam.quark.logging.DebugSwitch;
+import org.bxteam.quark.paper.PaperPlatform;
+import org.bxteam.quark.update.UpdateChecker;
+import org.bxteam.quark.update.UpdateProvider;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public final class NDailyRewards extends JavaPlugin {
+    private boolean librariesLoaded;
     private Injector injector;
-    private ExtendedLogger logger;
-    private File langFile;
-    private FileConfiguration langConfig;
+    private QuarkLogger logger;
+    private PaperPlatform platform;
+    private PluginConfig config;
+    private Messages messages;
     private CommandManager commandManager;
-
-    public FileConfiguration getLangConfig() {
-        return langConfig;
-    }
 
     @Override
     public void onLoad() {
-        LibraryLoaderUtil.loadDependencies(this);
+        try {
+            LibraryManager libraryManager = LibraryManager.builder()
+                    .plugin(this)
+                    .dataDirectory(getDataFolder().toPath())
+                    .logger(new JulLogger(getLogger()))
+                    .build();
+            libraryManager.loadFromGradle();
+            // snakeyaml-engine for the configs goes to the same libs/ folder
+            BackendProvider.libraryManager(libraryManager);
+            this.librariesLoaded = true;
+        } catch (LibraryManager.LibraryLoadException e) {
+            getLogger().severe("Could not download the libraries NDailyRewards needs: " + e.getMessage()
+                    + ". Check the server's internet access, or put the jars into plugins/NDailyRewards/libs by hand.");
+        }
     }
 
     @Override
     public void onEnable() {
+        if (!this.librariesLoaded) {
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         Instant startTime = Instant.now();
 
-        Appender javaLoggerAppender = new JavaLoggerAppender(this.getLogger());
-        saveDefaultConfig();
-        LogLevel initialLogLevel = getConfig().getBoolean("debug", false) ? LogLevel.DEBUG : LogLevel.INFO;
-        this.logger = new ExtendedLogger("NDailyRewards", initialLogLevel, List.of(javaLoggerAppender), new ArrayList<>());
+        this.platform = PaperPlatform.create(this);
+        this.logger = DebugSwitch.wrap(this.platform.logger());
+
+        Path dataFolder = this.platform.dataDirectory();
+        this.config = PluginConfig.create(dataFolder, this.logger);
+        this.messages = Messages.create(dataFolder, this.logger);
+        try {
+            this.config.load();
+            this.messages.load();
+        } catch (ConfigException e) {
+            this.logger.error(e.getMessage() + " Fix the file and restart the server, NDailyRewards is disabled until then.", null);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        DebugSwitch.setEnabled(this.config.debug);
+
+        UpdateChecker updateChecker = new UpdateChecker(UpdateProvider.modrinth("ndailyrewards"), getDescription().getVersion());
 
         this.injector = Guice.createInjector(
-                new NDailyRewardsModule(this, logger),
-                new DatabaseModule(this),
-                new SchedulerSetup(this)
+                new NDailyRewardsModule(this, this.platform, this.logger, this.config, this.messages, updateChecker),
+                new DatabaseModule(this.config)
         );
 
-        createLangFile();
-        Language.init(this);
         new Metrics(this, 13844);
 
-        logger.info("Loading plugin managers...");
+        this.logger.info("Loading plugin managers...");
         Logger.setGlobalLogLevel(Level.ERROR);
         try {
             this.injector.getInstance(DatabaseClient.class).open();
@@ -81,26 +102,34 @@ public final class NDailyRewards extends JavaPlugin {
             throw new RuntimeException(e);
         }
         this.injector.getInstance(IntegrationRegistry.class).init();
-        this.injector.getInstance(MessageService.class).init();
+        MessageService messageService = this.injector.getInstance(MessageService.class);
+        messageService.init();
         this.injector.getInstance(RewardManager.class);
         this.injector.getInstance(MenuManager.class);
 
-        logger.info("Registering listeners...");
-        getServer().getPluginManager().registerEvents(injector.getInstance(InventoryClickListener.class), this);
-        getServer().getPluginManager().registerEvents(injector.getInstance(PlayerJoinListener.class), this);
+        this.logger.info("Registering listeners...");
+        getServer().getPluginManager().registerEvents(this.injector.getInstance(InventoryClickListener.class), this);
+        getServer().getPluginManager().registerEvents(this.injector.getInstance(PlayerJoinListener.class), this);
 
         this.commandManager = new CommandManager(this, this.injector);
         this.commandManager.registerCommands();
 
         Duration timeTaken = Duration.between(startTime, Instant.now());
-        logger.info("Successfully enabled (took %sms)".formatted(timeTaken.toMillis()));
+        this.logger.info("Successfully enabled (took {}ms)", timeTaken.toMillis());
 
-        if (getConfig().getBoolean("check-updates")) checkForUpdates();
+        if (this.config.checkUpdates) {
+            updateChecker.checkAndLog(this.logger);
+            BukkitUpdateNotifier.register(this, updateChecker, "ndailyrewards.update-notify",
+                    outdated -> messageService.updateNotice(outdated.latest()));
+        }
     }
 
     @Override
     public void onDisable() {
-        this.injector.getInstance(Scheduler.class).cancelTasks(this);
+        if (this.injector == null) {
+            return;
+        }
+        this.platform.scheduler().cancelAll();
         this.commandManager.unregisterCommands();
         this.injector.getInstance(DatabaseClient.class).close();
         this.injector.getInstance(MenuManager.class).shutdown();
@@ -108,40 +137,16 @@ public final class NDailyRewards extends JavaPlugin {
         this.injector.getInstance(MessageService.class).shutdown();
     }
 
+    /**
+     * Re-reads config.yml and lang.yml. A file that fails to load throws and keeps its previous values.
+     *
+     * @throws ConfigException if a file cannot be read or has invalid values
+     */
     public void reload() {
-        reloadConfig();
-        createLangFile();
-        Language.init(this);
-
-        LogLevel newLevel = getConfig().getBoolean("debug", false) ? LogLevel.DEBUG : LogLevel.INFO;
-        this.logger.setCurrentLevel(newLevel);
+        this.config.reload();
+        this.messages.reload();
+        DebugSwitch.setEnabled(this.config.debug);
 
         this.injector.getInstance(RewardManager.class).reload();
-    }
-
-    private void createLangFile() {
-        langFile = new File(getDataFolder(), "lang.yml");
-        if (!langFile.exists()) {
-            langFile.getParentFile().mkdirs();
-            saveResource("lang.yml", false);
-        }
-        langConfig = YamlConfiguration.loadConfiguration(langFile);
-    }
-
-    private void checkForUpdates() {
-        final var current = new ComparableVersion(this.getDescription().getVersion());
-
-        supplyAsync(this.injector.getInstance(VersionFetcher.class)::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
-            if (error != null || newest.compareTo(current) <= 0) {
-                return;
-            }
-
-            logger.warn("""
-                A new version of NDailyRewards is available!
-                Your version: %s
-                Newest version: %s
-                Download it at: %s
-                """.formatted(current.toString(), newest, this.injector.getInstance(VersionFetcher.class).getDownloadUrl()));
-        });
     }
 }

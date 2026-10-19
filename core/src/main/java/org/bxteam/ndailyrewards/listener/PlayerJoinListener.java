@@ -2,40 +2,34 @@ package org.bxteam.ndailyrewards.listener;
 
 import com.google.inject.Inject;
 import lombok.RequiredArgsConstructor;
-import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
-import org.bxteam.helix.logger.ExtendedLogger;
-import org.bxteam.helix.scheduler.Scheduler;
-import org.bxteam.helix.updater.VersionFetcher;
-import org.bxteam.ndailyrewards.event.EventCaller;
-import org.bxteam.ndailyrewards.manager.menu.MenuManager;
-import org.bxteam.ndailyrewards.messaging.MessageService;
-import org.bxteam.ndailyrewards.utils.SoundUtil;
 import org.bxteam.ndailyrewards.api.event.AutoClaimEvent;
 import org.bxteam.ndailyrewards.api.event.PlayerReceiveReminderEvent;
-import org.bxteam.ndailyrewards.configuration.Language;
+import org.bxteam.ndailyrewards.configuration.Messages;
+import org.bxteam.ndailyrewards.configuration.PluginConfig;
+import org.bxteam.ndailyrewards.event.EventCaller;
+import org.bxteam.ndailyrewards.manager.menu.MenuManager;
 import org.bxteam.ndailyrewards.manager.reward.RewardManager;
+import org.bxteam.ndailyrewards.messaging.MessageService;
+import org.bxteam.quark.common.QuarkLogger;
+import org.bxteam.quark.paper.PaperScheduler;
 
-import java.util.Objects;
+import java.time.Duration;
 import java.util.UUID;
-
-import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class PlayerJoinListener implements Listener {
-    private final Plugin plugin;
+    private final PluginConfig config;
+    private final Messages messages;
     private final RewardManager rewardManager;
     private final MenuManager menuManager;
-    private final ExtendedLogger logger;
-    private final VersionFetcher versionFetcher;
-    private final Scheduler scheduler;
+    private final QuarkLogger logger;
+    private final PaperScheduler scheduler;
     private final EventCaller eventCaller;
-    private final SoundUtil soundUtil;
     private final MessageService messageService;
 
     @EventHandler
@@ -46,7 +40,7 @@ public class PlayerJoinListener implements Listener {
         this.rewardManager.createInitialPlayerData(uuid)
                 .thenAccept(initialData -> checkPlayerRewards(player))
                 .exceptionally(throwable -> {
-                    this.logger.error("Could not create initial player data: %s".formatted(throwable.getMessage()));
+                    this.logger.error("Could not create initial player data", throwable);
                     return null;
                 });
     }
@@ -60,29 +54,29 @@ public class PlayerJoinListener implements Listener {
             if (this.rewardManager.isRewardAvailable(playerRewardData, currentDay)) {
                 this.rewardManager.checkResetForPlayerAsync(player.getUniqueId()).thenAccept(wasReset -> {
                     if (wasReset) {
-                        messageService.send(player, Language.CLAIM_REWARD_RESET);
+                        messageService.send(player, messages.claim.rewardReset);
                         return;
                     }
 
-                    long delayTime = this.plugin.getConfig().getLong("events.auto-claim-delay");
-                    if (this.plugin.getConfig().getBoolean("events.auto-claim-reward")) {
-                        this.scheduler.runTaskLater(() -> {
+                    PluginConfig.Events events = this.config.events;
+                    if (events.autoClaimReward) {
+                        this.scheduler.later(player, () -> {
                             this.rewardManager.giveReward(player, currentDay);
                             this.eventCaller.callEvent(new AutoClaimEvent(player, currentDay));
-                        }, delayTime * 20L);
+                        }, Duration.ofSeconds(events.autoClaimDelay));
                     }
 
-                    if (this.plugin.getConfig().getBoolean("events.open-gui-when-available")) {
-                        this.scheduler.runTask(() -> {
+                    if (events.openGuiWhenAvailable) {
+                        this.scheduler.sync(player, () -> {
                             this.menuManager.openRewardsMenu(player);
-                            if (plugin.getConfig().getBoolean("sound.open.enabled")) {
-                                this.soundUtil.playSound(player, "open");
+                            if (this.config.sound.open.enabled) {
+                                this.config.sound.open.type.play(player);
                             }
                         });
                     }
 
-                    if (this.plugin.getConfig().getBoolean("events.notify-when-available")) {
-                        messageService.send(player, Language.EVENTS_NOTIFY_WHEN_AVAILABLE);
+                    if (events.notifyWhenAvailable) {
+                        messageService.send(player, messages.events.notifyWhenAvailable);
                         this.eventCaller.callEvent(new PlayerReceiveReminderEvent(player, currentDay));
                     }
                 });
@@ -93,23 +87,5 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         this.rewardManager.invalidateCache(event.getPlayer().getUniqueId());
-    }
-
-    @EventHandler
-    public void updateChecker(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-
-        if (this.plugin.getConfig().getBoolean("check-updates") && player.hasPermission("ndailyrewards.update-notify")) {
-            final var current = new ComparableVersion(this.plugin.getDescription().getVersion());
-
-            supplyAsync(this.versionFetcher::fetchNewestVersion).thenApply(Objects::requireNonNull).whenComplete((newest, error) -> {
-                if (error != null || newest.compareTo(current) <= 0) {
-                    return;
-                }
-
-                messageService.sendPrefixed(player, "&aA new update is available: &e" + newest);
-                messageService.sendPrefixed(player, "&aDownload here: &e" + versionFetcher.getDownloadUrl());
-            });
-        }
     }
 }

@@ -8,8 +8,9 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
-import org.bukkit.plugin.Plugin;
-import org.bxteam.helix.database.DatabaseClient;
+import org.bxteam.ndailyrewards.database.DatabaseClient;
+import org.bxteam.ndailyrewards.configuration.PluginConfig;
+import org.bxteam.quark.common.QuarkLogger;
 
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -18,7 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
 public class SQLiteClient implements DatabaseClient {
-    private final Plugin plugin;
+    private final PluginConfig config;
+    private final QuarkLogger logger;
     private final Map<Class<?>, Dao<?, ?>> cachedDao = new ConcurrentHashMap<>();
     private final Path dataDirectory;
 
@@ -26,9 +28,10 @@ public class SQLiteClient implements DatabaseClient {
     private ConnectionSource connectionSource;
 
     @Inject
-    public SQLiteClient(@Named("dataFolder") Path dataDirectory, Plugin plugin) {
+    public SQLiteClient(@Named("dataFolder") Path dataDirectory, PluginConfig config, QuarkLogger logger) {
         this.dataDirectory = dataDirectory;
-        this.plugin = plugin;
+        this.config = config;
+        this.logger = logger;
     }
 
     @Override
@@ -41,7 +44,7 @@ public class SQLiteClient implements DatabaseClient {
         this.dataSource.setMaximumPoolSize(5);
         this.dataSource.setPoolName("NDailyRewards");
         this.dataSource.setDriverClassName("org.sqlite.JDBC");
-        this.dataSource.setJdbcUrl("jdbc:sqlite:" + this.dataDirectory.toAbsolutePath() + "/" + this.plugin.getConfig().getString("database.sqlite.file"));
+        this.dataSource.setJdbcUrl("jdbc:sqlite:" + this.dataDirectory.toAbsolutePath() + "/" + this.config.database.sqlite.file);
 
         this.connectionSource = new DataSourceConnectionSource(this.dataSource, this.dataSource.getJdbcUrl());
     }
@@ -51,8 +54,8 @@ public class SQLiteClient implements DatabaseClient {
         try {
             this.dataSource.close();
             this.connectionSource.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            this.logger.error("Could not close the SQLite connection pool", e);
         }
     }
 

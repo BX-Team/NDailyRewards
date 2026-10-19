@@ -8,8 +8,9 @@ import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.plugin.Plugin;
-import org.bxteam.helix.database.DatabaseClient;
+import org.bxteam.ndailyrewards.database.DatabaseClient;
+import org.bxteam.ndailyrewards.configuration.PluginConfig;
+import org.bxteam.quark.common.QuarkLogger;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -18,7 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class MariaDBClient implements DatabaseClient {
-    private final Plugin plugin;
+    private final PluginConfig config;
+    private final QuarkLogger logger;
     private final Map<Class<?>, Dao<?, ?>> cachedDao = new ConcurrentHashMap<>();
 
     private HikariDataSource dataSource;
@@ -26,17 +28,15 @@ public class MariaDBClient implements DatabaseClient {
 
     @Override
     public void open() throws SQLException {
+        PluginConfig.Database database = this.config.database;
         this.dataSource = new HikariDataSource();
-        this.dataSource.addDataSourceProperty("cachePrepStmts", true);
-        this.dataSource.addDataSourceProperty("prepStmtCacheSize", 250);
-        this.dataSource.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
-        this.dataSource.addDataSourceProperty("useServerPrepStmts", true);
+        database.dataSourceProperties.forEach(this.dataSource::addDataSourceProperty);
         this.dataSource.setMaximumPoolSize(5);
         this.dataSource.setPoolName("NDailyRewards");
         this.dataSource.setDriverClassName("org.mariadb.jdbc.Driver");
-        this.dataSource.setJdbcUrl(this.plugin.getConfig().getString("database.mariadb.jdbc"));
-        this.dataSource.setUsername(this.plugin.getConfig().getString("database.mariadb.username"));
-        this.dataSource.setPassword(this.plugin.getConfig().getString("database.mariadb.password"));
+        this.dataSource.setJdbcUrl(database.mariadb.jdbc);
+        this.dataSource.setUsername(database.mariadb.username);
+        this.dataSource.setPassword(database.mariadb.password);
 
         this.connectionSource = new DataSourceConnectionSource(this.dataSource, this.dataSource.getJdbcUrl());
     }
@@ -46,8 +46,8 @@ public class MariaDBClient implements DatabaseClient {
         try {
             this.dataSource.close();
             this.connectionSource.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            this.logger.error("Could not close the MariaDB connection pool", e);
         }
     }
 

@@ -1,12 +1,4 @@
-import org.bxteam.runserver.ServerType
-
-plugins {
-    id("java-library")
-    alias(libs.plugins.shadow)
-    alias(libs.plugins.run.server)
-}
-
-allprojects {
+subprojects {
     apply(plugin = "java-library")
 
     repositories {
@@ -18,63 +10,12 @@ allprojects {
         maven("https://repo.bxteam.org/releases")
     }
 
-    tasks.compileJava {
+    tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
         options.release.set(17)
     }
 
-    tasks.javadoc {
+    tasks.withType<Javadoc>().configureEach {
         options.encoding = "UTF-8"
-    }
-}
-
-dependencies {
-    api(project(":core"))
-}
-
-tasks {
-    shadowJar {
-        archiveClassifier = ""
-        from(file("LICENSE"))
-        relocate("org.bstats", "org.bxteam.ndailyrewards.dependencies.bstats")
-        relocate("net.kyori", "org.bxteam.ndailyrewards.dependencies.kyori")
-        minimize()
-
-        exclude("META-INF/NOTICE")
-        exclude("META-INF/NOTICE.md")
-        exclude("META-INF/LICENSE")
-        exclude("META-INF/LICENSE.txt")
-        exclude("META-INF/DEPENDENCIES")
-        exclude("META-INF/maven/**")
-        exclude("META-INF/versions/**")
-        exclude("META-INF/**.kotlin_module")
-        exclude("deprecated.properties")
-        exclude("driver.properties")
-        exclude("mariadb.properties")
-    }
-
-    build {
-        dependsOn(shadowJar)
-    }
-
-    compileJava {
-        options.release = 17
-    }
-
-    processResources {
-        from("resources")
-    }
-
-    runServer {
-        serverType(ServerType.PAPER)
-        serverVersion("1.21.11")
-        noGui(true)
-        acceptMojangEula()
-        perVersionFolder(true)
-
-        downloadPlugins {
-            modrinth("luckperms", "v5.5.17-bukkit")
-            hangar("PlaceholderAPI", "2.12.2")
-        }
     }
 }

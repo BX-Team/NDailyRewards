@@ -2,38 +2,46 @@ package org.bxteam.ndailyrewards.manager.reward;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bxteam.helix.logger.ExtendedLogger;
+import org.bxteam.ndailyrewards.configuration.SoundEffect;
 import org.bxteam.ndailyrewards.messaging.MessageService;
+import org.bxteam.quark.common.QuarkLogger;
+import org.bxteam.quark.paper.PaperScheduler;
 
+import java.util.List;
 import java.util.Random;
 
+/**
+ * Runs the action lines of a reward or a custom menu item. Call {@link #execute()} on the thread that owns the
+ * player ({@code PaperScheduler#sync(Entity, Runnable)}).
+ */
 public class ActionsExecutor {
-    private final ExtendedLogger logger;
+    private final QuarkLogger logger;
     private final MessageService messageService;
+    private final PaperScheduler scheduler;
     private final Player player;
-    private final Reward reward;
+    private final List<String> actions;
     private final String[] titleText = new String[]{"", ""};
     private final Random random = new Random();
 
     @Inject
-    public ActionsExecutor(ExtendedLogger logger, MessageService messageService, @Assisted Player player, @Assisted Reward reward) {
+    public ActionsExecutor(QuarkLogger logger, MessageService messageService, PaperScheduler scheduler,
+                           @Assisted Player player, @Assisted List<String> actions) {
         this.logger = logger;
         this.messageService = messageService;
+        this.scheduler = scheduler;
         this.player = player;
-        this.reward = reward;
+        this.actions = actions;
     }
 
     public void execute() {
-        reward.actions().forEach(action -> {
+        actions.forEach(action -> {
             if (action == null || action.isBlank()) return;
 
             ActionType actionType = ActionType.fromAction(action);
             if (actionType == null) {
-                logger.warn("Unknown action type in reward config: '%s'. Expected one of [console], [player], [message], [actionbar], [sound], [title], [subtitle], [permission], [luck], [close] (case-insensitive).".formatted(action));
+                logger.warn("Unknown action type in reward config: '{}'. Expected one of [console], [player], [message], [actionbar], [sound], [title], [subtitle], [permission], [luck], [close] (case-insensitive).", action);
                 return;
             }
 
@@ -43,8 +51,7 @@ public class ActionsExecutor {
             try {
                 switch (actionType) {
                     case CONSOLE:
-                        String consoleCommand = StringUtils.replace(filled, "<player>", player.getName());
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consoleCommand);
+                        dispatchConsole(filled.replace("<player>", player.getName()));
                         break;
                     case PLAYER:
                         player.performCommand(filled);
@@ -56,16 +63,10 @@ public class ActionsExecutor {
                         messageService.sendActionBar(player, filled);
                         break;
                     case SOUND:
-                        String[] parts = filled.split(":");
-                        if (parts.length == 3) {
-                            try {
-                                Sound sound = Sound.valueOf(parts[0]);
-                                float volume = Float.parseFloat(parts[1]);
-                                float pitch = Float.parseFloat(parts[2]);
-                                player.playSound(player.getLocation(), sound, volume, pitch);
-                            } catch (IllegalArgumentException e) {
-                                logger.warn("Invalid sound action: " + action);
-                            }
+                        try {
+                            SoundEffect.parse(filled).play(player);
+                        } catch (IllegalArgumentException e) {
+                            logger.warn("Invalid sound action '{}': {}", action, e.getMessage());
                         }
                         break;
                     case TITLE:
@@ -80,7 +81,7 @@ public class ActionsExecutor {
                             String permission = permParts[0].replace("{", "").replace("}", "");
 
                             if (player.hasPermission(permission)) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), permParts[1].replace("<player>", player.getName()));
+                                dispatchConsole(permParts[1].replace("<player>", player.getName()));
                             }
                         }
                         break;
@@ -92,10 +93,10 @@ public class ActionsExecutor {
                                 int chance = Integer.parseInt(chanceString);
                                 String luckCommand = filled.substring(endIndex + 1).trim();
                                 if (random.nextInt(100) < chance) {
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), luckCommand.replace("<player>", player.getName()));
+                                    dispatchConsole(luckCommand.replace("<player>", player.getName()));
                                 }
                             } catch (NumberFormatException e) {
-                                logger.warn("Invalid luck action: " + action);
+                                logger.warn("Invalid luck action: {}", action);
                             }
                         }
                         break;
@@ -104,8 +105,7 @@ public class ActionsExecutor {
                         break;
                 }
             } catch (Exception e) {
-                logger.error("Error executing action '%s' for player %s: %s".formatted(action, player.getName(), e.getMessage()));
-                e.printStackTrace();
+                logger.error("Error executing action '%s' for player %s".formatted(action, player.getName()), e);
             }
         });
 
@@ -114,7 +114,16 @@ public class ActionsExecutor {
         }
     }
 
+    private void dispatchConsole(String command) {
+        // console commands belong to the global region on Folia; on Paper this is the main thread we are already on
+        if (scheduler.isSyncThread()) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        } else {
+            scheduler.sync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
+        }
+    }
+
     public interface Factory {
-        ActionsExecutor create(Player player, Reward reward);
+        ActionsExecutor create(Player player, List<String> actions);
     }
 }

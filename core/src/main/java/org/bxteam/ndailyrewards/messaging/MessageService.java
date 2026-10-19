@@ -12,9 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bxteam.ndailyrewards.configuration.Language;
+import org.bxteam.ndailyrewards.configuration.Messages;
+import org.bxteam.quark.update.ReleaseInfo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class MessageService {
     private final Plugin plugin;
+    private final Messages messages;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final LegacyComponentSerializer legacyAmpersand = LegacyComponentSerializer.legacyAmpersand();
     private final LegacyComponentSerializer legacySection = LegacyComponentSerializer.legacySection();
@@ -42,18 +45,28 @@ public class MessageService {
         }
     }
 
-    public void send(CommandSender sender, Language key, String... placeholders) {
-        sendRaw(sender, Language.PREFIX.asString() + key.asString(), placeholders);
+    /**
+     * Sends a message from {@link Messages} with the prefix in front.
+     */
+    public void send(CommandSender sender, String message, String... placeholders) {
+        sendRaw(sender, messages.prefix + message, placeholders);
     }
 
-    public void sendPrefixed(CommandSender sender, String raw, String... placeholders) {
-        sendRaw(sender, Language.PREFIX.asString() + raw, placeholders);
-    }
-
-    public void sendList(CommandSender sender, Language key, String... placeholders) {
-        for (String line : key.asStringList()) {
+    public void sendList(CommandSender sender, List<String> lines, String... placeholders) {
+        for (String line : lines) {
             sendRaw(sender, line, placeholders);
         }
+    }
+
+    /**
+     * The update lines of {@link Messages.Update} as one legacy string, for the join notifier.
+     */
+    public String updateNotice(ReleaseInfo release) {
+        String notice = messages.prefix + messages.update.available.replace("<version>", release.version().toString());
+        if (release.url() != null) {
+            notice += "\n" + messages.prefix + messages.update.download.replace("<url>", release.url().toString());
+        }
+        return toLegacyString(notice);
     }
 
     public void sendRaw(CommandSender sender, String raw, String... placeholders) {

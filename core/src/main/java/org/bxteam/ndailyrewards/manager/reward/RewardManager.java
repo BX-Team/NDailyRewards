@@ -3,23 +3,21 @@ package org.bxteam.ndailyrewards.manager.reward;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bxteam.helix.logger.ExtendedLogger;
-import org.bxteam.helix.scheduler.Scheduler;
 import org.bxteam.ndailyrewards.api.event.PlayerClaimRewardEvent;
+import org.bxteam.ndailyrewards.configuration.Messages;
+import org.bxteam.ndailyrewards.configuration.PluginConfig;
 import org.bxteam.ndailyrewards.event.EventCaller;
 import org.bxteam.ndailyrewards.manager.menu.MenuManager;
 import org.bxteam.ndailyrewards.manager.reward.database.RewardRepository;
-import org.bxteam.ndailyrewards.configuration.Language;
 import org.bxteam.ndailyrewards.messaging.MessageService;
+import org.bxteam.quark.common.QuarkLogger;
+import org.bxteam.quark.paper.PaperScheduler;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -27,13 +25,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
 public class RewardManager {
-    private final Plugin plugin;
+    private final PluginConfig config;
+    private final Messages messages;
     private final RewardRepository rewardRepository;
     private final Provider<MenuManager> menuManagerProvider;
-    private final ExtendedLogger logger;
+    private final QuarkLogger logger;
     private final EventCaller eventCaller;
     private final ActionsExecutor.Factory actionsExecutorFactory;
-    private final Scheduler scheduler;
+    private final PaperScheduler scheduler;
     private final MessageService messageService;
 
     private final Map<Integer, Reward> rewards = new HashMap<>();
@@ -44,13 +43,13 @@ public class RewardManager {
     private int resetTime;
     private boolean unlockAfterMidnight;
     private ZoneId zoneId;
-    private boolean debug;
 
     @Inject
-    public RewardManager(Plugin plugin, RewardRepository rewardRepository, Provider<MenuManager> menuManagerProvider,
-                        ExtendedLogger logger, EventCaller eventCaller, ActionsExecutor.Factory actionsExecutorFactory,
-                        Scheduler scheduler, MessageService messageService) {
-        this.plugin = plugin;
+    public RewardManager(PluginConfig config, Messages messages, RewardRepository rewardRepository, Provider<MenuManager> menuManagerProvider,
+                         QuarkLogger logger, EventCaller eventCaller, ActionsExecutor.Factory actionsExecutorFactory,
+                         PaperScheduler scheduler, MessageService messageService) {
+        this.config = config;
+        this.messages = messages;
         this.rewardRepository = rewardRepository;
         this.menuManagerProvider = menuManagerProvider;
         this.logger = logger;
@@ -82,28 +81,13 @@ public class RewardManager {
     }
 
     private void loadSettings() {
-        this.debug = plugin.getConfig().getBoolean("debug", false);
-        this.resetWhenAllClaimed = plugin.getConfig().getBoolean("rewards.reset-when-all-claimed", true);
-        this.cooldown = plugin.getConfig().getInt("rewards.cooldown", 24);
-        this.resetTime = plugin.getConfig().getInt("rewards.reset-time", 24);
-        this.unlockAfterMidnight = plugin.getConfig().getBoolean("rewards.unlock-after-midnight", false);
-        this.zoneId = resolveZoneId(plugin.getConfig().getString("rewards.timezone", "system"));
-    }
-
-    private ZoneId resolveZoneId(String raw) {
-        if (raw == null || raw.isBlank() || raw.equalsIgnoreCase("system") || raw.equalsIgnoreCase("default")) {
-            return ZoneId.systemDefault();
-        }
-        try {
-            return ZoneId.of(raw);
-        } catch (Exception e) {
-            logger.warn("Invalid timezone '%s' in config — falling back to system default. Valid examples: UTC, Europe/Moscow, America/New_York".formatted(raw));
-            return ZoneId.systemDefault();
-        }
-    }
-
-    public boolean isDebugEnabled() {
-        return debug;
+        PluginConfig.Rewards settings = config.rewards;
+        this.resetWhenAllClaimed = settings.resetWhenAllClaimed;
+        this.cooldown = settings.cooldown;
+        this.resetTime = settings.resetTime;
+        this.unlockAfterMidnight = settings.unlockAfterMidnight;
+        // validated when the config loads
+        this.zoneId = settings.zoneId();
     }
 
     public ZoneId getZoneId() {
@@ -115,58 +99,47 @@ public class RewardManager {
     }
 
     private void loadRewards() {
-        ConfigurationSection daysSection = plugin.getConfig().getConfigurationSection("rewards.days");
-        if (daysSection != null) {
-            for (String dayKey : daysSection.getKeys(false)) {
-                int day = Integer.parseInt(dayKey);
-                ConfigurationSection daySection = daysSection.getConfigurationSection(dayKey);
-                if (daySection != null) {
-                    List<String> lore = daySection.getStringList("lore");
-                    List<String> rewardsList = daySection.getStringList("actions");
-                    rewards.put(day, new Reward(lore, rewardsList));
-                }
-            }
-        }
+        config.rewards.days.forEach((day, settings) -> rewards.put(day, new Reward(settings.lore, settings.actions)));
     }
 
     public void giveReward(Player player, int day) {
         UUID uuid = player.getUniqueId();
         
-        if (debug) logger.info("[DEBUG] Checking if " + player.getName() + " can claim reward for day " + day);
+        logger.debug(() -> "Checking if " + player.getName() + " can claim reward for day " + day);
 
         canClaimRewardAsync(uuid).thenAccept(canClaim -> {
             if (!canClaim) {
-                if (debug) logger.info("[DEBUG] Player " + player.getName() + " cannot claim reward for day " + day);
-                messageService.send(player, Language.CLAIM_NOT_AVAILABLE);
+                logger.debug(() -> "Player " + player.getName() + " cannot claim reward for day " + day);
+                messageService.send(player, messages.claim.notAvailable);
                 return;
             }
 
             checkResetForPlayerAsync(uuid).thenAccept(wasReset -> {
                 if (wasReset) {
-                    if (debug) logger.info("[DEBUG] Player " + player.getName() + " reward was reset.");
-                    messageService.send(player, Language.CLAIM_REWARD_RESET);
+                    logger.debug(() -> "Player " + player.getName() + " reward was reset.");
+                    messageService.send(player, messages.claim.rewardReset);
                     return;
                 }
 
                 Reward reward = rewards.get(day);
                 if (reward != null) {
-                    if (debug) logger.info("[DEBUG] Executing actions for " + player.getName() + " day " + day);
-                    this.scheduler.runTask(() -> {
-                        ActionsExecutor executor = this.actionsExecutorFactory.create(player, reward);
+                    logger.debug(() -> "Executing actions for " + player.getName() + " day " + day);
+                    this.scheduler.sync(player, () -> {
+                        ActionsExecutor executor = this.actionsExecutorFactory.create(player, reward.actions());
                         executor.execute();
                     });
 
                     updatePlayerRewardDataAsync(uuid, day).thenRun(() -> {
-                        this.scheduler.runTask(() -> {
+                        this.scheduler.sync(player, () -> {
                             if (player.getOpenInventory().getTopInventory().getHolder() instanceof MenuManager.MainMenuHolder) {
-                                if (debug) logger.info("[DEBUG] Refreshing inventory for " + player.getName());
+                                logger.debug(() -> "Refreshing inventory for " + player.getName());
                                 this.menuManagerProvider.get().refreshPlayerInventory(player);
                             }
                         });
                     });
 
                     if (resetWhenAllClaimed && day >= rewards.size()) {
-                        if (debug) logger.info("[DEBUG] Resetting rewards for " + player.getName() + " as all claimed.");
+                        logger.debug(() -> "Resetting rewards for " + player.getName() + " as all claimed.");
                         resetPlayerRewardDataAsync(uuid, 0);
                     }
 
@@ -179,7 +152,7 @@ public class RewardManager {
     private CompletableFuture<Void> updatePlayerRewardDataAsync(UUID uuid, int nextDay) {
         long nextTime = getUnixTimeForNextDay(false, false);
         long now = System.currentTimeMillis() / 1000L;
-        if (debug) logger.info("[DEBUG] Updating reward data async for " + uuid + " nextDay: " + nextDay + " nextTime: " + nextTime);
+        logger.debug(() -> "Updating reward data async for " + uuid + " nextDay: " + nextDay + " nextTime: " + nextTime);
         return this.rewardRepository.getPlayerRewardData(uuid)
                 .thenCompose(current -> {
                     int newMaxStreak = Math.max(current.maxStreak(), nextDay);
@@ -189,8 +162,7 @@ public class RewardManager {
                     );
                 })
                 .exceptionally(throwable -> {
-                    this.logger.error("Could not update player reward data: %s".formatted(throwable.getMessage()));
-                    throwable.printStackTrace();
+                    this.logger.error("Could not update player reward data", throwable);
                     return null;
                 });
     }
@@ -202,19 +174,18 @@ public class RewardManager {
                     return data;
                 })
                 .exceptionally(throwable -> {
-                    this.logger.error("Could not create initial player data: %s".formatted(throwable.getMessage()));
+                    this.logger.error("Could not create initial player data", throwable);
                     return null;
                 });
     }
 
     private CompletableFuture<Void> resetPlayerRewardDataAsync(UUID uuid, int missedToAdd) {
         long nextTime = getUnixTimeForNextDay(false, true);
-        if (debug) logger.info("[DEBUG] Resetting reward data async for " + uuid + " missedToAdd: " + missedToAdd + " nextTime: " + nextTime);
+        logger.debug(() -> "Resetting reward data async for " + uuid + " missedToAdd: " + missedToAdd + " nextTime: " + nextTime);
         return rewardRepository.resetPlayerRewardData(uuid, nextTime, missedToAdd)
                 .thenRun(() -> refreshCache(uuid))
                 .exceptionally(throwable -> {
-                    this.logger.error("Could not reset player reward data: %s".formatted(throwable.getMessage()));
-                    throwable.printStackTrace();
+                    this.logger.error("Could not reset player reward data", throwable);
                     return null;
                 });
     }
@@ -231,7 +202,7 @@ public class RewardManager {
                     return data;
                 })
                 .exceptionally(throwable -> {
-                    this.logger.error("Could not retrieve player reward data: %s".formatted(throwable.getMessage()));
+                    this.logger.error("Could not retrieve player reward data", throwable);
                     return null;
                 });
     }
@@ -241,7 +212,7 @@ public class RewardManager {
         try {
             return getPlayerRewardDataAsync(uuid).get();
         } catch (Exception e) {
-            this.logger.error("Could not retrieve player reward data: %s".formatted(e.getMessage()));
+            this.logger.error("Could not retrieve player reward data", e);
             return null;
         }
     }
@@ -292,7 +263,7 @@ public class RewardManager {
             }
             return CompletableFuture.completedFuture(false);
         }).exceptionally(throwable -> {
-            this.logger.error("Could not check reset for player: %s".formatted(throwable.getMessage()));
+            this.logger.error("Could not check reset for player", throwable);
             return false;
         });
     }
@@ -314,11 +285,11 @@ public class RewardManager {
     }
 
     private long getUnixTimeForNextDay(boolean isFirstJoin, boolean isReset) {
-        if (isFirstJoin && this.plugin.getConfig().getBoolean("rewards.first-join-reward")) {
+        if (isFirstJoin && config.rewards.firstJoinReward) {
             return Instant.now().getEpochSecond();
         }
 
-        if (isReset && this.plugin.getConfig().getBoolean("rewards.first-day-on-reset")) {
+        if (isReset && config.rewards.firstDayOnReset) {
             return Instant.now().getEpochSecond();
         }
 
@@ -331,16 +302,16 @@ public class RewardManager {
     }
 
     public void handleReward(Player player, int day) {
-        if (debug) logger.info("[DEBUG] Handling reward click for " + player.getName() + " day: " + day);
+        logger.debug(() -> "Handling reward click for " + player.getName() + " day: " + day);
         getPlayerRewardDataAsync(player.getUniqueId()).thenAccept(playerRewardData -> {
             if (isRewardClaimed(playerRewardData, day)) {
-                messageService.send(player, Language.CLAIM_ALREADY_CLAIMED);
+                messageService.send(player, messages.claim.alreadyClaimed);
             } else if (isRewardAvailable(playerRewardData, day)) {
                 giveReward(player, day);
             } else if (isRewardNext(playerRewardData, day)) {
-                messageService.send(player, Language.CLAIM_AVAILABLE_SOON);
+                messageService.send(player, messages.claim.availableSoon);
             } else {
-                messageService.send(player, Language.CLAIM_NOT_AVAILABLE);
+                messageService.send(player, messages.claim.notAvailable);
             }
         });
     }
@@ -351,8 +322,7 @@ public class RewardManager {
         this.rewardRepository.updatePlayerRewardData(uuid, currentTime, day)
                 .thenRun(() -> refreshCache(uuid))
                 .exceptionally(throwable -> {
-                    this.logger.error("Could not set player day: %s".formatted(throwable.getMessage()));
-                    throwable.printStackTrace();
+                    this.logger.error("Could not set player day", throwable);
                     return null;
                 });
     }

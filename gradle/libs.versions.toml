@@ -1,5 +1,4 @@
 [versions]
-plugin-yml = "0.9.0"
 ormlite = "6.1"
 guice = "5.1.0"
 lamp = "4.0.0-rc.18"
@@ -7,16 +6,11 @@ adventure = "4.26.1"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.6.1" }
-plugin-yml-bukkit = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "plugin-yml" }
-run-server = { id = "org.bxteam.runserver", version = "1.2.2" }
-quark = { id = "org.bxteam.quark", version = "1.3.0" }
+quark = { id = "org.bxteam.quark", version = "2.0.0" }
 
 [libraries]
 paper = { module = "com.destroystokyo.paper:paper-api", version = "1.16.5-R0.1-SNAPSHOT" }
-paperlib = { module = "io.papermc:paperlib", version = "1.0.8" }
-
-helix = { module = "org.bxteam:helix", version = "1.0.0" }
-maven-artifact = { module = "org.apache.maven:maven-artifact", version = "3.9.16" }
+bstats = { module = "org.bstats:bstats-bukkit", version = "3.2.1" }
 
 ormlite = { module = "com.j256.ormlite:ormlite-core", version.ref = "ormlite" }
 ormlite-jdbc = { module = "com.j256.ormlite:ormlite-jdbc", version.ref = "ormlite" }
