@@ -11,6 +11,11 @@
         "net.kyori:adventure-text-serializer-legacy"
       ],
       "enabled": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["java-jdk"],
+      "enabled": false
     }
   ]
 }
