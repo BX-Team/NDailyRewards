@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +39,7 @@ public class RewardManager {
     private final Map<Integer, Reward> rewards = new HashMap<>();
 
     private final Map<UUID, PlayerRewardData> playerDataCache = new ConcurrentHashMap<>();
+    private final Set<UUID> claimsInProgress = ConcurrentHashMap.newKeySet();
     private boolean resetWhenAllClaimed;
     private int cooldown;
     private int resetTime;
@@ -104,67 +106,72 @@ public class RewardManager {
 
     public void giveReward(Player player, int day) {
         UUID uuid = player.getUniqueId();
-        
+
+        // Clicks held back client-side (e.g. UI Utils' packet delay) arrive in one burst, and without this every
+        // one of them reads the old day before the first write lands, so each would be granted (#174).
+        if (!claimsInProgress.add(uuid)) {
+            logger.debug(() -> "Ignoring claim from " + player.getName() + " for day " + day + ": one is in progress");
+            return;
+        }
+
+        claimRewardAsync(player, day).whenComplete((ignored, throwable) -> {
+            claimsInProgress.remove(uuid);
+            if (throwable != null) {
+                this.logger.error("Could not claim reward for " + player.getName(), throwable);
+            }
+        });
+    }
+
+    private CompletableFuture<Void> claimRewardAsync(Player player, int day) {
+        UUID uuid = player.getUniqueId();
         logger.debug(() -> "Checking if " + player.getName() + " can claim reward for day " + day);
 
-        canClaimRewardAsync(uuid).thenAccept(canClaim -> {
-            if (!canClaim) {
+        return getPlayerRewardDataAsync(uuid).thenCompose(data -> {
+            Reward reward = rewards.get(day);
+            if (reward == null || !isRewardAvailable(data, day)) {
                 logger.debug(() -> "Player " + player.getName() + " cannot claim reward for day " + day);
                 messageService.send(player, messages.claim.notAvailable);
-                return;
+                return CompletableFuture.completedFuture(null);
             }
 
-            checkResetForPlayerAsync(uuid).thenAccept(wasReset -> {
+            return checkResetForPlayerAsync(uuid).thenCompose(wasReset -> {
                 if (wasReset) {
                     logger.debug(() -> "Player " + player.getName() + " reward was reset.");
                     messageService.send(player, messages.claim.rewardReset);
-                    return;
+                    return CompletableFuture.completedFuture(null);
                 }
 
-                Reward reward = rewards.get(day);
-                if (reward != null) {
+                // Saved before the actions run: if the write fails the player gets nothing, rather than a reward
+                // they can claim again.
+                return updatePlayerRewardDataAsync(uuid, day, data).thenCompose(ignored -> {
                     logger.debug(() -> "Executing actions for " + player.getName() + " day " + day);
                     this.scheduler.sync(player, () -> {
-                        ActionsExecutor executor = this.actionsExecutorFactory.create(player, reward.actions());
-                        executor.execute();
-                    });
+                        this.actionsExecutorFactory.create(player, reward.actions()).execute();
+                        this.eventCaller.callEvent(new PlayerClaimRewardEvent(player, day));
 
-                    updatePlayerRewardDataAsync(uuid, day).thenRun(() -> {
-                        this.scheduler.sync(player, () -> {
-                            if (player.getOpenInventory().getTopInventory().getHolder() instanceof MenuManager.MainMenuHolder) {
-                                logger.debug(() -> "Refreshing inventory for " + player.getName());
-                                this.menuManagerProvider.get().refreshPlayerInventory(player);
-                            }
-                        });
+                        if (player.getOpenInventory().getTopInventory().getHolder() instanceof MenuManager.MainMenuHolder) {
+                            logger.debug(() -> "Refreshing inventory for " + player.getName());
+                            this.menuManagerProvider.get().refreshPlayerInventory(player);
+                        }
                     });
 
                     if (resetWhenAllClaimed && day >= rewards.size()) {
                         logger.debug(() -> "Resetting rewards for " + player.getName() + " as all claimed.");
-                        resetPlayerRewardDataAsync(uuid, 0);
+                        return resetPlayerRewardDataAsync(uuid, 0);
                     }
-
-                    this.eventCaller.callEvent(new PlayerClaimRewardEvent(player, day));
-                }
+                    return CompletableFuture.completedFuture(null);
+                });
             });
         });
     }
 
-    private CompletableFuture<Void> updatePlayerRewardDataAsync(UUID uuid, int nextDay) {
+    private CompletableFuture<Void> updatePlayerRewardDataAsync(UUID uuid, int nextDay, PlayerRewardData current) {
         long nextTime = getUnixTimeForNextDay(false, false);
         long now = System.currentTimeMillis() / 1000L;
+        int newMaxStreak = Math.max(current.maxStreak(), nextDay);
         logger.debug(() -> "Updating reward data async for " + uuid + " nextDay: " + nextDay + " nextTime: " + nextTime);
-        return this.rewardRepository.getPlayerRewardData(uuid)
-                .thenCompose(current -> {
-                    int newMaxStreak = Math.max(current.maxStreak(), nextDay);
-                    playerDataCache.put(uuid, new PlayerRewardData(nextTime, nextDay, newMaxStreak, current.missedTotal(), now));
-                    return this.rewardRepository.updatePlayerRewardData(
-                            uuid, nextTime, nextDay, newMaxStreak, current.missedTotal(), now
-                    );
-                })
-                .exceptionally(throwable -> {
-                    this.logger.error("Could not update player reward data", throwable);
-                    return null;
-                });
+        return this.rewardRepository.updatePlayerRewardData(uuid, nextTime, nextDay, newMaxStreak, current.missedTotal(), now)
+                .thenRun(() -> playerDataCache.put(uuid, new PlayerRewardData(nextTime, nextDay, newMaxStreak, current.missedTotal(), now)));
     }
 
     public CompletableFuture<PlayerRewardData> createInitialPlayerData(UUID uuid) {
